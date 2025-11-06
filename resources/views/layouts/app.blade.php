@@ -78,6 +78,72 @@
             margin-right: 12px;
         }
 
+        /* Dropdown Menu */
+        .menu-group {
+            position: relative;
+        }
+
+        .menu-item-dropdown {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .menu-item-dropdown:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item-dropdown svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .dropdown-toggle {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s;
+        }
+
+        .menu-item-dropdown.active-dropdown .dropdown-toggle {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 0;
+            border-left: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .submenu.show {
+            display: block;
+        }
+
+        .submenu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px 12px 40px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .submenu-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .submenu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -229,7 +295,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Aktivitas Pipeline</h2>
+                <h2>Pipeline</h2>
                 <p>Management System</p>
             </div>
             
@@ -282,6 +348,80 @@
                 </a>
                 @endif
 
+                @if(auth()->user()->isAdmin())
+                <!-- Master Menu with Dropdown -->
+                <div class="menu-group">
+                    <div class="menu-item-dropdown" onclick="toggleDropdown(this)">
+                        <span style="display: flex; align-items: center;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                            </svg>
+                            Pull Of Pipeline
+                        </span>
+                        <svg class="dropdown-toggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                    </div>
+                    <div class="submenu" id="master-submenu">
+                        <a href="{{ route('penurunan-brilink.index') }}" class="submenu-item {{ request()->routeIs('penurunan-brilink.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                            </svg>
+                            Penurunan Brilink
+                        </a>
+                        
+                        <a href="{{ route('penurunan-mantri.index') }}" class="submenu-item {{ request()->routeIs('penurunan-mantri.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Penurunan Mantri
+                        </a>
+                        
+                        <a href="{{ route('penurunan-merchant-mikro.index') }}" class="submenu-item {{ request()->routeIs('penurunan-merchant-mikro.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Penurunan Merchant Mikro
+                        </a>
+                        
+                        <a href="{{ route('penurunan-merchant-ritel.index') }}" class="submenu-item {{ request()->routeIs('penurunan-merchant-ritel.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Penurunan Merchant Ritel
+                        </a>
+                        
+                        <a href="{{ route('penurunan-no-segment-mikro.index') }}" class="submenu-item {{ request()->routeIs('penurunan-no-segment-mikro.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Penurunan No-Segment Mikro
+                        </a>
+                        
+                        <a href="{{ route('penurunan-no-segment-ritel.index') }}" class="submenu-item {{ request()->routeIs('penurunan-no-segment-ritel.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                            </svg>
+                            Penurunan No-Segment Ritel
+                        </a>
+                        
+                        <a href="{{ route('penurunan-sme-ritel.index') }}" class="submenu-item {{ request()->routeIs('penurunan-sme-ritel.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            Penurunan SME Ritel
+                        </a>
+                        
+                        <a href="{{ route('top10-qris-per-unit.index') }}" class="submenu-item {{ request()->routeIs('top10-qris-per-unit.*') ? 'active' : '' }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 10px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Top 10 QRIS Per Unit
+                        </a>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Profile Menu - All users -->
                 <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
                     <a href="{{ route('profile.index') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
@@ -328,6 +468,14 @@
             </div>
         </main>
     </div>
+
+    <script>
+        function toggleDropdown(element) {
+            const submenu = element.nextElementSibling;
+            submenu.classList.toggle('show');
+            element.classList.toggle('active-dropdown');
+        }
+    </script>
 
     @stack('scripts')
 </body>
