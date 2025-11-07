@@ -126,6 +126,33 @@
     .action-buttons-top {
         margin-bottom: 20px;
     }
+
+    .pagination-wrapper {
+        margin-top: 30px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .pagination-info {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .alert {
+        padding: 12px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
 </style>
 
 <div class="action-buttons-top">
@@ -206,7 +233,40 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center mt-4">
-            {{ $data->links() }}
+        @if($data->hasPages())
+        <div class="pagination-wrapper">
+            <p class="pagination-info">Showing {{ $data->firstItem() }} to {{ $data->lastItem() }} of {{ $data->total() }} results</p>
+            
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                @if ($data->onFirstPage())
+                    <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">← Previous</span>
+                @else
+                    <a href="{{ $data->appends(request()->query())->previousPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">← Previous</a>
+                @endif
+
+                {{-- Show pages 1 to 5 only --}}
+                @php
+                    $currentPage = $data->currentPage();
+                    $lastPage = $data->lastPage();
+                    $startPage = 1;
+                    $endPage = min(5, $lastPage);
+                @endphp
+
+                @foreach (range($startPage, $endPage) as $page)
+                    @php $url = $data->appends(request()->query())->url($page); @endphp
+                    @if ($page == $currentPage)
+                        <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                @if ($data->hasMorePages())
+                    <a href="{{ $data->appends(request()->query())->nextPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">Next →</a>
+                @else
+                    <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">Next →</span>
+                @endif
+            </div>
         </div>
+        @endif
 @endsection

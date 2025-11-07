@@ -132,6 +132,21 @@
         align-items: center;
         margin-bottom: 20px;
     }
+
+    .pagination-wrapper {
+        margin-top: 30px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .pagination-info {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+    }
 </style>
 
 <div class="page-header">
@@ -143,6 +158,69 @@
 <div class="alert alert-success">
     {{ session('success') }}
 </div>
+@endif
+
+@if(auth()->user()->isAdmin())
+<div class="card" style="margin-bottom: 20px;">
+    <form method="GET" action="{{ route('aktivitas.index') }}" style="display: flex; gap: 15px; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label for="kode_kc" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per KC</label>
+            <select name="kode_kc" id="kode_kc" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                <option value="">-- Semua KC --</option>
+                @foreach($listKC as $kc)
+                <option value="{{ $kc->kode_kc }}" {{ request('kode_kc') == $kc->kode_kc ? 'selected' : '' }}>
+                    {{ $kc->kode_kc }} - {{ $kc->nama_kc }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
+            <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                <option value="">-- Semua Unit --</option>
+                @foreach($listUnit as $unit)
+                <option value="{{ $unit->kode_uker }}" data-kc="{{ $unit->kode_kc }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
+                    {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white;">Reset</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Filter unit berdasarkan KC yang dipilih
+document.getElementById('kode_kc').addEventListener('change', function() {
+    var selectedKC = this.value;
+    var unitSelect = document.getElementById('kode_uker');
+    var allOptions = unitSelect.querySelectorAll('option');
+    
+    allOptions.forEach(function(option) {
+        if (option.value === '') {
+            option.style.display = 'block';
+        } else {
+            var optionKC = option.getAttribute('data-kc');
+            if (selectedKC === '' || optionKC === selectedKC) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    });
+    
+    // Reset unit selection jika tidak sesuai dengan KC
+    if (unitSelect.value !== '') {
+        var selectedOption = unitSelect.querySelector('option[value="' + unitSelect.value + '"]');
+        if (selectedOption && selectedOption.style.display === 'none') {
+            unitSelect.value = '';
+        }
+    }
+});
+</script>
 @endif
 
 <div class="card">
@@ -243,8 +321,39 @@
     </div>
 
     @if($aktivitas->hasPages())
-    <div class="pagination-wrapper" style="margin-top: 20px;">
-        {{ $aktivitas->links() }}
+    <div class="pagination-wrapper">
+        <p class="pagination-info">Showing {{ $aktivitas->firstItem() }} to {{ $aktivitas->lastItem() }} of {{ $aktivitas->total() }} results</p>
+        
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+            @if ($aktivitas->onFirstPage())
+                <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">← Previous</span>
+            @else
+                <a href="{{ $aktivitas->appends(request()->query())->previousPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">← Previous</a>
+            @endif
+
+            {{-- Show pages 1 to 5 only --}}
+            @php
+                $currentPage = $aktivitas->currentPage();
+                $lastPage = $aktivitas->lastPage();
+                $startPage = 1;
+                $endPage = min(5, $lastPage);
+            @endphp
+
+            @foreach (range($startPage, $endPage) as $page)
+                @php $url = $aktivitas->appends(request()->query())->url($page); @endphp
+                @if ($page == $currentPage)
+                    <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            @if ($aktivitas->hasMorePages())
+                <a href="{{ $aktivitas->appends(request()->query())->nextPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">Next →</a>
+            @else
+                <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">Next →</span>
+            @endif
+        </div>
     </div>
     @endif
 </div>

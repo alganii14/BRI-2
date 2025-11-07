@@ -16,25 +16,56 @@ class AktivitasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         
-        if ($user->isManager()) {
+        if ($user->isAdmin()) {
+            // Admin bisa lihat semua aktivitas dengan filter
+            $query = Aktivitas::with(['rmft', 'assignedBy']);
+            
+            // Filter per KC
+            if ($request->filled('kode_kc')) {
+                $query->where('kode_kc', $request->kode_kc);
+            }
+            
+            // Filter per Unit
+            if ($request->filled('kode_uker')) {
+                $query->where('kode_uker', $request->kode_uker);
+            }
+            
+            $aktivitas = $query->orderBy('tanggal', 'desc')->paginate(20);
+            
+            // Get list KC dan Unit untuk dropdown filter
+            $listKC = Aktivitas::select('kode_kc', 'nama_kc')
+                               ->distinct()
+                               ->orderBy('nama_kc')
+                               ->get();
+            
+            $listUnit = Aktivitas::select('kode_uker', 'nama_uker', 'kode_kc')
+                                 ->distinct()
+                                 ->orderBy('nama_uker')
+                                 ->get();
+            
+            return view('aktivitas.index', compact('aktivitas', 'listKC', 'listUnit'));
+            
+        } elseif ($user->isManager()) {
             // Manager hanya lihat aktivitas di Kanca mereka
             $aktivitas = Aktivitas::with(['rmft', 'assignedBy'])
                                   ->where('kode_kc', $user->kode_kanca)
                                   ->orderBy('tanggal', 'desc')
                                   ->paginate(20);
+            
+            return view('aktivitas.index', compact('aktivitas'));
         } else {
             // RMFT lihat aktivitas mereka sendiri
             $aktivitas = Aktivitas::with('assignedBy')
                                   ->where('rmft_id', $user->rmft_id)
                                   ->orderBy('tanggal', 'desc')
                                   ->paginate(20);
+            
+            return view('aktivitas.index', compact('aktivitas'));
         }
-        
-        return view('aktivitas.index', compact('aktivitas'));
     }
 
     /**
