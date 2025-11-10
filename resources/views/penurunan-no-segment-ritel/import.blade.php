@@ -73,6 +73,11 @@
             color: white;
         }
 
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -154,6 +159,39 @@
                 ← Kembali
             </a>
         </form>
+
+        <!-- Zona Berbahaya -->
+        @php
+            $totalPenurunanNoSegmentRitel = \App\Models\PenurunanNoSegmentRitel::count();
+        @endphp
+
+        @if($totalPenurunanNoSegmentRitel > 0)
+        <div class="card" style="margin-top: 30px; border: 2px solid #dc3545;">
+            <div class="card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <h4 class="card-title mb-0">⚠️ Zona Berbahaya</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <strong>Peringatan:</strong> Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan!
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Hapus Semua Data Penurunan No Segment Ritel</h6>
+                        <p class="text-muted mb-0">Total {{ number_format($totalPenurunanNoSegmentRitel, 0, ",", ".") }} data akan dihapus secara permanen</p>
+                    </div>
+                    <form action="{{ route('penurunan-no-segment-ritel.delete-all') }}" method="POST" 
+                          onsubmit="return confirm('PERINGATAN: Anda akan menghapus SEMUA data penurunan no segment ritel ({{ number_format($totalPenurunanNoSegmentRitel, 0, ",", ".") }} data).\n\nTindakan ini TIDAK DAPAT DIBATALKAN!\n\nApakah Anda yakin ingin melanjutkan?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Hapus Semua Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endif
 </div>
 
 <script>

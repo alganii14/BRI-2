@@ -218,7 +218,7 @@ class PenurunanBrilinkController extends Controller
                     ];
 
                     if (count($batch) >= $batchSize) {
-                        DB::table('penurunan_brillinks')->insert($batch);
+                        DB::table('penurunan_brilinks')->insert($batch);
                         $totalInserted += count($batch);
                         $batch = [];
                     }
@@ -227,7 +227,7 @@ class PenurunanBrilinkController extends Controller
 
             // Insert remaining batch
             if (!empty($batch)) {
-                DB::table('penurunan_brillinks')->insert($batch);
+                DB::table('penurunan_brilinks')->insert($batch);
                 $totalInserted += count($batch);
             }
 
@@ -241,6 +241,39 @@ class PenurunanBrilinkController extends Controller
             DB::rollBack();
             return redirect()->back()
                             ->with('error', '✗ Gagal mengimport CSV: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete all penurunan brilink records
+     */
+    public function deleteAll()
+    {
+        try {
+            $count = PenurunanBrilink::count();
+            
+            if ($count > 0) {
+                // Disable foreign key checks temporarily
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                
+                // Truncate the table - FIXED: correct table name
+                DB::table('penurunan_brilinks')->truncate();
+                
+                // Re-enable foreign key checks
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                
+                return redirect()->route('penurunan-brilink.index')
+                                ->with('success', '✓ Berhasil menghapus semua data penurunan brilink! Total data terhapus: ' . number_format($count, 0, ',', '.') . ' baris');
+            }
+            
+            return redirect()->route('penurunan-brilink.index')
+                            ->with('success', '✓ Tidak ada data penurunan brilink untuk dihapus.');
+                            
+        } catch (\Exception $e) {
+            // Re-enable foreign key checks in case of error
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            return redirect()->back()->with('error', '✗ Gagal menghapus data: ' . $e->getMessage());
         }
     }
 }

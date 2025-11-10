@@ -88,7 +88,15 @@ class AktivitasController extends Controller
         if ($user->isManager() && $user->kode_kanca) {
             $rmftList = User::where('role', 'rmft')
                            ->where('kode_kanca', $user->kode_kanca)
-                           ->with('rmftData')
+                           ->with('rmftData.ukerRelation')
+                           ->orderBy('name', 'asc')
+                           ->get();
+        }
+        
+        // Get RMFT list if user is Admin (all RMFT)
+        if ($user->isAdmin()) {
+            $rmftList = User::where('role', 'rmft')
+                           ->with('rmftData.ukerRelation')
                            ->orderBy('name', 'asc')
                            ->get();
         }
@@ -115,6 +123,8 @@ class AktivitasController extends Controller
             'nama_kc' => 'required|string',
             'kode_uker' => 'required|string',
             'nama_uker' => 'required|string',
+            'kode_uker_list' => 'nullable|string',
+            'nama_uker_list' => 'nullable|string',
             'kelompok' => 'required|string',
             'rencana_aktivitas' => 'required|string',
             'segmen_nasabah' => 'required|string',
@@ -124,47 +134,119 @@ class AktivitasController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        // Check if nasabah exists dengan KC dan Unit yang sama
-        $nasabah = Nasabah::where('norek', $validated['norek'])
-                          ->where('kode_kc', $validated['kode_kc'])
-                          ->where('kode_uker', $validated['kode_uker'])
-                          ->first();
+        // Check if multiple units are selected
+        $multipleUnits = !empty($validated['kode_uker_list']) && !empty($validated['nama_uker_list']);
         
-        if (!$nasabah) {
-            // Cek apakah norek sudah ada tapi dengan KC/Unit berbeda
-            $existingNasabah = Nasabah::where('norek', $validated['norek'])->first();
+        if ($multipleUnits) {
+            // Split units
+            $kodeUkerArray = explode(',', $validated['kode_uker_list']);
+            $namaUkerArray = explode(',', $validated['nama_uker_list']);
             
-            if ($existingNasabah) {
-                return back()->withErrors([
-                    'norek' => 'Norek ini terdaftar di KC: ' . $existingNasabah->nama_kc . ' / Unit: ' . $existingNasabah->nama_uker . '. Norek harus sesuai dengan KC dan Unit RMFT.'
-                ])->withInput();
+            $createdCount = 0;
+            
+            foreach ($kodeUkerArray as $index => $kodeUker) {
+                $namaUker = $namaUkerArray[$index] ?? '';
+                
+                if (empty($kodeUker) || empty($namaUker)) {
+                    continue;
+                }
+                
+                // Check if nasabah exists dengan KC dan Unit yang sama
+                $nasabah = Nasabah::where('norek', $validated['norek'])
+                                  ->where('kode_kc', $validated['kode_kc'])
+                                  ->where('kode_uker', trim($kodeUker))
+                                  ->first();
+                
+                if (!$nasabah) {
+                    // Buat nasabah baru dengan KC dan Unit
+                    $nasabah = Nasabah::create([
+                        'norek' => $validated['norek'],
+                        'nama_nasabah' => $validated['nama_nasabah'],
+                        'segmen_nasabah' => $validated['segmen_nasabah'],
+                        'kode_kc' => $validated['kode_kc'],
+                        'nama_kc' => $validated['nama_kc'],
+                        'kode_uker' => trim($kodeUker),
+                        'nama_uker' => trim($namaUker),
+                    ]);
+                }
+                
+                // Create activity for this unit
+                $activityData = [
+                    'tanggal' => $validated['tanggal'],
+                    'rmft_id' => $validated['rmft_id'],
+                    'nama_rmft' => $validated['nama_rmft'],
+                    'pn' => $validated['pn'],
+                    'kode_kc' => $validated['kode_kc'],
+                    'nama_kc' => $validated['nama_kc'],
+                    'kode_uker' => trim($kodeUker),
+                    'nama_uker' => trim($namaUker),
+                    'kelompok' => $validated['kelompok'],
+                    'rencana_aktivitas' => $validated['rencana_aktivitas'],
+                    'segmen_nasabah' => $validated['segmen_nasabah'],
+                    'nama_nasabah' => $validated['nama_nasabah'],
+                    'norek' => $validated['norek'],
+                    'rp_jumlah' => $validated['rp_jumlah'],
+                    'keterangan' => $validated['keterangan'],
+                    'nasabah_id' => $nasabah->id,
+                ];
+                
+                // Jika Manager atau Admin yang membuat, ini adalah assignment
+                if ($user->isManager() || $user->isAdmin()) {
+                    $activityData['assigned_by'] = $user->id;
+                    $activityData['tipe'] = 'assigned';
+                } else {
+                    $activityData['tipe'] = 'self';
+                }
+                
+                Aktivitas::create($activityData);
+                $createdCount++;
             }
             
-            // Buat nasabah baru dengan KC dan Unit
-            $nasabah = Nasabah::create([
-                'norek' => $validated['norek'],
-                'nama_nasabah' => $validated['nama_nasabah'],
-                'segmen_nasabah' => $validated['segmen_nasabah'],
-                'kode_kc' => $validated['kode_kc'],
-                'nama_kc' => $validated['nama_kc'],
-                'kode_uker' => $validated['kode_uker'],
-                'nama_uker' => $validated['nama_uker'],
-            ]);
-        }
-        
-        $validated['nasabah_id'] = $nasabah->id;
-        
-        // Jika Manager yang membuat, ini adalah assignment
-        if ($user->isManager()) {
-            $validated['assigned_by'] = $user->id;
-            $validated['tipe'] = 'assigned';
+            return redirect()->route('aktivitas.index')->with('success', "Berhasil membuat {$createdCount} aktivitas untuk {$createdCount} unit berbeda!");
+            
         } else {
-            $validated['tipe'] = 'self';
+            // Single unit - existing logic
+            $nasabah = Nasabah::where('norek', $validated['norek'])
+                              ->where('kode_kc', $validated['kode_kc'])
+                              ->where('kode_uker', $validated['kode_uker'])
+                              ->first();
+            
+            if (!$nasabah) {
+                // Cek apakah norek sudah ada tapi dengan KC/Unit berbeda
+                $existingNasabah = Nasabah::where('norek', $validated['norek'])->first();
+                
+                if ($existingNasabah) {
+                    return back()->withErrors([
+                        'norek' => 'Norek ini terdaftar di KC: ' . $existingNasabah->nama_kc . ' / Unit: ' . $existingNasabah->nama_uker . '. Norek harus sesuai dengan KC dan Unit RMFT.'
+                    ])->withInput();
+                }
+                
+                // Buat nasabah baru dengan KC dan Unit
+                $nasabah = Nasabah::create([
+                    'norek' => $validated['norek'],
+                    'nama_nasabah' => $validated['nama_nasabah'],
+                    'segmen_nasabah' => $validated['segmen_nasabah'],
+                    'kode_kc' => $validated['kode_kc'],
+                    'nama_kc' => $validated['nama_kc'],
+                    'kode_uker' => $validated['kode_uker'],
+                    'nama_uker' => $validated['nama_uker'],
+                ]);
+            }
+            
+            $validated['nasabah_id'] = $nasabah->id;
+            
+            // Jika Manager atau Admin yang membuat, ini adalah assignment
+            if ($user->isManager() || $user->isAdmin()) {
+                $validated['assigned_by'] = $user->id;
+                $validated['tipe'] = 'assigned';
+            } else {
+                $validated['tipe'] = 'self';
+            }
+
+            Aktivitas::create($validated);
+
+            return redirect()->route('aktivitas.index')->with('success', 'Aktivitas berhasil ditambahkan!');
         }
-
-        Aktivitas::create($validated);
-
-        return redirect()->route('aktivitas.index')->with('success', 'Aktivitas berhasil ditambahkan!');
     }
 
     /**
@@ -196,7 +278,7 @@ class AktivitasController extends Controller
         
         $aktivitas = Aktivitas::findOrFail($id);
         
-        // Manager hanya bisa edit aktivitas di KC mereka
+        // Manager hanya bisa edit aktivitas di KC mereka (Admin bisa edit semua)
         if ($user->isManager() && $aktivitas->kode_kc != $user->kode_kanca) {
             abort(403, 'Unauthorized action.');
         }
@@ -222,7 +304,7 @@ class AktivitasController extends Controller
         
         $aktivitas = Aktivitas::findOrFail($id);
         
-        // Manager hanya bisa update aktivitas di KC mereka
+        // Manager hanya bisa update aktivitas di KC mereka (Admin bisa update semua)
         if ($user->isManager() && $aktivitas->kode_kc != $user->kode_kanca) {
             abort(403, 'Unauthorized action.');
         }
@@ -259,7 +341,7 @@ class AktivitasController extends Controller
         
         $aktivitas = Aktivitas::findOrFail($id);
         
-        // Manager hanya bisa delete aktivitas di KC mereka
+        // Manager hanya bisa delete aktivitas di KC mereka (Admin bisa delete semua)
         if ($user->isManager() && $aktivitas->kode_kc != $user->kode_kanca) {
             abort(403, 'Unauthorized action.');
         }

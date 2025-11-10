@@ -108,6 +108,11 @@
         color: white;
     }
 
+    .btn-danger {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
     .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -220,6 +225,26 @@
             </a>
         </div>
     </form>
+
+    @php
+        $totalPenurunanBrilink = \App\Models\PenurunanBrilink::count();
+    @endphp
+
+    @if($totalPenurunanBrilink > 0)
+    <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+        <h3 style="color: #dc3545; margin-bottom: 16px;">⚠️ Zona Berbahaya</h3>
+        <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
+            Menghapus semua data penurunan brilink akan menghapus <strong>{{ number_format($totalPenurunanBrilink, 0, ',', '.') }} data</strong> secara permanen dan tidak dapat dikembalikan.
+        </p>
+        <form action="{{ route('penurunan-brilink.delete-all') }}" method="POST" onsubmit="return confirm('⚠️ PERINGATAN KERAS!\n\nAnda akan menghapus SEMUA {{ number_format($totalPenurunanBrilink, 0, ",", ".") }} data penurunan brilink!\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda BENAR-BENAR yakin?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">
+                🗑️ Hapus Semua Data Penurunan Brilink
+            </button>
+        </form>
+    </div>
+    @endif
 </div>
 
 <script>

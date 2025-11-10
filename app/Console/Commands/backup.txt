@@ -1,0 +1,269 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use App\Models\Nasabah;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+
+class ImportMthFolder extends Command
+{
+    protected $signature = 'import:mth-folder {folder=MTH}';
+    protected $description = 'Import semua file CSV dari folder MTH secara otomatis';
+
+    public function handle()
+    {
+        // Set unlimited memory and time for large files
+        ini_set('memory_limit', '2048M');
+        set_time_limit(0);
+        
+        $folderPath = base_path($this->argument('folder'));
+        
+        if (!File::exists($folderPath)) {
+            $this->error("Folder {$folderPath} tidak ditemukan!");
+            return 1;
+        }
+
+        $files = File::files($folderPath);
+        $csvFiles = array_filter($files, function($file) {
+            return strtolower($file->getExtension()) === 'csv';
+        });
+
+        if (empty($csvFiles)) {
+            $this->error("Tidak ada file CSV di folder {$folderPath}");
+            return 1;
+        }
+
+        $this->info("📁 Ditemukan " . count($csvFiles) . " file CSV");
+        $this->newLine();
+
+        $totalFiles = count($csvFiles);
+        $successCount = 0;
+        $failCount = 0;
+        $totalRecords = 0;
+        $totalSkipped = 0;
+        $startTime = microtime(true);
+
+        foreach ($csvFiles as $index => $file) {
+            $fileNumber = $index + 1;
+            $fileName = $file->getFilename();
+            
+            $this->info("[$fileNumber/$totalFiles] 📄 Memproses: {$fileName}");
+            
+            try {
+                $result = $this->importFile($file->getPathname(), $fileName);
+                $totalRecords += $result['imported'];
+                $totalSkipped += $result['skipped'];
+                $successCount++;
+                $this->info("✓ Berhasil import {$result['imported']} record dari {$fileName}");
+                if ($result['skipped'] > 0) {
+                    $this->warn("  ⚠ Dilewati: {$result['skipped']} records (duplikat/error)");
+                }
+            } catch (\Exception $e) {
+                $failCount++;
+                $this->error("✗ Gagal import {$fileName}");
+                $this->error("  Error: " . $e->getMessage());
+                $this->warn("  Melanjutkan ke file berikutnya...");
+            }
+            
+            $this->newLine();
+        }
+
+        $endTime = microtime(true);
+        $duration = round($endTime - $startTime, 2);
+        $minutes = floor($duration / 60);
+        $seconds = $duration % 60;
+
+        $this->info("=== RINGKASAN IMPORT ===");
+        $this->table(
+            ['Metric', 'Value'],
+            [
+                ['Total File Diproses', $totalFiles],
+                ['File Berhasil', $successCount],
+                ['File Gagal', $failCount],
+                ['Total Record Diimport', number_format($totalRecords, 0, ',', '.')],
+                ['Total Dilewati (Duplikat/Error)', number_format($totalSkipped, 0, ',', '.')],
+                ['Waktu Proses', sprintf('%d menit %d detik', $minutes, $seconds)],
+            ]
+        );
+
+        return 0;
+    }
+
+    private function importFile($filePath, $fileName)
+    {
+        $handle = fopen($filePath, 'r');
+        if (!$handle) {
+            throw new \Exception("Tidak dapat membuka file");
+        }
+
+        // Baca header
+        $header = fgetcsv($handle);
+        if (!$header) {
+            fclose($handle);
+            throw new \Exception("File kosong atau format tidak valid");
+        }
+
+        $batch = [];
+        $batchSize = 500;
+        $totalInserted = 0;
+        $skipped = 0;
+        $rowNumber = 1;
+
+        DB::beginTransaction();
+        DB::connection()->disableQueryLog();
+        
+        // Disable Eloquent event listeners for performance
+        \App\Models\Nasabah::unsetEventDispatcher();
+
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+            
+            // Skip jika jumlah kolom tidak sama
+            if (count($row) !== count($header)) {
+                continue;
+            }
+
+            $data = array_combine($header, $row);
+            
+            // Skip jika nomor rekening kosong
+            if (empty(trim($data['No_Rekening'] ?? ''))) {
+                continue;
+            }
+
+            // Helper function to parse decimal
+            $parseDecimal = function($value) {
+                if (empty($value)) return null;
+                $cleaned = str_replace(',', '', trim($value));
+                return is_numeric($cleaned) ? (float) $cleaned : null;
+            };
+            
+            // Parse kode_kc and nama_kc dari Kantor_Cabang (format: "123 -- NAMA CABANG")
+            $kode_kc = null;
+            $nama_kc = null;
+            if (!empty($data['Kantor_Cabang'])) {
+                preg_match('/^(\d+)\s*--\s*(.+)$/', trim($data['Kantor_Cabang']), $matches);
+                if (isset($matches[1]) && isset($matches[2])) {
+                    $kode_kc = ltrim($matches[1], '0') ?: '0';
+                    $nama_kc = trim($matches[2]);
+                }
+            }
+
+            // Parse kode_uker and nama_uker dari Unit_Kerja (format: "456 -- NAMA UNIT")
+            $kode_uker = null;
+            $nama_uker = null;
+            if (!empty($data['Unit_Kerja'])) {
+                preg_match('/^(\d+)\s*--\s*(.+)$/', trim($data['Unit_Kerja']), $matches);
+                if (isset($matches[1]) && isset($matches[2])) {
+                    $kode_uker = ltrim($matches[1], '0') ?: '0';
+                    $nama_uker = trim($matches[2]);
+                }
+            }
+            
+            // Mapping kolom ke database (sesuai header CSV MTH)
+            $batch[] = [
+                'norek' => trim($data['No_Rekening']),
+                'cifno' => !empty(trim($data['CIFNO'] ?? '')) ? trim($data['CIFNO']) : null,
+                'nama_nasabah' => !empty(trim($data['Nama_Nasabah'] ?? '')) ? trim($data['Nama_Nasabah']) : null,
+                'kode_kc' => $kode_kc,
+                'nama_kc' => $nama_kc,
+                'kode_uker' => $kode_uker,
+                'nama_uker' => $nama_uker,
+                'regional_office' => !empty(trim($data['Regional_Office'] ?? '')) ? trim($data['Regional_Office']) : null,
+                'kantor_cabang' => !empty(trim($data['Kantor_Cabang'] ?? '')) ? trim($data['Kantor_Cabang']) : null,
+                'unit_kerja' => !empty(trim($data['Unit_Kerja'] ?? '')) ? trim($data['Unit_Kerja']) : null,
+                'jenis_uker' => !empty(trim($data['Jenis_Uker'] ?? '')) ? trim($data['Jenis_Uker']) : null,
+                'tanggal_pembukaan_rekening' => !empty(trim($data['Tanggal_Pembukaan_Rekening'] ?? '')) && strtotime(trim($data['Tanggal_Pembukaan_Rekening'])) !== false ? date('Y-m-d', strtotime(trim($data['Tanggal_Pembukaan_Rekening']))) : null,
+                'tanggal_jatuh_tempo' => !empty(trim($data['Tanggal_Jatuh_Tempo'] ?? '')) && strtotime(trim($data['Tanggal_Jatuh_Tempo'])) !== false ? date('Y-m-d', strtotime(trim($data['Tanggal_Jatuh_Tempo']))) : null,
+                'status' => !empty(trim($data['STATUS'] ?? '')) ? trim($data['STATUS']) : null,
+                'segmentasi_bisnis' => !empty(trim($data['Segmentasi_Bisnis'] ?? '')) ? trim($data['Segmentasi_Bisnis']) : null,
+                'segmentasi_divisi' => !empty(trim($data['Segmentasi_Divisi'] ?? '')) ? trim($data['Segmentasi_Divisi']) : null,
+                'segmen_nasabah' => !empty(trim($data['Segmentasi_Bisnis'] ?? '')) ? trim($data['Segmentasi_Bisnis']) : 'KONSUMER',
+                'tipe_produk' => !empty(trim($data['Tipe_Produk'] ?? '')) ? trim($data['Tipe_Produk']) : null,
+                'jenis_simpanan' => !empty(trim($data['Jenis_Simpanan'] ?? '')) ? trim($data['Jenis_Simpanan']) : null,
+                'jenis_kartu' => !empty(trim($data['Jenis_Kartu'] ?? '')) ? trim($data['Jenis_Kartu']) : null,
+                'kelompok_produk' => !empty(trim($data['Kelompok_Produk'] ?? '')) ? trim($data['Kelompok_Produk']) : null,
+                'deskripsi_produk' => !empty(trim($data['Deskripsi_Produk'] ?? '')) ? trim($data['Deskripsi_Produk']) : null,
+                'jangka_waktu' => !empty(trim($data['Jangka_Waktu'] ?? '')) ? trim($data['Jangka_Waktu']) : null,
+                'jenis_valuta' => !empty(trim($data['JENIS_VALUTA'] ?? '')) ? trim($data['JENIS_VALUTA']) : null,
+                'saldo_original' => isset($data['Saldo_Original']) ? $parseDecimal($data['Saldo_Original']) : null,
+                'saldo_idr' => isset($data['Saldo_IDR']) ? $parseDecimal($data['Saldo_IDR']) : null,
+                'ratas_saldo_marginal' => isset($data['Ratas_Saldo_Marginal']) ? $parseDecimal($data['Ratas_Saldo_Marginal']) : null,
+                'ratas_saldo_historical' => isset($data['Ratas_Saldo_Historical']) ? $parseDecimal($data['Ratas_Saldo_Historical']) : null,
+                'beban_bunga' => isset($data['Beban_Bunga']) ? $parseDecimal($data['Beban_Bunga']) : null,
+                'rate_simpanan' => isset($data['Rate_Simpanan']) ? $parseDecimal($data['Rate_Simpanan']) : null,
+                'pn_customer_service' => !empty(trim($data['PN_Customer_Service'] ?? '')) ? trim($data['PN_Customer_Service']) : null,
+                'pn_mantri_rm_dana' => !empty(trim($data['PN_Mantri_RM_Dana'] ?? '')) ? trim($data['PN_Mantri_RM_Dana']) : null,
+                'pn_rm_pinjaman' => !empty(trim($data['PN_RM_Pinjaman'] ?? '')) ? trim($data['PN_RM_Pinjaman']) : null,
+                'pn_rm_merchant' => !empty(trim($data['PN_RM_Merchant'] ?? '')) ? trim($data['PN_RM_Merchant']) : null,
+                'pn_relationship_officer' => !empty(trim($data['PN_Relationship_Officer'] ?? '')) ? trim($data['PN_Relationship_Officer']) : null,
+                'pn_sales_person' => !empty(trim($data['PN_Sales_Person'] ?? '')) ? trim($data['PN_Sales_Person']) : null,
+                'pn_rab' => !empty(trim($data['PN_RAB'] ?? '')) ? trim($data['PN_RAB']) : null,
+                'pn_rm_referral' => !empty(trim($data['PN_RM_Referral'] ?? '')) ? trim($data['PN_RM_Referral']) : null,
+                'kepemilikan_brimo' => !empty(trim($data['Kepemilikan_BRIMO'] ?? '')) ? trim($data['Kepemilikan_BRIMO']) : null,
+                'referral' => !empty(trim($data['Referral'] ?? '')) ? trim($data['Referral']) : null,
+                'status_pekerja' => !empty(trim($data['Status_Pekerja'] ?? '')) ? trim($data['Status_Pekerja']) : null,
+                'status_cif' => !empty(trim($data['Status_CIF'] ?? '')) ? trim($data['Status_CIF']) : null,
+                'referral_code' => !empty(trim($data['Referral_Code'] ?? '')) ? trim($data['Referral_Code']) : null,
+                'flag_pn_pengelola_slot_2' => !empty(trim($data['Flag_PN_Pengelola_Slot_2'] ?? '')) ? trim($data['Flag_PN_Pengelola_Slot_2']) : null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            if (count($batch) >= $batchSize) {
+                try {
+                    DB::table('nasabahs')->insertOrIgnore($batch);
+                    $totalInserted += count($batch);
+                    
+                    // Show progress
+                    if ($totalInserted % 5000 == 0) {
+                        $this->output->write(".");
+                    }
+                } catch (\Exception $e) {
+                    // Log error but continue
+                    $this->warn("\nError pada batch: " . $e->getMessage());
+                    $skipped += count($batch);
+                }
+                
+                // Clear batch and free memory
+                $batch = [];
+                
+                // Aggressive garbage collection
+                if ($totalInserted % 5000 == 0) {
+                    gc_collect_cycles();
+                    
+                    // Periodic commit to avoid long transactions
+                    if ($totalInserted % 50000 == 0) {
+                        DB::commit();
+                        DB::beginTransaction();
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            throw new \Exception("Error pada baris {$rowNumber}: " . $e->getMessage());
+        }
+
+        // Insert remaining batch
+        if (!empty($batch)) {
+            try {
+                DB::table('nasabahs')->insertOrIgnore($batch);
+                $totalInserted += count($batch);
+            } catch (\Exception $e) {
+                $this->warn("\nError pada batch terakhir: " . $e->getMessage());
+                $skipped += count($batch);
+            }
+        }
+
+        DB::commit();
+        fclose($handle);
+        
+        return [
+            'imported' => $totalInserted,
+            'skipped' => $skipped
+        ];
+    }
+}

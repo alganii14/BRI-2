@@ -191,4 +191,22 @@ class UkerController extends Controller
                 ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Get units by Kanca (for API)
+     */
+    public function getByKC(Request $request)
+    {
+        $kodeKc = $request->get('kode_kc');
+        
+        if (!$kodeKc) {
+            return response()->json([]);
+        }
+        
+        $ukers = Uker::where('kode_kanca', $kodeKc)
+            ->orderBy('sub_kanca', 'asc')
+            ->get(['id', 'kode_sub_kanca', 'sub_kanca', 'kode_kanca', 'kanca']);
+        
+        return response()->json($ukers);
+    }
 }

@@ -64,11 +64,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/nasabah/search', [NasabahController::class, 'searchByNorek'])->name('api.nasabah.search');
     Route::get('api/nasabah/get', [NasabahController::class, 'getByNorek'])->name('api.nasabah.get');
     
+    // API for uker by KC
+    Route::get('api/uker/by-kc', [UkerController::class, 'getByKC'])->name('api.uker.by-kc');
+    
     // Manager and Admin Routes
     Route::middleware(['role:manager,admin'])->group(function () {
         
         // Nasabah Routes
         Route::resource('nasabah', NasabahController::class);
+        Route::get('nasabah-import', [NasabahController::class, 'importForm'])->name('nasabah.import.form');
+        Route::post('nasabah-import', [NasabahController::class, 'import'])->name('nasabah.import');
+        Route::delete('nasabah-delete-all', [NasabahController::class, 'deleteAll'])->name('nasabah.delete-all');
         
         // Akun Routes
         Route::get('akun', [AkunController::class, 'index'])->name('akun.index');
@@ -87,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['role:admin'])->group(function () {
             Route::get('penurunan-brilink/import', [PenurunanBrilinkController::class, 'importForm'])->name('penurunan-brilink.import.form');
             Route::post('penurunan-brilink/import', [PenurunanBrilinkController::class, 'import'])->name('penurunan-brilink.import');
+            Route::delete('penurunan-brilink-delete-all', [PenurunanBrilinkController::class, 'deleteAll'])->name('penurunan-brilink.delete-all');
             Route::resource('penurunan-brilink', PenurunanBrilinkController::class);
             
             // Penurunan Mantri Routes - Admin Only
@@ -112,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
             // Penurunan No-Segment Ritel Routes - Admin Only
             Route::get('penurunan-no-segment-ritel/import', [PenurunanNoSegmentRitelController::class, 'importForm'])->name('penurunan-no-segment-ritel.import.form');
             Route::post('penurunan-no-segment-ritel/import', [PenurunanNoSegmentRitelController::class, 'import'])->name('penurunan-no-segment-ritel.import');
+            Route::delete('penurunan-no-segment-ritel-delete-all', [PenurunanNoSegmentRitelController::class, 'deleteAll'])->name('penurunan-no-segment-ritel.delete-all');
             Route::resource('penurunan-no-segment-ritel', PenurunanNoSegmentRitelController::class);
             
             // Penurunan SME Ritel Routes - Admin Only

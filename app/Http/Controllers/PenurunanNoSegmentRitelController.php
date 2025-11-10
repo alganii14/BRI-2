@@ -204,4 +204,37 @@ class PenurunanNoSegmentRitelController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete all penurunan no-segment ritel records
+     */
+    public function deleteAll()
+    {
+        try {
+            $count = PenurunanNoSegmentRitel::count();
+            
+            if ($count > 0) {
+                // Disable foreign key checks temporarily
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                
+                // Truncate the table
+                DB::table('penurunan_no_segment_ritels')->truncate();
+                
+                // Re-enable foreign key checks
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                
+                return redirect()->route('penurunan-no-segment-ritel.index')
+                                ->with('success', '✓ Berhasil menghapus semua data penurunan no-segment ritel! Total data terhapus: ' . number_format($count, 0, ',', '.') . ' baris');
+            }
+            
+            return redirect()->route('penurunan-no-segment-ritel.index')
+                            ->with('success', '✓ Tidak ada data penurunan no-segment ritel untuk dihapus.');
+                            
+        } catch (\Exception $e) {
+            // Re-enable foreign key checks in case of error
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            return redirect()->back()->with('error', '✗ Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
 }

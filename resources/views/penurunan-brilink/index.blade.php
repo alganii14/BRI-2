@@ -54,7 +54,12 @@
         color: white;
     }
 
-    .btn-primary:hover, .btn-success:hover {
+    .btn-danger-gradient {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .btn-primary:hover, .btn-success:hover, .btn-danger-gradient:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
@@ -151,6 +156,15 @@
 
 <div class="header-actions">
     <div style="display: flex; gap: 10px;">
+        @if($penurunanBrilinks->total() > 0)
+        <form action="{{ route('penurunan-brilink.delete-all') }}" method="POST" style="display: inline;" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data penurunan brilink ({{ number_format($penurunanBrilinks->total(), 0, ',', '.') }} baris).\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger-gradient">
+                🗑️ Hapus Semua
+            </button>
+        </form>
+        @endif
         <a href="{{ route('penurunan-brilink.create') }}" class="btn btn-primary">
             ➕ Tambah Data
         </a>

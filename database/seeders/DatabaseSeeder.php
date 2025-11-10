@@ -16,28 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Create Manager user
-        User::create([
-            'name' => 'Manager',
-            'email' => 'manager@admin.com',
-            'password' => Hash::make('password'),
-            'role' => 'manager',
-        ]);
-
-        // Create RMFT user
-        User::create([
-            'name' => 'RMFT User',
-            'email' => 'rmft@admin.com',
-            'password' => Hash::make('password'),
-            'role' => 'rmft',
-        ]);
-        
-        // Create default admin user (manager)
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('password'),
-            'role' => 'manager',
+        // Seed admin user first
+        $this->call([
+            AdminUserSeeder::class,
+            UpdateUsersWithKancaSeeder::class,
+            CreateAllRMFTUsersSeeder::class,
+            UpdateRMFTUserSeeder::class,
         ]);
     }
 }

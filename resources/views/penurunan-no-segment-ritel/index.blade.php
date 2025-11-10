@@ -118,6 +118,11 @@
         color: white;
     }
 
+    .btn-danger-gradient {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
     .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -156,6 +161,15 @@
 </style>
 
 <div class="action-buttons-top">
+    @if($data->total() > 0)
+    <form action="{{ route('penurunan-no-segment-ritel.delete-all') }}" method="POST" style="display: inline;" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data penurunan no-segment ritel ({{ number_format($data->total(), 0, ',', '.') }} baris).\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-danger-gradient">
+            🗑️ Hapus Semua
+        </button>
+    </form>
+    @endif
     <a href="{{ route('penurunan-no-segment-ritel.import.form') }}" class="btn btn-success">
         📤 Import CSV
     </a>

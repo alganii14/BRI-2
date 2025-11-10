@@ -197,8 +197,8 @@
             </div>
 
             <div class="form-group">
-                <label>NOREK <span style="color: red;">*</span></label>
-                <input type="text" name="norek" value="{{ old('norek', $aktivitas->norek) }}" required>
+                <label>CIFNO <span style="color: red;">*</span></label>
+                <input type="text" name="norek" value="{{ old('norek', $aktivitas->norek) }}" required placeholder="CIFNO nasabah">
             </div>
 
             <div class="form-group">

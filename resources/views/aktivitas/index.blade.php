@@ -243,7 +243,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                     <th>RENCANA AKTIVITAS</th>
                     <th>SEGMEN NASABAH</th>
                     <th>NAMA NASABAH</th>
-                    <th>NOREK</th>
+                    <th>CIFNO</th>
                     <th>TARGET</th>
                     <th>STATUS</th>
                     <th>REALISASI</th>
@@ -292,7 +292,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                     <td>{{ $item->keterangan ?? '-' }}</td>
                     <td>
                         <div class="action-buttons">
-                            @if(auth()->user()->isManager())
+                            @if(auth()->user()->isManager() || auth()->user()->isAdmin())
                             <a href="{{ route('aktivitas.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('aktivitas.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus aktivitas ini?')">
                                 @csrf
