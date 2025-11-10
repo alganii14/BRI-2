@@ -158,18 +158,11 @@
     <div class="header-actions">
         <div>
             <h3>Daftar Nasabah</h3>
-            <p style="color: #666; font-size: 14px; margin-top: 4px;">Total: {{ $nasabahs->total() }} nasabah</p>
+            <p style="color: #666; font-size: 14px; margin-top: 4px;">
+                Menampilkan {{ $nasabahs->count() }} nasabah per halaman
+            </p>
         </div>
         <div style="display: flex; gap: 12px;">
-            @if($nasabahs->total() > 0)
-            <form action="{{ route('nasabah.delete-all') }}" method="POST" style="display: inline;" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data nasabah ({{ number_format($nasabahs->total(), 0, ',', '.') }} baris).\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger-gradient">
-                    🗑️ Hapus Semua
-                </button>
-            </form>
-            @endif
             <a href="{{ route('nasabah.import.form') }}" class="btn btn-import">
                 📤 Import MTH
             </a>
@@ -179,11 +172,11 @@
         </div>
     </div>
 
-    <!-- Search Form -->
+    <!-- Search & Filter Form -->
     <div style="margin-bottom: 20px;">
-        <form action="{{ route('nasabah.index') }}" method="GET">
-            <div style="display: flex; gap: 12px; align-items: flex-end;">
-                <div style="flex: 1;">
+        <form action="{{ route('nasabah.index') }}" method="GET" id="filterForm">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
                     <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333;">
                         🔍 Cari Nasabah
                     </label>
@@ -191,24 +184,91 @@
                         type="text" 
                         name="search" 
                         value="{{ request('search') }}" 
-                        placeholder="Cari berdasarkan norek, nama, CIFNO, KC, atau Unit Kerja..."
+                        placeholder="Cari berdasarkan norek, CIFNO, atau nama (min. 2 karakter)..."
                         style="width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
                     >
                 </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333;">
+                        🏢 Filter KC
+                    </label>
+                    <select 
+                        name="kode_kc" 
+                        id="filterKC"
+                        style="width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
+                        onchange="this.form.submit()"
+                    >
+                        <option value="">Semua KC</option>
+                        @foreach($kcList as $kc)
+                        <option value="{{ $kc->kode_kc }}" {{ request('kode_kc') == $kc->kode_kc ? 'selected' : '' }}>
+                            {{ $kc->kode_kc }} - {{ $kc->nama_kc }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333;">
+                        🏪 Filter Unit
+                    </label>
+                    <select 
+                        name="kode_uker" 
+                        id="filterUnit"
+                        style="width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
+                        onchange="this.form.submit()"
+                        {{ !request('kode_kc') ? 'disabled' : '' }}
+                    >
+                        <option value="">Semua Unit</option>
+                        @foreach($ukerList as $uker)
+                        <option value="{{ $uker->kode_uker }}" {{ request('kode_uker') == $uker->kode_uker ? 'selected' : '' }}>
+                            {{ $uker->kode_uker }} - {{ $uker->nama_uker }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333;">
+                        📄 Per Halaman
+                    </label>
+                    <select 
+                        name="per_page" 
+                        style="width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
+                        onchange="this.form.submit()"
+                    >
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; align-items: center;">
                 <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
                     🔍 Cari
                 </button>
-                @if(request('search'))
+                @if(request('search') || request('kode_kc') || request('kode_uker'))
                 <a href="{{ route('nasabah.index') }}" class="btn" style="background: #6c757d; color: white; white-space: nowrap;">
-                    ✕ Reset
+                    ✕ Reset Filter
                 </a>
                 @endif
+                
+                @if(request('search') || request('kode_kc') || request('kode_uker'))
+                <p style="margin: 0; font-size: 13px; color: #666;">
+                    @if(request('search'))
+                    Pencarian: <strong>"{{ request('search') }}"</strong>
+                    @endif
+                    @if(request('kode_kc'))
+                    | KC: <strong>{{ request('kode_kc') }}</strong>
+                    @endif
+                    @if(request('kode_uker'))
+                    | Unit: <strong>{{ request('kode_uker') }}</strong>
+                    @endif
+                </p>
+                @endif
             </div>
-            @if(request('search'))
-            <p style="margin-top: 8px; font-size: 13px; color: #666;">
-                Hasil pencarian untuk: <strong>"{{ request('search') }}"</strong>
-            </p>
-            @endif
         </form>
     </div>
 
@@ -257,34 +317,23 @@
     </div>
 
     <div class="pagination-wrapper" style="margin-top: 20px;">
-        <p style="text-align: center; color: #666; font-size: 14px;">Showing {{ $nasabahs->firstItem() }} to {{ $nasabahs->lastItem() }} of {{ $nasabahs->total() }} results</p>
+        <p style="text-align: center; color: #666; font-size: 14px;">
+            Menampilkan {{ $nasabahs->count() }} nasabah
+        </p>
         
         <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
             @if ($nasabahs->onFirstPage())
                 <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">← Previous</span>
             @else
-                <a href="{{ $nasabahs->previousPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">← Previous</a>
+                <a href="{{ $nasabahs->appends(request()->except('page'))->previousPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">← Previous</a>
             @endif
 
-            {{-- Show pages 1 to 5 only --}}
-            @php
-                $currentPage = $nasabahs->currentPage();
-                $lastPage = $nasabahs->lastPage();
-                $startPage = 1;
-                $endPage = min(5, $lastPage);
-            @endphp
-
-            @foreach (range($startPage, $endPage) as $page)
-                @php $url = $nasabahs->url($page); @endphp
-                @if ($page == $currentPage)
-                    <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">{{ $page }}</span>
-                @else
-                    <a href="{{ $url }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">{{ $page }}</a>
-                @endif
-            @endforeach
+            <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">
+                Halaman {{ $nasabahs->currentPage() }}
+            </span>
 
             @if ($nasabahs->hasMorePages())
-                <a href="{{ $nasabahs->nextPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">Next →</a>
+                <a href="{{ $nasabahs->appends(request()->except('page'))->nextPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">Next →</a>
             @else
                 <span style="padding: 10px 20px; background: #f0f0f0; color: #999; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed;">Next →</span>
             @endif

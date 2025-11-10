@@ -21,15 +21,14 @@ class NasabahController extends Controller
             return response()->json([]);
         }
         
+        // Minimum 2 karakter untuk search
+        if (strlen($search) < 2) {
+            return response()->json([]);
+        }
+        
         $query = Nasabah::query();
         
-        // Search by CIFNO or nama_nasabah
-        $query->where(function($q) use ($search) {
-            $q->where('cifno', 'LIKE', "%{$search}%")
-              ->orWhere('nama_nasabah', 'LIKE', "%{$search}%");
-        });
-        
-        // Filter by KC and Unit jika diberikan
+        // Filter by KC first (paling penting untuk performance)
         if ($kode_kc) {
             $query->where('kode_kc', $kode_kc);
         }
@@ -46,8 +45,14 @@ class NasabahController extends Controller
             }
         }
         
-        $nasabah = $query->limit(50)
-                        ->orderBy('nama_nasabah', 'asc')
+        // Search by CIFNO or nama_nasabah (setelah filter KC dan Unit)
+        $query->where(function($q) use ($search) {
+            $q->where('cifno', 'LIKE', "{$search}%")  // Exact start match (lebih cepat)
+              ->orWhere('nama_nasabah', 'LIKE', "%{$search}%");
+        });
+        
+        $nasabah = $query->limit(30)  // Batasi hanya 30 hasil
+                        ->orderBy('cifno', 'asc')
                         ->get(['id', 'cifno', 'norek', 'nama_nasabah', 'segmen_nasabah', 'kode_kc', 'nama_kc', 'kode_uker', 'nama_uker']);
         
         return response()->json($nasabah);
@@ -64,7 +69,7 @@ class NasabahController extends Controller
         
         $query = Nasabah::where('cifno', $norek);
         
-        // Filter by KC and Unit jika diberikan
+        // Filter by KC first (paling penting untuk performance)
         if ($kode_kc) {
             $query->where('kode_kc', $kode_kc);
         }
@@ -104,30 +109,69 @@ class NasabahController extends Controller
     {
         $user = auth()->user();
         
-        $query = Nasabah::query();
+        // OPTIMASI: Select hanya kolom yang dibutuhkan untuk mengurangi memory usage
+        $query = Nasabah::select([
+            'id', 'norek', 'cifno', 'nama_nasabah', 'segmen_nasabah',
+            'kode_kc', 'nama_kc', 'kode_uker', 'nama_uker', 'created_at'
+        ]);
         
-        // Search functionality
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('norek', 'like', "%{$search}%")
-                  ->orWhere('nama_nasabah', 'like', "%{$search}%")
-                  ->orWhere('cifno', 'like', "%{$search}%")
-                  ->orWhere('kode_kc', 'like', "%{$search}%")
-                  ->orWhere('nama_kc', 'like', "%{$search}%")
-                  ->orWhere('kode_uker', 'like', "%{$search}%")
-                  ->orWhere('nama_uker', 'like', "%{$search}%");
-            });
-        }
-        
-        // Filter by KC untuk Manager
+        // OPTIMASI: Filter by KC terlebih dahulu (paling selektif)
         if ($user->isManager() && $user->kode_kanca) {
             $query->where('kode_kc', $user->kode_kanca);
+        } elseif ($request->has('kode_kc') && !empty($request->kode_kc)) {
+            // Filter KC dari form filter
+            $query->where('kode_kc', $request->kode_kc);
         }
         
-        $nasabahs = $query->orderBy('created_at', 'desc')->paginate(20);
+        // Filter by Unit (jika ada)
+        if ($request->has('kode_uker') && !empty($request->kode_uker)) {
+            $query->where('kode_uker', $request->kode_uker);
+        }
         
-        return view('nasabah.index', compact('nasabahs'));
+        // Search functionality (setelah filter KC/Unit)
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            
+            // OPTIMASI: Minimum 2 karakter untuk search
+            if (strlen($search) >= 2) {
+                $query->where(function($q) use ($search) {
+                    // Gunakan exact start match untuk CIFNO dan norek (lebih cepat)
+                    $q->where('norek', 'LIKE', "{$search}%")
+                      ->orWhere('cifno', 'LIKE', "{$search}%")
+                      ->orWhere('nama_nasabah', 'LIKE', "%{$search}%")
+                      ->orWhere('nama_kc', 'LIKE', "%{$search}%")
+                      ->orWhere('nama_uker', 'LIKE', "%{$search}%");
+                });
+            }
+        }
+        
+        // OPTIMASI: Gunakan simplePaginate (TIDAK HITUNG TOTAL - lebih cepat!)
+        $perPage = min((int)$request->get('per_page', 50), 200); // Max 200 per page
+        
+        // SimplePaginate tidak perlu COUNT(*) jadi jauh lebih cepat
+        $nasabahs = $query->orderBy('created_at', 'desc')->simplePaginate($perPage);
+        
+        // OPTIMASI: Ambil KC list dari table uker (lebih kecil daripada nasabahs)
+        $kcList = \DB::table('ukers')
+            ->select('kode_kanca as kode_kc', 'kanca as nama_kc')
+            ->whereNotNull('kode_kanca')
+            ->distinct()
+            ->orderBy('kanca')
+            ->get();
+        
+        // Ambil Unit list berdasarkan KC yang dipilih (jika ada)
+        $ukerList = collect();
+        if ($request->has('kode_kc') && !empty($request->kode_kc)) {
+            $ukerList = \DB::table('ukers')
+                ->select('kode_sub_kanca as kode_uker', 'sub_kanca as nama_uker')
+                ->where('kode_kanca', $request->kode_kc)
+                ->whereNotNull('kode_sub_kanca')
+                ->distinct()
+                ->orderBy('sub_kanca')
+                ->get();
+        }
+        
+        return view('nasabah.index', compact('nasabahs', 'kcList', 'ukerList'));
     }
 
     /**
