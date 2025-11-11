@@ -64,6 +64,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('api/nasabah/search', [NasabahController::class, 'searchByNorek'])->name('api.nasabah.search');
     Route::get('api/nasabah/get', [NasabahController::class, 'getByNorek'])->name('api.nasabah.get');
     
+    // API for pipeline search
+    Route::get('api/pipeline/search', [NasabahController::class, 'searchPipeline'])->name('api.pipeline.search');
+    
     // API for uker by KC
     Route::get('api/uker/by-kc', [UkerController::class, 'getByKC'])->name('api.uker.by-kc');
     

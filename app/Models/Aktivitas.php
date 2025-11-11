@@ -24,6 +24,7 @@ class Aktivitas extends Model
         'kode_uker',
         'nama_uker',
         'kelompok',
+        'strategy_pipeline',
         'rencana_aktivitas',
         'segmen_nasabah',
         'nama_nasabah',

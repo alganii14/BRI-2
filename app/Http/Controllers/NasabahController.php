@@ -4,10 +4,171 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Nasabah;
+use App\Models\PenurunanBrilink;
+use App\Models\PenurunanMantri;
+use App\Models\PenurunanMerchantMikro;
+use App\Models\PenurunanMerchantRitel;
+use App\Models\PenurunanNoSegmentMikro;
+use App\Models\PenurunanNoSegmentRitel;
+use App\Models\PenurunanSmeRitel;
+use App\Models\Top10QrisPerUnit;
 use Illuminate\Support\Facades\DB;
 
 class NasabahController extends Controller
 {
+    /**
+     * Search nasabah from pipeline tables based on strategy
+     */
+    public function searchPipeline(Request $request)
+    {
+        $search = $request->get('search');
+        $kode_kc = $request->get('kode_kc');
+        $kode_uker = $request->get('kode_uker');
+        $strategy = $request->get('strategy');
+        $load_all = $request->get('load_all'); // Parameter untuk load semua data
+        
+        if (!$strategy) {
+            return response()->json([]);
+        }
+        
+        // Jika load_all atau search kosong, tidak perlu minimum 2 karakter
+        if (!$load_all && $search && strlen($search) < 2) {
+            return response()->json([]);
+        }
+        
+        // Tentukan model berdasarkan strategy
+        $model = null;
+        $isQris = false;
+        
+        switch ($strategy) {
+            case 'Penurunan Brilink':
+                $model = PenurunanBrilink::class;
+                break;
+            case 'Penurunan Mantri':
+                $model = PenurunanMantri::class;
+                break;
+            case 'Penurunan Merchant Mikro':
+                $model = PenurunanMerchantMikro::class;
+                break;
+            case 'Penurunan Merchant Ritel':
+                $model = PenurunanMerchantRitel::class;
+                break;
+            case 'Penurunan No-Segment Mikro':
+                $model = PenurunanNoSegmentMikro::class;
+                break;
+            case 'Penurunan No-Segment Ritel':
+                $model = PenurunanNoSegmentRitel::class;
+                break;
+            case 'Penurunan SME Ritel':
+                $model = PenurunanSmeRitel::class;
+                break;
+            case 'Top 10 QRIS Per Unit':
+                $model = Top10QrisPerUnit::class;
+                $isQris = true;
+                break;
+            default:
+                return response()->json([]);
+        }
+        
+        $query = $model::query();
+        
+        if ($isQris) {
+            // Top 10 QRIS memiliki struktur field berbeda
+            // Filter by KC first
+            if ($kode_kc) {
+                $query->where('mainbr', $kode_kc);
+            }
+            
+            if ($kode_uker) {
+                // Check if multiple units (comma-separated)
+                if (strpos($kode_uker, ',') !== false) {
+                    // Multiple units
+                    $unitArray = array_map('trim', explode(',', $kode_uker));
+                    $query->whereIn('branch', $unitArray);
+                } else {
+                    // Single unit
+                    $query->where('branch', $kode_uker);
+                }
+            }
+            
+            // Search by CIF or nama_merchant (hanya jika ada search term)
+            if ($search && strlen($search) >= 2) {
+                $query->where(function($q) use ($search) {
+                    $q->where('cif', 'LIKE', "{$search}%")
+                      ->orWhere('nama_merchant', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            $results = $query->limit(100)  // Batasi 100 hasil untuk load all
+                            ->orderBy('cif', 'asc')
+                            ->get()
+                            ->map(function($item) {
+                                // Ensure numeric values are properly formatted
+                                return [
+                                    'id' => $item->id,
+                                    'cifno' => $item->cif,
+                                    'no_rekening' => $item->no_rek,
+                                    'nama_nasabah' => $item->nama_merchant,
+                                    'kode_cabang_induk' => $item->mainbr,
+                                    'cabang_induk' => $item->mbdesc,
+                                    'kode_uker' => $item->branch,
+                                    'unit_kerja' => $item->brdesc,
+                                    'saldo_terupdate' => floatval($item->saldo_posisi ?? 0),
+                                ];
+                            });
+            
+            return response()->json($results);
+            
+        } else {
+            // Tabel penurunan lainnya
+            // Filter by KC first (paling penting untuk performance)
+            if ($kode_kc) {
+                $query->where('kode_cabang_induk', $kode_kc);
+            }
+            
+            if ($kode_uker) {
+                // Check if multiple units (comma-separated)
+                if (strpos($kode_uker, ',') !== false) {
+                    // Multiple units
+                    $unitArray = array_map('trim', explode(',', $kode_uker));
+                    $query->whereIn('kode_uker', $unitArray);
+                } else {
+                    // Single unit
+                    $query->where('kode_uker', $kode_uker);
+                }
+            }
+            
+            // Search by CIFNO or nama_nasabah (hanya jika ada search term)
+            if ($search && strlen($search) >= 2) {
+                $query->where(function($q) use ($search) {
+                    $q->where('cifno', 'LIKE', "{$search}%")  // Exact start match (lebih cepat)
+                      ->orWhere('nama_nasabah', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            $results = $query->limit(100)  // Batasi 100 hasil untuk load all
+                            ->orderBy('cifno', 'asc')
+                            ->get()
+                            ->map(function($item) {
+                                // Ensure numeric values are properly formatted
+                                return [
+                                    'id' => $item->id,
+                                    'cifno' => $item->cifno,
+                                    'no_rekening' => $item->no_rekening,
+                                    'nama_nasabah' => $item->nama_nasabah,
+                                    'kode_cabang_induk' => $item->kode_cabang_induk,
+                                    'cabang_induk' => $item->cabang_induk,
+                                    'kode_uker' => $item->kode_uker,
+                                    'unit_kerja' => $item->unit_kerja,
+                                    'saldo_terupdate' => floatval($item->saldo_terupdate ?? $item->saldo_last_eom ?? 0),
+                                    'saldo_last_eom' => floatval($item->saldo_last_eom ?? 0),
+                                ];
+                            });
+            
+            return response()->json($results);
+        }
+    }
+
     /**
      * Search nasabah by CIFNO (for autocomplete)
      */

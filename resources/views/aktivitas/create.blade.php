@@ -209,9 +209,24 @@
         </div>
 
         <div class="form-group">
+            <label>STRATEGY PULL OF PIPELINE <span style="color: red;">*</span></label>
+            <select name="strategy_pipeline" id="strategy_pipeline" required onchange="handleStrategyChange()" disabled>
+                <option value="">Pilih RMFT terlebih dahulu</option>
+                <option value="Penurunan Brilink" {{ old('strategy_pipeline') == 'Penurunan Brilink' ? 'selected' : '' }}>Penurunan Brilink</option>
+                <option value="Penurunan Mantri" {{ old('strategy_pipeline') == 'Penurunan Mantri' ? 'selected' : '' }}>Penurunan Mantri</option>
+                <option value="Penurunan Merchant Mikro" {{ old('strategy_pipeline') == 'Penurunan Merchant Mikro' ? 'selected' : '' }}>Penurunan Merchant Mikro</option>
+                <option value="Penurunan Merchant Ritel" {{ old('strategy_pipeline') == 'Penurunan Merchant Ritel' ? 'selected' : '' }}>Penurunan Merchant Ritel</option>
+                <option value="Penurunan No-Segment Mikro" {{ old('strategy_pipeline') == 'Penurunan No-Segment Mikro' ? 'selected' : '' }}>Penurunan No-Segment Mikro</option>
+                <option value="Penurunan No-Segment Ritel" {{ old('strategy_pipeline') == 'Penurunan No-Segment Ritel' ? 'selected' : '' }}>Penurunan No-Segment Ritel</option>
+                <option value="Penurunan SME Ritel" {{ old('strategy_pipeline') == 'Penurunan SME Ritel' ? 'selected' : '' }}>Penurunan SME Ritel</option>
+                <option value="Top 10 QRIS Per Unit" {{ old('strategy_pipeline') == 'Top 10 QRIS Per Unit' ? 'selected' : '' }}>Top 10 QRIS Per Unit</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label>RENCANA AKTIVITAS <span style="color: red;">*</span></label>
-            <select name="rencana_aktivitas" required>
-                <option value="">Pilih Rencana Aktivitas</option>
+            <select name="rencana_aktivitas" id="rencana_aktivitas" required disabled>
+                <option value="">Pilih RMFT terlebih dahulu</option>
                 <option value="DANA MASUK TABUNGAN (Rp)" {{ old('rencana_aktivitas') == 'DANA MASUK TABUNGAN (Rp)' ? 'selected' : '' }}>DANA MASUK TABUNGAN (Rp)</option>
                 <option value="PICKUP SERVICE (RP)" {{ old('rencana_aktivitas') == 'PICKUP SERVICE (RP)' ? 'selected' : '' }}>PICKUP SERVICE (RP)</option>
                 <option value="DANA MASUK GIRO (Rp)" {{ old('rencana_aktivitas') == 'DANA MASUK GIRO (Rp)' ? 'selected' : '' }}>DANA MASUK GIRO (Rp)</option>
@@ -246,8 +261,8 @@
         <div class="form-row">
             <div class="form-group">
                 <label>SEGMEN NASABAH <span style="color: red;">*</span></label>
-                <select name="segmen_nasabah" required>
-                    <option value="">Pilih Segmen</option>
+                <select name="segmen_nasabah" id="segmen_nasabah" required disabled>
+                    <option value="">Pilih RMFT terlebih dahulu</option>
                     <option value="Ritel Badan Usaha" {{ old('segmen_nasabah') == 'Ritel Badan Usaha' ? 'selected' : '' }}>Ritel Badan Usaha</option>
                     <option value="SME" {{ old('segmen_nasabah') == 'SME' ? 'selected' : '' }}>SME</option>
                     <option value="Konsumer" {{ old('segmen_nasabah') == 'Konsumer' ? 'selected' : '' }}>Konsumer</option>
@@ -262,8 +277,8 @@
             <div class="form-group">
                 <label>CIFNO <span style="color: red;">*</span></label>
                 <div style="position: relative;">
-                    <input type="text" id="norek" name="norek" value="{{ old('norek') }}" required placeholder="CIFNO nasabah" autocomplete="off" style="padding-right: 45px;">
-                    <button type="button" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    <input type="text" id="norek" name="norek" value="{{ old('norek') }}" required placeholder="Pilih RMFT terlebih dahulu" autocomplete="off" style="padding-right: 45px;" disabled>
+                    <button type="button" id="btn_search_nasabah" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" disabled>
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
@@ -273,18 +288,18 @@
 
             <div class="form-group">
                 <label>NAMA NASABAH <span style="color: red;">*</span></label>
-                <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah') }}" required placeholder="Nama lengkap nasabah">
+                <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah') }}" required placeholder="Pilih RMFT terlebih dahulu" disabled>
             </div>
 
             <div class="form-group">
                 <label>RP / JUMLAH <span style="color: red;">*</span></label>
-                <input type="text" name="rp_jumlah" value="{{ old('rp_jumlah') }}" required placeholder="Contoh: 10000000">
+                <input type="text" id="rp_jumlah" name="rp_jumlah" value="{{ old('rp_jumlah') }}" required placeholder="Pilih RMFT terlebih dahulu" disabled>
             </div>
         </div>
 
         <div class="form-group">
             <label>KETERANGAN</label>
-            <textarea name="keterangan" rows="3" placeholder="Keterangan tambahan (opsional)">{{ old('keterangan') }}</textarea>
+            <textarea name="keterangan" id="keterangan" rows="3" placeholder="Pilih RMFT terlebih dahulu" disabled>{{ old('keterangan') }}</textarea>
         </div>
 
         <div class="form-actions">
@@ -296,21 +311,19 @@
 
 <!-- Modal Nasabah -->
 <div id="nasabahModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; width: 90%; max-width: 800px; max-height: 80vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+    <div style="background: white; border-radius: 12px; width: 90%; max-width: 900px; max-height: 80vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
         <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <h3 style="margin: 0; color: white;">Pilih Nasabah</h3>
+            <h3 style="margin: 0; color: white;">Pilih Nasabah dari Pull of Pipeline</h3>
             <button onclick="closeNasabahModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">&times;</button>
         </div>
         
         <div style="padding: 20px;">
-            <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px;" onkeyup="searchNasabahList()">
+            <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah (opsional)..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px;" onkeyup="searchNasabahList()">
             
-            <div id="nasabahList" style="max-height: 400px; overflow-y: auto;">
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <p>Gunakan search untuk mencari nasabah</p>
+            <div id="nasabahList" style="max-height: 450px; overflow-y: auto;">
+                <div style="text-align: center; padding: 40px; color: #667eea;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 16px;">Memuat data...</p>
                 </div>
             </div>
         </div>
@@ -351,6 +364,20 @@
 </div>
 
 <script>
+    // Handle strategy pipeline change
+    function handleStrategyChange() {
+        const strategy = document.getElementById('strategy_pipeline').value;
+        
+        if (strategy) {
+            // Visual feedback
+            const strategySelect = document.getElementById('strategy_pipeline');
+            strategySelect.style.borderColor = '#28a745';
+            setTimeout(() => {
+                strategySelect.style.borderColor = '#ddd';
+            }, 1000);
+        }
+    }
+
     // Function to fill RMFT data when Manager selects RMFT
     function fillRMFTData(rmftUserId) {
         const select = document.getElementById('rmft_select');
@@ -374,6 +401,9 @@
             document.getElementById('nama_uker_display').onclick = null;
             document.getElementById('kode_uker_display').style.cursor = 'text';
             document.getElementById('kode_uker_display').onclick = null;
+            
+            // Disable Data Aktivitas fields
+            disableAktivitasFields();
             return;
         }
         
@@ -429,13 +459,113 @@
             document.getElementById('kelompok').value = option.dataset.kelompok;
             selectedUnits = [];
         }
+        
+        // Enable Data Aktivitas fields
+        enableAktivitasFields();
+    }
+    
+    // Function to disable Data Aktivitas fields
+    function disableAktivitasFields() {
+        document.getElementById('strategy_pipeline').disabled = true;
+        document.getElementById('strategy_pipeline').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
+        document.getElementById('rencana_aktivitas').disabled = true;
+        document.getElementById('rencana_aktivitas').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
+        document.getElementById('segmen_nasabah').disabled = true;
+        document.getElementById('segmen_nasabah').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
+        document.getElementById('norek').disabled = true;
+        document.getElementById('norek').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('btn_search_nasabah').disabled = true;
+        document.getElementById('nama_nasabah').disabled = true;
+        document.getElementById('nama_nasabah').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('rp_jumlah').disabled = true;
+        document.getElementById('rp_jumlah').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('keterangan').disabled = true;
+        document.getElementById('keterangan').placeholder = 'Pilih RMFT terlebih dahulu';
+    }
+    
+    // Function to enable Data Aktivitas fields
+    function enableAktivitasFields() {
+        // Enable Strategy Pipeline
+        document.getElementById('strategy_pipeline').disabled = false;
+        document.getElementById('strategy_pipeline').innerHTML = `
+            <option value="">Pilih Strategy Pull of Pipeline</option>
+            <option value="Penurunan Brilink">Penurunan Brilink</option>
+            <option value="Penurunan Mantri">Penurunan Mantri</option>
+            <option value="Penurunan Merchant Mikro">Penurunan Merchant Mikro</option>
+            <option value="Penurunan Merchant Ritel">Penurunan Merchant Ritel</option>
+            <option value="Penurunan No-Segment Mikro">Penurunan No-Segment Mikro</option>
+            <option value="Penurunan No-Segment Ritel">Penurunan No-Segment Ritel</option>
+            <option value="Penurunan SME Ritel">Penurunan SME Ritel</option>
+            <option value="Top 10 QRIS Per Unit">Top 10 QRIS Per Unit</option>
+        `;
+        
+        // Enable Rencana Aktivitas
+        document.getElementById('rencana_aktivitas').disabled = false;
+        document.getElementById('rencana_aktivitas').innerHTML = `
+            <option value="">Pilih Rencana Aktivitas</option>
+            <option value="DANA MASUK TABUNGAN (Rp)">DANA MASUK TABUNGAN (Rp)</option>
+            <option value="PICKUP SERVICE (RP)">PICKUP SERVICE (RP)</option>
+            <option value="DANA MASUK GIRO (Rp)">DANA MASUK GIRO (Rp)</option>
+            <option value="DANA MASUK DEPO (Rp)">DANA MASUK DEPO (Rp)</option>
+            <option value="BRICUAN (Rp)">BRICUAN (Rp)</option>
+            <option value="EXTRA REWARD PRIO (Rp)">EXTRA REWARD PRIO (Rp)</option>
+            <option value="BOOSTER DEPO (Rp)">BOOSTER DEPO (Rp)</option>
+            <option value="PANEN EXTRA TAB (Rp)">PANEN EXTRA TAB (Rp)</option>
+            <option value="BRING BACK FUND (Rp)">BRING BACK FUND (Rp)</option>
+            <option value="CASA BRILINK (Rp)">CASA BRILINK (Rp)</option>
+            <option value="DISBURSEMENT KREDIT MIKRO (Rp)">DISBURSEMENT KREDIT MIKRO (Rp)</option>
+            <option value="NASI KUNING (Rp)">NASI KUNING (Rp)</option>
+            <option value="MERCY (Rp)">MERCY (Rp)</option>
+            <option value="SHL SMT II (Rp)">SHL SMT II (Rp)</option>
+            <option value="AKURASI (Jumlah Rek)">AKURASI (Jumlah Rek)</option>
+            <option value="REK VQ (Jumlah Rek)">REK VQ (Jumlah Rek)</option>
+            <option value="REK H3 (Jumlah Rek)">REK H3 (Jumlah Rek)</option>
+            <option value="Akuisisi EDC/ QRIS (Jumlah)">Akuisisi EDC/ QRIS (Jumlah)</option>
+            <option value="brifest spbu baraya (Jumlah)">brifest spbu baraya (Jumlah)</option>
+            <option value="lucky ride (Jumlah)">lucky ride (Jumlah)</option>
+            <option value="Menyala Agenku (Jumlah)">Menyala Agenku (Jumlah)</option>
+            <option value="Agen Ngebutz (Jumlah)">Agen Ngebutz (Jumlah)</option>
+            <option value="Akuisisi Incoming (Jumlah)">Akuisisi Incoming (Jumlah)</option>
+            <option value="Akuisisi Hotspot (Jumlah)">Akuisisi Hotspot (Jumlah)</option>
+            <option value="Giro Pareto Belum EDC (Jumlah)">Giro Pareto Belum EDC (Jumlah)</option>
+            <option value="Giro Reward (Jumlah)">Giro Reward (Jumlah)</option>
+            <option value="Suku Bunga Nego Giro (Jumlah)">Suku Bunga Nego Giro (Jumlah)</option>
+            <option value="Cross Sell Perusahaan Anak">Cross Sell Perusahaan Anak</option>
+        `;
+        
+        // Enable Segmen Nasabah
+        document.getElementById('segmen_nasabah').disabled = false;
+        document.getElementById('segmen_nasabah').innerHTML = `
+            <option value="">Pilih Segmen</option>
+            <option value="Ritel Badan Usaha">Ritel Badan Usaha</option>
+            <option value="SME">SME</option>
+            <option value="Konsumer">Konsumer</option>
+            <option value="Prioritas">Prioritas</option>
+            <option value="Merchant">Merchant</option>
+            <option value="Agen Brilink">Agen Brilink</option>
+            <option value="Mikro">Mikro</option>
+            <option value="Komersial">Komersial</option>
+        `;
+        
+        // Enable other fields
+        document.getElementById('norek').disabled = false;
+        document.getElementById('norek').placeholder = 'CIFNO nasabah';
+        document.getElementById('btn_search_nasabah').disabled = false;
+        document.getElementById('nama_nasabah').disabled = false;
+        document.getElementById('nama_nasabah').placeholder = 'Nama lengkap nasabah';
+        document.getElementById('rp_jumlah').disabled = false;
+        document.getElementById('rp_jumlah').placeholder = 'Contoh: 10000000';
+        document.getElementById('keterangan').disabled = false;
+        document.getElementById('keterangan').placeholder = 'Keterangan tambahan (opsional)';
     }
 
-    // Autocomplete for Norek
+    // Autocomplete for Norek - DISABLED, now using Pipeline Search
     const norekInput = document.getElementById('norek');
     const namaNasabahInput = document.getElementById('nama_nasabah');
-    const segmenNasabahSelect = document.querySelector('select[name="segmen_nasabah"]');
+    const segmenNasababSelect = document.querySelector('select[name="segmen_nasabah"]');
     
+    // Disable autocomplete on direct typing
+    /*
     let debounceTimer;
     
     norekInput.addEventListener('input', function() {
@@ -487,30 +617,146 @@
                         setTimeout(() => {
                             norekInput.style.borderColor = '#ddd';
                         }, 1000);
-                    }
+                    `;
                 });
         }, 300);
     });
+    */
     
     // Modal Functions
     function openNasabahModal() {
+        // Validasi strategy harus dipilih terlebih dahulu
+        const strategy = document.getElementById('strategy_pipeline').value;
+        if (!strategy) {
+            alert('Harap pilih Strategy Pull of Pipeline terlebih dahulu');
+            document.getElementById('strategy_pipeline').focus();
+            return;
+        }
+        
         const modal = document.getElementById('nasabahModal');
         modal.style.display = 'flex';
-        document.getElementById('searchNasabah').focus();
+        
+        // Langsung load semua data tanpa perlu ketik
+        loadAllNasabahFromPipeline();
+    }
+    
+    // Function to load all nasabah from pipeline based on KC and Unit
+    function loadAllNasabahFromPipeline() {
+        const kodeKc = document.getElementById('kode_kc').value;
+        const isUnitRmft = document.getElementById('is_unit_rmft').value;
+        const strategy = document.getElementById('strategy_pipeline').value;
+        
+        // Jika multiple units dipilih, gunakan semua unit
+        let kodeUkerParam = '';
+        if (isUnitRmft === '1' && selectedUnits.length > 0) {
+            kodeUkerParam = selectedUnits.map(u => u.kode_sub_kanca).join(',');
+        } else {
+            kodeUkerParam = document.getElementById('kode_uker').value;
+        }
+        
+        document.getElementById('nasabahList').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #667eea;">
+                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="margin-top: 16px;">Memuat data nasabah dari ${strategy}...</p>
+            </div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+        
+        fetch(`{{ route('api.pipeline.search') }}?search=&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}&load_all=1`)
+            .then(response => response.json())
+            .then(nasabahs => {
+                if (nasabahs.length === 0) {
+                    document.getElementById('nasabahList').innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p>Tidak ada nasabah ditemukan di ${strategy}</p>
+                            <small style="color: #999;">Untuk KC: ${document.getElementById('nama_kc').value}</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                displayNasabahList(nasabahs);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('nasabahList').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #d32f2f;">
+                        <p>Terjadi kesalahan saat memuat data</p>
+                    </div>
+                `;
+            });
+    }
+    
+    // Function to display nasabah list
+    function displayNasabahList(nasabahs) {
+        let html = '<div style="margin-bottom: 10px; padding: 10px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600;">';
+        html += `<span>Ditemukan ${nasabahs.length} nasabah</span>`;
+        html += '</div>';
+        
+        html += '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<thead><tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 15%;">CIFNO</th>';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Nama</th>';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Unit</th>';
+        html += '<th style="padding: 10px; text-align: right; font-size: 13px; width: 20%;">Saldo</th>';
+        html += '<th style="padding: 10px; text-align: center; font-size: 13px; width: 15%;">Aksi</th>';
+        html += '</tr></thead><tbody>';
+        
+        nasabahs.forEach(nasabah => {
+            // Pastikan saldo adalah number yang benar
+            let saldoValue = 0;
+            
+            // Ambil nilai saldo - pastikan sebagai number
+            if (typeof nasabah.saldo_terupdate === 'number') {
+                saldoValue = nasabah.saldo_terupdate;
+            } else if (typeof nasabah.saldo_terupdate === 'string') {
+                saldoValue = parseFloat(nasabah.saldo_terupdate.replace(/,/g, ''));
+            } else if (nasabah.saldo_last_eom) {
+                if (typeof nasabah.saldo_last_eom === 'number') {
+                    saldoValue = nasabah.saldo_last_eom;
+                } else {
+                    saldoValue = parseFloat(nasabah.saldo_last_eom.replace(/,/g, ''));
+                }
+            }
+            
+            // Pastikan saldoValue adalah number yang valid
+            if (isNaN(saldoValue)) {
+                saldoValue = 0;
+            }
+            
+            // Format dengan pemisah ribuan dan desimal
+            const saldoFormatted = new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(saldoValue);
+            
+            html += '<tr style="border-bottom: 1px solid #eee; transition: background 0.2s;" onmouseenter="this.style.background=\'#f8f9fa\'" onmouseleave="this.style.background=\'white\'">';
+            html += `<td style="padding: 10px; font-weight: 600; font-family: monospace;">${nasabah.cifno || '-'}</td>`;
+            html += `<td style="padding: 10px;">${nasabah.nama_nasabah}</td>`;
+            html += `<td style="padding: 10px; font-size: 12px; color: #666;">${nasabah.unit_kerja || '-'}</td>`;
+            html += `<td style="padding: 10px; font-size: 13px; text-align: right; color: ${saldoValue > 0 ? '#2e7d32' : '#d32f2f'}; font-weight: 600; font-family: monospace;">Rp ${saldoFormatted}</td>`;
+            html += `<td style="padding: 10px; text-align: center;">
+                <button onclick='selectNasabah(${JSON.stringify(nasabah)})' style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.05)'" onmouseleave="this.style.transform='scale(1)'">Pilih</button>
+            </td>`;
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table>';
+        document.getElementById('nasabahList').innerHTML = html;
     }
     
     function closeNasabahModal() {
         const modal = document.getElementById('nasabahModal');
         modal.style.display = 'none';
         document.getElementById('searchNasabah').value = '';
-        document.getElementById('nasabahList').innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <p>Gunakan search untuk mencari nasabah</p>
-            </div>
-        `;
     }
     
     // Unit Modal Functions
@@ -707,11 +953,8 @@
         const searchValue = document.getElementById('searchNasabah').value;
         
         if (searchValue.length < 2) {
-            document.getElementById('nasabahList').innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Ketik minimal 2 karakter untuk mencari</p>
-                </div>
-            `;
+            // Jika kurang dari 2 karakter, load semua data
+            loadAllNasabahFromPipeline();
             return;
         }
         
@@ -719,6 +962,15 @@
             // Get KC and Unit from form
             const kodeKc = document.getElementById('kode_kc').value;
             const isUnitRmft = document.getElementById('is_unit_rmft').value;
+            const strategy = document.getElementById('strategy_pipeline').value;
+            
+            // Validasi strategy harus dipilih terlebih dahulu
+            if (!strategy) {
+                alert('Harap pilih Strategy Pull of Pipeline terlebih dahulu');
+                closeNasabahModal();
+                document.getElementById('strategy_pipeline').focus();
+                return;
+            }
             
             // Jika multiple units dipilih, gunakan semua unit
             let kodeUkerParam = '';
@@ -731,12 +983,13 @@
             }
             
             document.getElementById('nasabahList').innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <p>Mencari...</p>
+                <div style="text-align: center; padding: 40px; color: #667eea;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 16px;">Mencari...</p>
                 </div>
             `;
             
-            fetch(`{{ route('api.nasabah.search') }}?norek=${searchValue}&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}`)
+            fetch(`{{ route('api.pipeline.search') }}?search=${searchValue}&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}`)
                 .then(response => response.json())
                 .then(nasabahs => {
                     if (nasabahs.length === 0) {
@@ -745,36 +998,14 @@
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3;">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <p>Tidak ada nasabah ditemukan</p>
-                                <small style="color: #999;">Coba kata kunci lain atau tambah nasabah baru</small>
+                                <p>Tidak ada nasabah ditemukan di ${strategy}</p>
+                                <small style="color: #999;">Coba kata kunci lain atau hapus pencarian untuk melihat semua</small>
                             </div>
                         `;
                         return;
                     }
                     
-                    let html = '<table style="width: 100%; border-collapse: collapse;">';
-                    html += '<thead><tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">';
-                    html += '<th style="padding: 10px; text-align: left; font-size: 13px;">CIFNO</th>';
-                    html += '<th style="padding: 10px; text-align: left; font-size: 13px;">Nama</th>';
-                    html += '<th style="padding: 10px; text-align: left; font-size: 13px;">Segmen</th>';
-                    html += '<th style="padding: 10px; text-align: left; font-size: 13px;">Unit</th>';
-                    html += '<th style="padding: 10px; text-align: center; font-size: 13px;">Aksi</th>';
-                    html += '</tr></thead><tbody>';
-                    
-                    nasabahs.forEach(nasabah => {
-                        html += '<tr style="border-bottom: 1px solid #eee;">';
-                        html += `<td style="padding: 10px; font-weight: 600;">${nasabah.cifno || '-'}</td>`;
-                        html += `<td style="padding: 10px;">${nasabah.nama_nasabah}</td>`;
-                        html += `<td style="padding: 10px;"><span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 3px; font-size: 11px;">${nasabah.segmen_nasabah}</span></td>`;
-                        html += `<td style="padding: 10px; font-size: 12px; color: #666;">${nasabah.nama_uker || '-'}</td>`;
-                        html += `<td style="padding: 10px; text-align: center;">
-                            <button onclick='selectNasabah(${JSON.stringify(nasabah)})' style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px;">Pilih</button>
-                        </td>`;
-                        html += '</tr>';
-                    });
-                    
-                    html += '</tbody></table>';
-                    document.getElementById('nasabahList').innerHTML = html;
+                    displayNasabahList(nasabahs);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -790,7 +1021,32 @@
     function selectNasabah(nasabah) {
         document.getElementById('norek').value = nasabah.cifno || nasabah.norek;
         document.getElementById('nama_nasabah').value = nasabah.nama_nasabah;
-        document.querySelector('select[name="segmen_nasabah"]').value = nasabah.segmen_nasabah;
+        
+        // Set segmen berdasarkan strategy yang dipilih
+        const strategy = document.getElementById('strategy_pipeline').value;
+        let segmen = '';
+        
+        if (strategy.includes('Brilink')) {
+            segmen = 'Agen Brilink';
+        } else if (strategy.includes('Mantri')) {
+            segmen = 'Mikro';
+        } else if (strategy.includes('Merchant Mikro')) {
+            segmen = 'Merchant';
+        } else if (strategy.includes('Merchant Ritel')) {
+            segmen = 'Merchant';
+        } else if (strategy.includes('No-Segment Mikro')) {
+            segmen = 'Mikro';
+        } else if (strategy.includes('No-Segment Ritel')) {
+            segmen = 'Ritel Badan Usaha';
+        } else if (strategy.includes('SME Ritel')) {
+            segmen = 'SME';
+        } else if (strategy.includes('QRIS')) {
+            segmen = 'Merchant';
+        } else {
+            segmen = nasabah.segmen_nasabah || 'Konsumer';
+        }
+        
+        document.querySelector('select[name="segmen_nasabah"]').value = segmen;
         closeNasabahModal();
         
         // Visual feedback
