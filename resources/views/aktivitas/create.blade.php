@@ -1281,5 +1281,43 @@
         
         return true;
     }
+    
+    // Initialize untuk RMFT - cek apakah Unit RMFT
+    @if(auth()->user()->isRMFT())
+    (function() {
+        const rmftUkerName = "{{ optional($rmftData)->ukerRelation->sub_kanca ?? '' }}";
+        const kodeKc = "{{ optional($rmftData)->ukerRelation->kode_kanca ?? '' }}";
+        
+        if (rmftUkerName.toUpperCase().includes('UNIT')) {
+            // Set sebagai Unit RMFT
+            document.getElementById('is_unit_rmft').value = '1';
+            document.getElementById('unit_selector_label').style.display = 'inline';
+            document.getElementById('rmft_kode_kc').value = kodeKc;
+            
+            // Enable klik untuk membuka modal unit
+            const namaUkerDisplay = document.getElementById('nama_uker_display');
+            const kodeUkerDisplay = document.getElementById('kode_uker_display');
+            
+            namaUkerDisplay.style.cursor = 'pointer';
+            namaUkerDisplay.onclick = function() {
+                openUnitModal();
+            };
+            
+            kodeUkerDisplay.style.cursor = 'pointer';
+            kodeUkerDisplay.onclick = function() {
+                openUnitModal();
+            };
+            
+            // Enable aktivitas fields
+            enableAktivitasFields();
+        } else {
+            // RMFT biasa (bukan Unit RMFT)
+            document.getElementById('is_unit_rmft').value = '0';
+            
+            // Enable aktivitas fields
+            enableAktivitasFields();
+        }
+    })();
+    @endif
 </script>
 @endsection
