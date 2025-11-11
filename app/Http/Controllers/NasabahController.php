@@ -26,14 +26,26 @@ class NasabahController extends Controller
         $kode_uker = $request->get('kode_uker');
         $strategy = $request->get('strategy');
         $load_all = $request->get('load_all'); // Parameter untuk load semua data
+        $page = $request->get('page', 1); // Current page, default 1
+        $perPage = 10; // 10 items per page
         
         if (!$strategy) {
-            return response()->json([]);
+            return response()->json([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+                'total' => 0
+            ]);
         }
         
         // Jika load_all atau search kosong, tidak perlu minimum 2 karakter
         if (!$load_all && $search && strlen($search) < 2) {
-            return response()->json([]);
+            return response()->json([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+                'total' => 0
+            ]);
         }
         
         // Tentukan model berdasarkan strategy
@@ -99,7 +111,12 @@ class NasabahController extends Controller
                 });
             }
             
-            $results = $query->limit(100)  // Batasi 100 hasil untuk load all
+            // Get total count for pagination
+            $total = $query->count();
+            $lastPage = ceil($total / $perPage);
+            
+            $results = $query->skip(($page - 1) * $perPage)
+                            ->take($perPage)
                             ->orderBy('cif', 'asc')
                             ->get()
                             ->map(function($item) {
@@ -117,7 +134,13 @@ class NasabahController extends Controller
                                 ];
                             });
             
-            return response()->json($results);
+            return response()->json([
+                'data' => $results,
+                'current_page' => (int)$page,
+                'last_page' => $lastPage,
+                'total' => $total,
+                'per_page' => $perPage
+            ]);
             
         } else {
             // Tabel penurunan lainnya
@@ -146,7 +169,12 @@ class NasabahController extends Controller
                 });
             }
             
-            $results = $query->limit(100)  // Batasi 100 hasil untuk load all
+            // Get total count for pagination
+            $total = $query->count();
+            $lastPage = ceil($total / $perPage);
+            
+            $results = $query->skip(($page - 1) * $perPage)
+                            ->take($perPage)
                             ->orderBy('cifno', 'asc')
                             ->get()
                             ->map(function($item) {
@@ -165,7 +193,13 @@ class NasabahController extends Controller
                                 ];
                             });
             
-            return response()->json($results);
+            return response()->json([
+                'data' => $results,
+                'current_page' => (int)$page,
+                'last_page' => $lastPage,
+                'total' => $total,
+                'per_page' => $perPage
+            ]);
         }
     }
 

@@ -311,16 +311,16 @@
 
 <!-- Modal Nasabah -->
 <div id="nasabahModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; width: 90%; max-width: 900px; max-height: 80vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div style="background: white; border-radius: 12px; width: 90%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-shrink: 0;">
             <h3 style="margin: 0; color: white;">Pilih Nasabah dari Pull of Pipeline</h3>
             <button onclick="closeNasabahModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">&times;</button>
         </div>
         
-        <div style="padding: 20px;">
-            <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah (opsional)..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px;" onkeyup="searchNasabahList()">
+        <div style="padding: 20px; display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+            <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah (opsional)..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; flex-shrink: 0;" onkeyup="searchNasabahList()">
             
-            <div id="nasabahList" style="max-height: 450px; overflow-y: auto;">
+            <div id="nasabahList" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
                 <div style="text-align: center; padding: 40px; color: #667eea;">
                     <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     <p style="margin-top: 16px;">Memuat data...</p>
@@ -640,11 +640,23 @@
         loadAllNasabahFromPipeline();
     }
     
+    // Variable to track pagination state
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentStrategy = '';
+    let currentKodeKc = '';
+    let currentKodeUker = '';
+    
     // Function to load all nasabah from pipeline based on KC and Unit
-    function loadAllNasabahFromPipeline() {
+    function loadAllNasabahFromPipeline(page = 1) {
         const kodeKc = document.getElementById('kode_kc').value;
         const isUnitRmft = document.getElementById('is_unit_rmft').value;
         const strategy = document.getElementById('strategy_pipeline').value;
+        
+        // Save current state
+        currentPage = page;
+        currentStrategy = strategy;
+        currentKodeKc = kodeKc;
         
         // Jika multiple units dipilih, gunakan semua unit
         let kodeUkerParam = '';
@@ -653,6 +665,8 @@
         } else {
             kodeUkerParam = document.getElementById('kode_uker').value;
         }
+        
+        currentKodeUker = kodeUkerParam;
         
         document.getElementById('nasabahList').innerHTML = `
             <div style="text-align: center; padding: 40px; color: #667eea;">
@@ -667,9 +681,13 @@
             </style>
         `;
         
-        fetch(`{{ route('api.pipeline.search') }}?search=&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}&load_all=1`)
+        fetch(`{{ route('api.pipeline.search') }}?search=&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}&load_all=1&page=${page}`)
             .then(response => response.json())
-            .then(nasabahs => {
+            .then(response => {
+                // Handle paginated response
+                const nasabahs = response.data || [];
+                totalPages = response.last_page || 1;
+                
                 if (nasabahs.length === 0) {
                     document.getElementById('nasabahList').innerHTML = `
                         <div style="text-align: center; padding: 40px; color: #666;">
@@ -683,7 +701,7 @@
                     return;
                 }
                 
-                displayNasabahList(nasabahs);
+                displayNasabahList(nasabahs, response);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -696,13 +714,23 @@
     }
     
     // Function to display nasabah list
-    function displayNasabahList(nasabahs) {
-        let html = '<div style="margin-bottom: 10px; padding: 10px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600;">';
-        html += `<span>Ditemukan ${nasabahs.length} nasabah</span>`;
+    function displayNasabahList(nasabahs, paginationData) {
+        // Create wrapper with table container and fixed pagination at bottom
+        let html = '<div style="display: flex; flex-direction: column; height: 100%;">';
+        
+        // Info header
+        html += '<div style="margin-bottom: 10px; padding: 10px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600; flex-shrink: 0;">';
+        html += `<span>Ditemukan ${paginationData.total || nasabahs.length} nasabah`;
+        if (paginationData && paginationData.last_page > 1) {
+            html += ` - Halaman ${paginationData.current_page} dari ${paginationData.last_page}`;
+        }
+        html += '</span>';
         html += '</div>';
         
+        // Scrollable table container
+        html += '<div style="flex: 1; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">';
         html += '<table style="width: 100%; border-collapse: collapse;">';
-        html += '<thead><tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">';
+        html += '<thead><tr style="background: #f5f5f5; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;">';
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 15%;">CIFNO</th>';
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Nama</th>';
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Unit</th>';
@@ -750,6 +778,39 @@
         });
         
         html += '</tbody></table>';
+        html += '</div>'; // Close scrollable container
+        
+        // Add pagination controls if needed - FIXED at bottom
+        if (paginationData && paginationData.last_page > 1) {
+            html += '<div style="padding: 12px; background: #f9fafb; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-top: 2px solid #e0e0e0;">';
+            
+            // Previous button
+            const prevDisabled = paginationData.current_page <= 1;
+            html += `<button onclick="loadAllNasabahFromPipeline(${paginationData.current_page - 1})" 
+                     style="padding: 8px 16px; background: ${prevDisabled ? '#e0e0e0' : '#667eea'}; color: ${prevDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${prevDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
+                     ${prevDisabled ? 'disabled' : ''}>
+                     ‹ Sebelumnya
+                  </button>`;
+            
+            // Page info
+            html += `<span style="font-size: 13px; color: #666; font-weight: 600;">
+                     Halaman ${paginationData.current_page} dari ${paginationData.last_page}
+                     <span style="color: #999; font-weight: normal;">(${paginationData.total} total)</span>
+                  </span>`;
+            
+            // Next button
+            const nextDisabled = paginationData.current_page >= paginationData.last_page;
+            html += `<button onclick="loadAllNasabahFromPipeline(${paginationData.current_page + 1})" 
+                     style="padding: 8px 16px; background: ${nextDisabled ? '#e0e0e0' : '#667eea'}; color: ${nextDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${nextDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
+                     ${nextDisabled ? 'disabled' : ''}>
+                     Selanjutnya ›
+                  </button>`;
+            
+            html += '</div>';
+        }
+        
+        html += '</div>'; // Close wrapper
+        
         document.getElementById('nasabahList').innerHTML = html;
     }
     
