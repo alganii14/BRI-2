@@ -114,7 +114,7 @@
     </div>
     @endif
 
-    <form action="{{ route('aktivitas.store') }}" method="POST">
+    <form action="{{ route('aktivitas.store') }}" method="POST" onsubmit="return validateForm()">
         @csrf
 
         @if(auth()->user()->isManager() || auth()->user()->isAdmin())
@@ -275,25 +275,59 @@
             </div>
 
             <div class="form-group">
-                <label>CIFNO <span style="color: red;">*</span></label>
-                <div style="position: relative;">
-                    <input type="text" id="norek" name="norek" value="{{ old('norek') }}" required placeholder="Pilih RMFT terlebih dahulu" autocomplete="off" style="padding-right: 45px;" disabled>
-                    <button type="button" id="btn_search_nasabah" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" disabled>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </button>
+                <label>TIPE NASABAH <span style="color: red;">*</span></label>
+                <select name="tipe_nasabah" id="tipe_nasabah" required disabled onchange="toggleNasabahForm()">
+                    <option value="">Pilih RMFT terlebih dahulu</option>
+                    <option value="lama" {{ old('tipe_nasabah') == 'lama' ? 'selected' : '' }}>Nasabah Lama</option>
+                    <option value="baru" {{ old('tipe_nasabah') == 'baru' ? 'selected' : '' }}>Nasabah Baru</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Form untuk Nasabah Lama -->
+        <div id="form_nasabah_lama" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CIFNO <span style="color: red;">*</span></label>
+                    <div style="position: relative;">
+                        <input type="text" id="norek" name="norek" value="{{ old('norek') }}" placeholder="Pilih RMFT terlebih dahulu" autocomplete="off" style="padding-right: 45px;" disabled>
+                        <button type="button" id="btn_search_nasabah" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" disabled>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>NAMA NASABAH <span style="color: red;">*</span></label>
+                    <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah') }}" placeholder="Pilih RMFT terlebih dahulu" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>RP / JUMLAH <span style="color: red;">*</span></label>
+                    <input type="text" id="rp_jumlah" name="rp_jumlah" value="{{ old('rp_jumlah') }}" placeholder="Pilih RMFT terlebih dahulu" disabled>
                 </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>NAMA NASABAH <span style="color: red;">*</span></label>
-                <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah') }}" required placeholder="Pilih RMFT terlebih dahulu" disabled>
-            </div>
+        <!-- Form untuk Nasabah Baru -->
+        <div id="form_nasabah_baru" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>NO. REKENING <span style="color: red;">*</span></label>
+                    <input type="text" id="norek_baru" name="norek_baru" value="{{ old('norek_baru') }}" placeholder="Masukkan nomor rekening" disabled>
+                </div>
 
-            <div class="form-group">
-                <label>RP / JUMLAH <span style="color: red;">*</span></label>
-                <input type="text" id="rp_jumlah" name="rp_jumlah" value="{{ old('rp_jumlah') }}" required placeholder="Pilih RMFT terlebih dahulu" disabled>
+                <div class="form-group">
+                    <label>NAMA NASABAH <span style="color: red;">*</span></label>
+                    <input type="text" id="nama_nasabah_baru" name="nama_nasabah_baru" value="{{ old('nama_nasabah_baru') }}" placeholder="Masukkan nama nasabah" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>RP / JUMLAH <span style="color: red;">*</span></label>
+                    <input type="text" id="rp_jumlah_baru" name="rp_jumlah_baru" value="{{ old('rp_jumlah_baru') }}" placeholder="Masukkan jumlah" disabled>
+                </div>
             </div>
         </div>
 
@@ -472,6 +506,8 @@
         document.getElementById('rencana_aktivitas').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
         document.getElementById('segmen_nasabah').disabled = true;
         document.getElementById('segmen_nasabah').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
+        document.getElementById('tipe_nasabah').disabled = true;
+        document.getElementById('tipe_nasabah').innerHTML = '<option value="">Pilih RMFT terlebih dahulu</option>';
         document.getElementById('norek').disabled = true;
         document.getElementById('norek').placeholder = 'Pilih RMFT terlebih dahulu';
         document.getElementById('btn_search_nasabah').disabled = true;
@@ -479,6 +515,12 @@
         document.getElementById('nama_nasabah').placeholder = 'Pilih RMFT terlebih dahulu';
         document.getElementById('rp_jumlah').disabled = true;
         document.getElementById('rp_jumlah').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('norek_baru').disabled = true;
+        document.getElementById('norek_baru').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('nama_nasabah_baru').disabled = true;
+        document.getElementById('nama_nasabah_baru').placeholder = 'Pilih RMFT terlebih dahulu';
+        document.getElementById('rp_jumlah_baru').disabled = true;
+        document.getElementById('rp_jumlah_baru').placeholder = 'Pilih RMFT terlebih dahulu';
         document.getElementById('keterangan').disabled = true;
         document.getElementById('keterangan').placeholder = 'Pilih RMFT terlebih dahulu';
     }
@@ -547,7 +589,15 @@
             <option value="Komersial">Komersial</option>
         `;
         
-        // Enable other fields
+        // Enable Tipe Nasabah
+        document.getElementById('tipe_nasabah').disabled = false;
+        document.getElementById('tipe_nasabah').innerHTML = `
+            <option value="">Pilih Tipe</option>
+            <option value="lama">Nasabah Lama</option>
+            <option value="baru">Nasabah Baru</option>
+        `;
+        
+        // Enable Nasabah Lama fields (default disabled)
         document.getElementById('norek').disabled = false;
         document.getElementById('norek').placeholder = 'CIFNO nasabah';
         document.getElementById('btn_search_nasabah').disabled = false;
@@ -555,8 +605,43 @@
         document.getElementById('nama_nasabah').placeholder = 'Nama lengkap nasabah';
         document.getElementById('rp_jumlah').disabled = false;
         document.getElementById('rp_jumlah').placeholder = 'Contoh: 10000000';
+        
+        // Enable Nasabah Baru fields (default disabled)
+        document.getElementById('norek_baru').disabled = false;
+        document.getElementById('norek_baru').placeholder = 'Masukkan nomor rekening';
+        document.getElementById('nama_nasabah_baru').disabled = false;
+        document.getElementById('nama_nasabah_baru').placeholder = 'Masukkan nama nasabah';
+        document.getElementById('rp_jumlah_baru').disabled = false;
+        document.getElementById('rp_jumlah_baru').placeholder = 'Masukkan jumlah';
+        
         document.getElementById('keterangan').disabled = false;
         document.getElementById('keterangan').placeholder = 'Keterangan tambahan (opsional)';
+    }
+    
+    // Function to toggle between Nasabah Baru and Nasabah Lama forms
+    function toggleNasabahForm() {
+        const tipeNasabah = document.getElementById('tipe_nasabah').value;
+        const formLama = document.getElementById('form_nasabah_lama');
+        const formBaru = document.getElementById('form_nasabah_baru');
+        
+        if (tipeNasabah === 'lama') {
+            formLama.style.display = 'block';
+            formBaru.style.display = 'none';
+            // Clear Nasabah Baru fields
+            document.getElementById('norek_baru').value = '';
+            document.getElementById('nama_nasabah_baru').value = '';
+            document.getElementById('rp_jumlah_baru').value = '';
+        } else if (tipeNasabah === 'baru') {
+            formLama.style.display = 'none';
+            formBaru.style.display = 'block';
+            // Clear Nasabah Lama fields
+            document.getElementById('norek').value = '';
+            document.getElementById('nama_nasabah').value = '';
+            document.getElementById('rp_jumlah').value = '';
+        } else {
+            formLama.style.display = 'none';
+            formBaru.style.display = 'none';
+        }
     }
 
     // Autocomplete for Norek - DISABLED, now using Pipeline Search
@@ -1130,5 +1215,71 @@
             closeUnitModal();
         }
     });
+    
+    // Form validation
+    function validateForm() {
+        const tipeNasabah = document.getElementById('tipe_nasabah').value;
+        
+        if (!tipeNasabah) {
+            alert('Harap pilih Tipe Nasabah terlebih dahulu');
+            return false;
+        }
+        
+        if (tipeNasabah === 'lama') {
+            // Validate Nasabah Lama fields
+            const norek = document.getElementById('norek').value.trim();
+            const namaNasabah = document.getElementById('nama_nasabah').value.trim();
+            const rpJumlah = document.getElementById('rp_jumlah').value.trim();
+            
+            if (!norek) {
+                alert('Harap isi CIFNO untuk Nasabah Lama');
+                return false;
+            }
+            if (!namaNasabah) {
+                alert('Harap isi Nama Nasabah untuk Nasabah Lama');
+                return false;
+            }
+            if (!rpJumlah) {
+                alert('Harap isi RP / Jumlah untuk Nasabah Lama');
+                return false;
+            }
+            
+            // Remove Nasabah Baru fields from submission
+            document.getElementById('norek_baru').removeAttribute('name');
+            document.getElementById('nama_nasabah_baru').removeAttribute('name');
+            document.getElementById('rp_jumlah_baru').removeAttribute('name');
+            
+        } else if (tipeNasabah === 'baru') {
+            // Validate Nasabah Baru fields
+            const norekBaru = document.getElementById('norek_baru').value.trim();
+            const namaNasabahBaru = document.getElementById('nama_nasabah_baru').value.trim();
+            const rpJumlahBaru = document.getElementById('rp_jumlah_baru').value.trim();
+            
+            if (!norekBaru) {
+                alert('Harap isi No. Rekening untuk Nasabah Baru');
+                return false;
+            }
+            if (!namaNasabahBaru) {
+                alert('Harap isi Nama Nasabah untuk Nasabah Baru');
+                return false;
+            }
+            if (!rpJumlahBaru) {
+                alert('Harap isi RP / Jumlah untuk Nasabah Baru');
+                return false;
+            }
+            
+            // Copy Nasabah Baru values to Nasabah Lama fields for submission
+            document.getElementById('norek').value = norekBaru;
+            document.getElementById('nama_nasabah').value = namaNasabahBaru;
+            document.getElementById('rp_jumlah').value = rpJumlahBaru;
+            
+            // Remove Nasabah Baru fields from submission
+            document.getElementById('norek_baru').removeAttribute('name');
+            document.getElementById('nama_nasabah_baru').removeAttribute('name');
+            document.getElementById('rp_jumlah_baru').removeAttribute('name');
+        }
+        
+        return true;
+    }
 </script>
 @endsection
