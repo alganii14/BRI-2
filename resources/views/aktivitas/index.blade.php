@@ -37,6 +37,25 @@
         color: white;
     }
 
+    .btn-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
     .badge-rmft {
         background-color: #4caf50;
         color: white;
@@ -226,7 +245,14 @@ document.getElementById('kode_kc').addEventListener('change', function() {
 <div class="card">
     <div class="header-actions">
         <h3>Daftar Aktivitas</h3>
-        <a href="{{ route('aktivitas.create') }}" class="btn btn-primary">+ Tambah Aktivitas</a>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ route('aktivitas.create') }}" class="btn btn-primary">+ Tambah Aktivitas</a>
+            @if(auth()->user()->isAdmin())
+            <button onclick="openDeleteAllModal()" class="btn" style="background: linear-gradient(135deg, #e53935 0%, #c62828 100%); color: white;">
+                🗑️ Hapus Semua Data
+            </button>
+            @endif
+        </div>
     </div>
 
     <div class="table-container">
@@ -292,6 +318,8 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                     <td>{{ $item->keterangan ?? '-' }}</td>
                     <td>
                         <div class="action-buttons">
+                            <a href="{{ route('aktivitas.show', $item->id) }}" class="btn btn-info btn-sm" title="Lihat Detail">👁️</a>
+                            
                             @if(auth()->user()->isManager() || auth()->user()->isAdmin())
                             <a href="{{ route('aktivitas.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('aktivitas.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus aktivitas ini?')">
@@ -301,7 +329,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                             </form>
                             @elseif(auth()->user()->isRMFT())
                                 @if($item->status_realisasi == 'belum')
-                                <a href="{{ route('aktivitas.feedback', $item->id) }}" class="btn btn-info btn-sm">Feedback</a>
+                                <a href="{{ route('aktivitas.feedback', $item->id) }}" class="btn btn-primary btn-sm">Feedback</a>
                                 @else
                                 <span style="color: #28a745; font-size: 12px;">✓ Sudah Feedback</span>
                                 @endif
@@ -357,4 +385,66 @@ document.getElementById('kode_kc').addEventListener('change', function() {
     </div>
     @endif
 </div>
+
+<!-- Modal Delete All Confirmation -->
+@if(auth()->user()->isAdmin())
+<div id="deleteAllModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; width: 90%; max-width: 500px; padding: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden;">
+        <div style="padding: 20px; background: linear-gradient(135deg, #e53935 0%, #c62828 100%); color: white;">
+            <h3 style="margin: 0; font-size: 20px; font-weight: 600;">⚠️ Konfirmasi Hapus Semua Data</h3>
+        </div>
+        
+        <div style="padding: 30px 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 60px; margin-bottom: 15px;">🗑️</div>
+                <p style="font-size: 16px; color: #333; margin: 0 0 10px 0; font-weight: 600;">
+                    Anda yakin ingin menghapus SEMUA data aktivitas?
+                </p>
+                <p style="font-size: 14px; color: #666; margin: 0;">
+                    Total: <strong id="totalCount">{{ $aktivitas->total() }}</strong> aktivitas
+                </p>
+            </div>
+            
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <p style="margin: 0; color: #856404; font-size: 13px; line-height: 1.6;">
+                    <strong>⚠️ PERINGATAN:</strong><br>
+                    • Semua data aktivitas akan dihapus secara permanen<br>
+                    • Tindakan ini TIDAK DAPAT dibatalkan<br>
+                    • Pastikan Anda sudah membuat backup jika diperlukan
+                </p>
+            </div>
+            
+            <form id="deleteAllForm" action="{{ route('aktivitas.delete-all') }}" method="POST">
+                @csrf
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" onclick="closeDeleteAllModal()" style="padding: 12px 24px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                        Batal
+                    </button>
+                    <button type="submit" style="padding: 12px 24px; background: linear-gradient(135deg, #e53935 0%, #c62828 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                        Ya, Hapus Semua
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteAllModal() {
+    document.getElementById('deleteAllModal').style.display = 'flex';
+}
+
+function closeDeleteAllModal() {
+    document.getElementById('deleteAllModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteAllModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteAllModal();
+    }
+});
+</script>
+@endif
+
 @endsection

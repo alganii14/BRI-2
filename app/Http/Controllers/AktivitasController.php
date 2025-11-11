@@ -136,12 +136,26 @@ class AktivitasController extends Controller
         ]);
 
         // Check if multiple units are selected
-        $multipleUnits = !empty($validated['kode_uker_list']) && !empty($validated['nama_uker_list']);
+        $multipleUnits = !empty($validated['kode_uker_list']) && 
+                        !empty($validated['nama_uker_list']) &&
+                        trim($validated['kode_uker_list']) !== '' &&
+                        trim($validated['nama_uker_list']) !== '';
         
         if ($multipleUnits) {
             // Split units
-            $kodeUkerArray = explode(',', $validated['kode_uker_list']);
-            $namaUkerArray = explode(',', $validated['nama_uker_list']);
+            $kodeUkerArray = array_filter(array_map('trim', explode(',', $validated['kode_uker_list'])));
+            $namaUkerArray = array_filter(array_map('trim', explode(',', $validated['nama_uker_list'])));
+            
+            // Pastikan ada lebih dari 1 unit, kalau cuma 1 unit gunakan logic single
+            if (count($kodeUkerArray) <= 1) {
+                $multipleUnits = false;
+            }
+        }
+        
+        if ($multipleUnits) {
+            // Split units
+            $kodeUkerArray = array_filter(array_map('trim', explode(',', $validated['kode_uker_list'])));
+            $namaUkerArray = array_filter(array_map('trim', explode(',', $validated['nama_uker_list'])));
             
             $createdCount = 0;
             
@@ -410,5 +424,29 @@ class AktivitasController extends Controller
         $aktivitas->update($validated);
         
         return redirect()->route('aktivitas.index')->with('success', 'Feedback berhasil disimpan!');
+    }
+
+    /**
+     * Delete all aktivitas (Admin only)
+     */
+    public function deleteAll()
+    {
+        $user = Auth::user();
+        
+        // Hanya Admin yang bisa delete all
+        if (!$user->isAdmin()) {
+            abort(403, 'Hanya Admin yang bisa menghapus semua data aktivitas.');
+        }
+        
+        try {
+            $count = Aktivitas::count();
+            Aktivitas::truncate();
+            
+            return redirect()->route('aktivitas.index')
+                           ->with('success', "Berhasil menghapus semua data aktivitas ({$count} record)!");
+        } catch (\Exception $e) {
+            return redirect()->route('aktivitas.index')
+                           ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
 }

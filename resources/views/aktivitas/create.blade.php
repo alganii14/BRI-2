@@ -373,14 +373,12 @@
         </div>
         
         <div style="padding: 20px;">
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <input type="text" id="searchUnit" placeholder="Cari nama unit..." style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;" onkeyup="filterUnitList()">
-                <button onclick="selectAllUnits()" style="padding: 10px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap;">Pilih Semua</button>
-                <button onclick="clearAllUnits()" style="padding: 10px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap;">Hapus Semua</button>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="searchUnit" placeholder="Cari nama unit..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;" onkeyup="filterUnitList()">
             </div>
             
             <div id="selected_count" style="margin-bottom: 10px; padding: 8px 12px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600;">
-                <span id="count_text">0 unit dipilih</span>
+                <span id="count_text">Belum ada unit dipilih</span>
             </div>
             
             <div id="unitList" style="max-height: 350px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px;">
@@ -436,6 +434,11 @@
             document.getElementById('kode_uker_display').style.cursor = 'text';
             document.getElementById('kode_uker_display').onclick = null;
             
+            // Clear list fields
+            document.getElementById('kode_uker_list').value = '';
+            document.getElementById('nama_uker_list').value = '';
+            selectedUnits = [];
+            
             // Disable Data Aktivitas fields
             disableAktivitasFields();
             return;
@@ -472,6 +475,10 @@
             document.getElementById('nama_uker_display').value = option.dataset.uker;
             document.getElementById('kelompok').value = option.dataset.kelompok;
             
+            // Clear list fields - user harus pilih unit secara manual
+            document.getElementById('kode_uker_list').value = '';
+            document.getElementById('nama_uker_list').value = '';
+            
             // Reset selections
             selectedUnits = [{
                 kode_sub_kanca: option.dataset.kodeUker,
@@ -491,6 +498,10 @@
             document.getElementById('nama_uker').value = option.dataset.uker;
             document.getElementById('nama_uker_display').value = option.dataset.uker;
             document.getElementById('kelompok').value = option.dataset.kelompok;
+            
+            // Clear list fields untuk RMFT biasa
+            document.getElementById('kode_uker_list').value = '';
+            document.getElementById('nama_uker_list').value = '';
             selectedUnits = [];
         }
         
@@ -974,17 +985,18 @@
         let html = '<div style="display: flex; flex-direction: column; gap: 4px;">';
         
         units.forEach(unit => {
-            const isSelected = selectedUnits.some(u => u.kode_sub_kanca === unit.kode_sub_kanca);
+            const isSelected = selectedUnits.length > 0 && selectedUnits[0].kode_sub_kanca === unit.kode_sub_kanca;
             
             html += `
                 <label style="padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; background: ${isSelected ? '#e3f2fd' : 'white'};"
                        onmouseenter="this.style.backgroundColor='#f0f8ff';"
                        onmouseleave="this.style.backgroundColor='${isSelected ? '#e3f2fd' : 'white'}';">
-                    <input type="checkbox" 
+                    <input type="radio" 
+                           name="unit_selection"
                            value="${unit.kode_sub_kanca}" 
                            data-name="${unit.sub_kanca}"
                            ${isSelected ? 'checked' : ''}
-                           onchange="toggleUnitSelection(this, ${JSON.stringify(unit).replace(/"/g, '&quot;')})"
+                           onchange="selectSingleUnit(${JSON.stringify(unit).replace(/"/g, '&quot;')})"
                            style="width: 18px; height: 18px; cursor: pointer;">
                     <div style="flex: 1;">
                         <div style="font-weight: 600; color: #333;">${unit.sub_kanca}</div>
@@ -998,55 +1010,19 @@
         document.getElementById('unitList').innerHTML = html;
     }
     
-    function toggleUnitSelection(checkbox, unit) {
-        if (checkbox.checked) {
-            // Add to selection
-            if (!selectedUnits.some(u => u.kode_sub_kanca === unit.kode_sub_kanca)) {
-                selectedUnits.push(unit);
-            }
-        } else {
-            // Remove from selection
-            selectedUnits = selectedUnits.filter(u => u.kode_sub_kanca !== unit.kode_sub_kanca);
-        }
-        updateSelectedCount();
-    }
-    
-    function selectAllUnits() {
-        const checkboxes = document.querySelectorAll('#unitList input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                checkbox.checked = true;
-                const unitData = JSON.parse(checkbox.getAttribute('onchange').match(/toggleUnitSelection\(this, (.+)\)/)[1].replace(/&quot;/g, '"'));
-                if (!selectedUnits.some(u => u.kode_sub_kanca === unitData.kode_sub_kanca)) {
-                    selectedUnits.push(unitData);
-                }
-            }
-        });
-        displayUnits(allUnits.filter(unit => {
-            const searchValue = document.getElementById('searchUnit').value.toLowerCase();
-            return unit.sub_kanca.toLowerCase().includes(searchValue) ||
-                   unit.kode_sub_kanca.toLowerCase().includes(searchValue);
-        }));
-        updateSelectedCount();
-    }
-    
-    function clearAllUnits() {
-        selectedUnits = [];
-        const checkboxes = document.querySelectorAll('#unitList input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        displayUnits(allUnits.filter(unit => {
-            const searchValue = document.getElementById('searchUnit').value.toLowerCase();
-            return unit.sub_kanca.toLowerCase().includes(searchValue) ||
-                   unit.kode_sub_kanca.toLowerCase().includes(searchValue);
-        }));
+    function selectSingleUnit(unit) {
+        // Clear previous selection and set new one
+        selectedUnits = [unit];
         updateSelectedCount();
     }
     
     function updateSelectedCount() {
         const count = selectedUnits.length;
-        document.getElementById('count_text').textContent = `${count} unit dipilih`;
+        if (count === 0) {
+            document.getElementById('count_text').textContent = 'Belum ada unit dipilih';
+        } else {
+            document.getElementById('count_text').textContent = `Unit dipilih: ${selectedUnits[0].sub_kanca}`;
+        }
     }
     
     function filterUnitList() {
@@ -1060,23 +1036,21 @@
     
     function applySelectedUnits() {
         if (selectedUnits.length === 0) {
-            alert('Harap pilih minimal 1 unit');
+            alert('Harap pilih 1 unit');
             return;
         }
         
-        // Update display untuk NAMA UKER
-        const unitNames = selectedUnits.map(u => u.sub_kanca).join(', ');
-        const unitCodes = selectedUnits.map(u => u.kode_sub_kanca).join(',');
+        // Single selection - gunakan unit yang dipilih
+        const selectedUnit = selectedUnits[0];
         
-        // Update display untuk KODE UKER (dengan line breaks untuk readability)
-        const unitCodesDisplay = selectedUnits.map(u => u.kode_sub_kanca).join(', ');
+        document.getElementById('nama_uker_display').value = selectedUnit.sub_kanca;
+        document.getElementById('nama_uker').value = selectedUnit.sub_kanca;
+        document.getElementById('kode_uker').value = selectedUnit.kode_sub_kanca;
+        document.getElementById('kode_uker_display').value = selectedUnit.kode_sub_kanca;
         
-        document.getElementById('nama_uker_display').value = unitNames;
-        document.getElementById('nama_uker').value = unitNames;
-        document.getElementById('kode_uker').value = selectedUnits[0].kode_sub_kanca; // Use first unit code as primary
-        document.getElementById('kode_uker_display').value = unitCodesDisplay;
-        document.getElementById('kode_uker_list').value = unitCodes;
-        document.getElementById('nama_uker_list').value = unitNames;
+        // Clear list fields untuk single selection
+        document.getElementById('kode_uker_list').value = '';
+        document.getElementById('nama_uker_list').value = '';
         
         closeUnitModal();
         
@@ -1294,6 +1268,10 @@
             document.getElementById('unit_selector_label').style.display = 'inline';
             document.getElementById('rmft_kode_kc').value = kodeKc;
             
+            // Clear list fields - user harus pilih unit secara manual
+            document.getElementById('kode_uker_list').value = '';
+            document.getElementById('nama_uker_list').value = '';
+            
             // Enable klik untuk membuka modal unit
             const namaUkerDisplay = document.getElementById('nama_uker_display');
             const kodeUkerDisplay = document.getElementById('kode_uker_display');
@@ -1313,6 +1291,10 @@
         } else {
             // RMFT biasa (bukan Unit RMFT)
             document.getElementById('is_unit_rmft').value = '0';
+            
+            // Pastikan list fields kosong untuk RMFT biasa
+            document.getElementById('kode_uker_list').value = '';
+            document.getElementById('nama_uker_list').value = '';
             
             // Enable aktivitas fields
             enableAktivitasFields();

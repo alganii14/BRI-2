@@ -52,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
     // Aktivitas - accessible by both Manager and RMFT
     Route::resource('aktivitas', AktivitasController::class);
     
+    // Delete All Aktivitas - Admin only
+    Route::post('aktivitas-delete-all', [AktivitasController::class, 'deleteAll'])->name('aktivitas.delete-all')->middleware('role:admin');
+    
     // Feedback Routes - RMFT only
     Route::get('aktivitas/{id}/feedback', [AktivitasController::class, 'feedback'])->name('aktivitas.feedback');
     Route::post('aktivitas/{id}/feedback', [AktivitasController::class, 'storeFeedback'])->name('aktivitas.storeFeedback');
