@@ -162,13 +162,19 @@ class PenurunanMerchantRitelController extends Controller
             DB::beginTransaction();
 
             $handle = fopen($path, 'r');
-            $header = fgetcsv($handle); // Skip header row
+            
+            // Detect delimiter (semicolon or comma)
+            $firstLine = fgets($handle);
+            rewind($handle);
+            $delimiter = (strpos($firstLine, ';') !== false) ? ';' : ',';
+            
+            $header = fgetcsv($handle, 0, $delimiter); // Skip header row
             
             $batch = [];
             $batchSize = 1000; // Process 1000 rows at a time
             $totalInserted = 0;
 
-            while (($row = fgetcsv($handle)) !== false) {
+            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
                 if (count($row) >= 23 && !empty(array_filter($row))) {
                     $batch[] = [
                         'regional_office' => trim($row[0]) ?: null,
@@ -222,6 +228,23 @@ class PenurunanMerchantRitelController extends Controller
             DB::rollBack();
             return redirect()->back()
                             ->with('error', '✗ Gagal mengimport CSV: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete all records from the table.
+     */
+    public function deleteAll()
+    {
+        try {
+            $count = PenurunanMerchantRitel::count();
+            PenurunanMerchantRitel::truncate();
+            
+            return redirect()->route('penurunan-merchant-ritel.index')
+                            ->with('success', '✓ Berhasil menghapus semua data! Total: ' . number_format($count, 0, ',', '.') . ' record telah dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->with('error', '✗ Gagal menghapus data: ' . $e->getMessage());
         }
     }
 }

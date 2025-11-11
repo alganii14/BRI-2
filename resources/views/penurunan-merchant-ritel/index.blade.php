@@ -148,6 +148,22 @@
         color: white;
     }
 
+    .btn-delete-all {
+        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-delete-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+    }
+
     .pagination-container {
         display: flex;
         justify-content: center;
@@ -306,6 +322,7 @@
     </form>
     <a href="{{ route('penurunan-merchant-ritel.create') }}" class="btn-primary">+ Tambah Data</a>
     <a href="{{ route('penurunan-merchant-ritel.import.form') }}" class="btn-primary btn-import">📥 Import CSV</a>
+    <button type="button" class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ Hapus Semua</button>
 </div>
 
 <div class="table-container">
@@ -449,6 +466,24 @@
     </div>
 </div>
 
+<!-- Delete All Modal -->
+<div id="deleteAllModal" class="modal">
+    <div class="modal-content">
+        <h3>⚠️ Konfirmasi Hapus Semua Data</h3>
+        <p style="color: #d32f2f; font-weight: 600;">PERHATIAN: Tindakan ini akan menghapus SEMUA data penurunan merchant ritel!</p>
+        <p>Total data yang akan dihapus: <strong>{{ \App\Models\PenurunanMerchantRitel::count() }}</strong> record</p>
+        <p>Apakah Anda yakin ingin melanjutkan?</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeDeleteAllModal()">Batal</button>
+            <form id="deleteAllForm" method="POST" action="{{ route('penurunan-merchant-ritel.deleteAll') }}" style="margin: 0;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="modal-btn modal-btn-confirm" style="background: #d32f2f;">Hapus Semua</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     function openDeleteModal(id) {
         document.getElementById('deleteForm').action = '/penurunan-merchant-ritel/' + id;
@@ -459,10 +494,22 @@
         document.getElementById('deleteModal').classList.remove('show');
     }
 
+    function confirmDeleteAll() {
+        document.getElementById('deleteAllModal').classList.add('show');
+    }
+
+    function closeDeleteAllModal() {
+        document.getElementById('deleteAllModal').classList.remove('show');
+    }
+
     window.addEventListener('click', function (event) {
         const modal = document.getElementById('deleteModal');
+        const deleteAllModal = document.getElementById('deleteAllModal');
         if (event.target === modal) {
             closeDeleteModal();
+        }
+        if (event.target === deleteAllModal) {
+            closeDeleteAllModal();
         }
     });
 </script>
