@@ -332,6 +332,30 @@
         </div>
         
         <div style="padding: 20px; display: flex; flex-direction: column; overflow: hidden; flex: 1;">
+            <!-- Filter Bulan dan Tahun -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-shrink: 0;">
+                <select id="filterYear" style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; background: white;" onchange="applyPipelineFilter()">
+                    <option value="">Semua Tahun</option>
+                    <!-- Tahun akan di-load secara dinamis -->
+                </select>
+                
+                <select id="filterMonth" style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; background: white;" onchange="applyPipelineFilter()">
+                    <option value="">Semua Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+            </div>
+            
             <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah (opsional)..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; flex-shrink: 0;" onkeyup="searchNasabahList()">
             
             <div id="nasabahList" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
@@ -687,8 +711,34 @@
         const modal = document.getElementById('nasabahModal');
         modal.style.display = 'flex';
         
+        // Load available years untuk strategy ini
+        loadAvailableYears(strategy);
+        
         // Langsung load semua data tanpa perlu ketik
         loadAllNasabahFromPipeline();
+    }
+    
+    // Function to load available years from database
+    function loadAvailableYears(strategy) {
+        fetch(`{{ route('api.pipeline.years') }}?strategy=${encodeURIComponent(strategy)}`)
+            .then(response => response.json())
+            .then(years => {
+                const yearSelect = document.getElementById('filterYear');
+                
+                // Clear existing options except "Semua Tahun"
+                yearSelect.innerHTML = '<option value="">Semua Tahun</option>';
+                
+                // Add years from database
+                years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading years:', error);
+            });
     }
     
     // Variable to track pagination state
@@ -703,6 +753,8 @@
         const kodeKc = document.getElementById('kode_kc').value;
         const isUnitRmft = document.getElementById('is_unit_rmft').value;
         const strategy = document.getElementById('strategy_pipeline').value;
+        const filterMonth = document.getElementById('filterMonth').value;
+        const filterYear = document.getElementById('filterYear').value;
         
         // Save current state
         currentPage = page;
@@ -719,10 +771,20 @@
         
         currentKodeUker = kodeUkerParam;
         
+        // Build filter text
+        let filterText = strategy;
+        if (filterYear) {
+            filterText += ` - Tahun ${filterYear}`;
+        }
+        if (filterMonth) {
+            const monthNames = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            filterText += ` - ${monthNames[parseInt(filterMonth)]}`;
+        }
+        
         document.getElementById('nasabahList').innerHTML = `
             <div style="text-align: center; padding: 40px; color: #667eea;">
                 <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                <p style="margin-top: 16px;">Memuat data nasabah dari ${strategy}...</p>
+                <p style="margin-top: 16px;">Memuat data nasabah dari ${filterText}...</p>
             </div>
             <style>
                 @keyframes spin {
@@ -732,7 +794,16 @@
             </style>
         `;
         
-        fetch(`{{ route('api.pipeline.search') }}?search=&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}&load_all=1&page=${page}`)
+        // Build URL with filters
+        let url = `{{ route('api.pipeline.search') }}?search=&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}&load_all=1&page=${page}`;
+        if (filterYear) {
+            url += `&year=${filterYear}`;
+        }
+        if (filterMonth) {
+            url += `&month=${filterMonth}`;
+        }
+        
+        fetch(url)
             .then(response => response.json())
             .then(response => {
                 // Handle paginated response
@@ -875,6 +946,10 @@
         const modal = document.getElementById('nasabahModal');
         modal.style.display = 'none';
         document.getElementById('searchNasabah').value = '';
+        
+        // Reset filters
+        document.getElementById('filterYear').value = '';
+        document.getElementById('filterMonth').value = '';
     }
     
     // Unit Modal Functions
@@ -1044,6 +1119,8 @@
             const kodeKc = document.getElementById('kode_kc').value;
             const isUnitRmft = document.getElementById('is_unit_rmft').value;
             const strategy = document.getElementById('strategy_pipeline').value;
+            const filterMonth = document.getElementById('filterMonth').value;
+            const filterYear = document.getElementById('filterYear').value;
             
             // Validasi strategy harus dipilih terlebih dahulu
             if (!strategy) {
@@ -1070,9 +1147,21 @@
                 </div>
             `;
             
-            fetch(`{{ route('api.pipeline.search') }}?search=${searchValue}&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}`)
+            // Build URL with filters
+            let url = `{{ route('api.pipeline.search') }}?search=${searchValue}&kode_kc=${kodeKc}&kode_uker=${kodeUkerParam}&strategy=${encodeURIComponent(strategy)}`;
+            if (filterYear) {
+                url += `&year=${filterYear}`;
+            }
+            if (filterMonth) {
+                url += `&month=${filterMonth}`;
+            }
+            
+            fetch(url)
                 .then(response => response.json())
-                .then(nasabahs => {
+                .then(response => {
+                    // Handle paginated response
+                    const nasabahs = response.data || [];
+                    
                     if (nasabahs.length === 0) {
                         document.getElementById('nasabahList').innerHTML = `
                             <div style="text-align: center; padding: 40px; color: #666;">
@@ -1086,7 +1175,7 @@
                         return;
                     }
                     
-                    displayNasabahList(nasabahs);
+                    displayNasabahList(nasabahs, response);
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -1097,6 +1186,12 @@
                     `;
                 });
         }, 500);
+    }
+    
+    // Function to apply filter changes (month/year)
+    function applyPipelineFilter() {
+        // Reload data dengan filter baru
+        loadAllNasabahFromPipeline(1);
     }
     
     function selectNasabah(nasabah) {

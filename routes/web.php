@@ -72,6 +72,9 @@ Route::middleware(['auth'])->group(function () {
     // API for pipeline search
     Route::get('api/pipeline/search', [NasabahController::class, 'searchPipeline'])->name('api.pipeline.search');
     
+    // API for pipeline available years
+    Route::get('api/pipeline/years', [NasabahController::class, 'getAvailableYears'])->name('api.pipeline.years');
+    
     // API for uker by KC
     Route::get('api/uker/by-kc', [UkerController::class, 'getByKC'])->name('api.uker.by-kc');
     
@@ -99,8 +102,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('nasabah-import', [NasabahController::class, 'import'])->name('nasabah.import');
         Route::delete('nasabah-delete-all', [NasabahController::class, 'deleteAll'])->name('nasabah.delete-all');
         
-        // Akun Routes
+        // Akun Routes - Index untuk manager & admin
         Route::get('akun', [AkunController::class, 'index'])->name('akun.index');
+        
+        // Akun CRUD - Admin Only
+        Route::middleware(['role:admin'])->group(function () {
+            Route::get('akun/create', [AkunController::class, 'create'])->name('akun.create');
+            Route::post('akun', [AkunController::class, 'store'])->name('akun.store');
+            Route::get('akun/{id}/edit', [AkunController::class, 'edit'])->name('akun.edit');
+            Route::put('akun/{id}', [AkunController::class, 'update'])->name('akun.update');
+            Route::delete('akun/{id}', [AkunController::class, 'destroy'])->name('akun.destroy');
+        });
         
         // Uker Routes
         Route::resource('uker', UkerController::class);

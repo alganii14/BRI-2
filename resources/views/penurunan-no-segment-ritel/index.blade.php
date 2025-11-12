@@ -185,8 +185,23 @@
 @endif
 
 <div class="search-box">
-    <form action="{{ route('penurunan-no-segment-ritel.index') }}" method="GET">
-        <input type="text" name="search" placeholder="🔍 Cari berdasarkan nama nasabah, no rekening, CIFNO, atau unit kerja..." value="{{ $search }}">
+    <form action="{{ route('penurunan-no-segment-ritel.index') }}" method="GET" style="display:flex;gap:10px;align-items:center;">
+        <select name="year" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Tahun</option>
+            @foreach($availableYears as $availableYear)
+                <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+            @endforeach
+        </select>
+        <select name="month" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Bulan</option>
+            @for($i=1;$i<=12;$i++)
+                <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+            @endfor
+        </select>
+        <input type="text" name="search" placeholder="🔍 Cari berdasarkan nama nasabah, no rekening, CIFNO, atau unit kerja..." value="{{ $search }}" style="flex:1;">
+        @if($search || request('month') || request('year'))
+            <a href="{{ route('penurunan-no-segment-ritel.index') }}" style="padding:10px 16px;background:#dc3545;color:white;border-radius:6px;text-decoration:none;white-space:nowrap;">Reset</a>
+        @endif
     </form>
 </div>
 

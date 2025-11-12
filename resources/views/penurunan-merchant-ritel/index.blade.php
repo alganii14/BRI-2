@@ -317,8 +317,23 @@
 
 <div class="search-container">
     <form style="flex: 1; display: flex; gap: 12px;">
-        <input type="text" name="search" class="search-input" placeholder="Cari berdasarkan nama nasabah, no rekening, CIFNO, atau unit kerja..." value="{{ $search }}">
+        <select name="year" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Tahun</option>
+            @foreach($availableYears as $availableYear)
+                <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+            @endforeach
+        </select>
+        <select name="month" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Bulan</option>
+            @for($i=1;$i<=12;$i++)
+                <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+            @endfor
+        </select>
+        <input type="text" name="search" class="search-input" placeholder="Cari berdasarkan nama nasabah, no rekening, CIFNO, atau unit kerja..." value="{{ $search }}" style="flex:1;">
         <button type="submit" class="btn-primary">Cari</button>
+        @if($search || request('month') || request('year'))
+            <a href="{{ route('penurunan-merchant-ritel.index') }}" class="btn-primary" style="background:#dc3545;">Reset</a>
+        @endif
     </form>
     <a href="{{ route('penurunan-merchant-ritel.create') }}" class="btn-primary">+ Tambah Data</a>
     <a href="{{ route('penurunan-merchant-ritel.import.form') }}" class="btn-primary btn-import">📥 Import CSV</a>

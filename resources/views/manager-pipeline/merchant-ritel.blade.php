@@ -24,9 +24,21 @@ Data Penurunan Merchant Ritel - KC {{ auth()->user()->nama_kanca }}
     </div>
     <div style="padding: 20px;">
         <form method="GET" action="{{ route('manager.pipeline.merchant-ritel') }}" class="search-box">
+            <select name="year" style="padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Semua Tahun</option>
+                @foreach($availableYears as $availableYear)
+                    <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+                @endforeach
+            </select>
+            <select name="month" style="padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Semua Bulan</option>
+                @for($i=1; $i<=12; $i++)
+                    <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+                @endfor
+            </select>
             <input type="text" name="search" placeholder="Cari berdasarkan CIFNO, Nama, No Rekening, atau Unit..." value="{{ $search ?? '' }}">
             <button type="submit" class="btn-search">🔍 Cari</button>
-            @if($search)<a href="{{ route('manager.pipeline.merchant-ritel') }}" class="btn-search" style="background: #6c757d;">Reset</a>@endif
+            @if($search || request('month') || request('year'))<a href="{{ route('manager.pipeline.merchant-ritel') }}" class="btn-search" style="background: #6c757d;">Reset</a>@endif
         </form>
     </div>
     <div class="table-container">
@@ -83,7 +95,7 @@ Data Penurunan Merchant Ritel - KC {{ auth()->user()->nama_kanca }}
         </div>
     @endif
     <div style="padding: 20px; background: #f9fafb; border-top: 2px solid #e0e0e0;">
-        <p style="margin: 0; color: #666; font-size: 14px;"><strong>Total Data:</strong> {{ $data->total() }} nasabah @if($search) | <strong>Hasil Pencarian:</strong> "{{ $search }}" @endif</p>
+        <p style="margin: 0; color: #666; font-size: 14px;"><strong>Total Data:</strong> {{ $data->total() }} nasabah @if($search) | <strong>Hasil Pencarian:</strong> "{{ $search }}" @endif @if(request('year')) | <strong>Tahun:</strong> {{ request('year') }} @endif @if(request('month')) | <strong>Bulan:</strong> {{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][request('month')] }} @endif</p>
     </div>
 </div>
 @endsection

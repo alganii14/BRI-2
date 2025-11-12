@@ -11,8 +11,16 @@ class PenurunanNoSegmentRitelController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
-        $data = PenurunanNoSegmentRitel::when($search, function($query) use ($search) {
+        $data = PenurunanNoSegmentRitel::when($year, function($query) use ($year) {
+            return $query->whereYear('created_at', $year);
+        })
+        ->when($month, function($query) use ($month) {
+            return $query->whereMonth('created_at', $month);
+        })
+        ->when($search, function($query) use ($search) {
             return $query->where('nama_nasabah', 'like', "%{$search}%")
                         ->orWhere('no_rekening', 'like', "%{$search}%")
                         ->orWhere('cifno', 'like', "%{$search}%")
@@ -21,7 +29,12 @@ class PenurunanNoSegmentRitelController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(20);
         
-        return view('penurunan-no-segment-ritel.index', compact('data', 'search'));
+        $availableYears = PenurunanNoSegmentRitel::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('penurunan-no-segment-ritel.index', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
 
     public function create()

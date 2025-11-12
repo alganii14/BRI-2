@@ -11,6 +11,19 @@ class PenurunanMantriController extends Controller
     public function index(Request $request)
     {
         $query = PenurunanMantri::query();
+        
+        $month = $request->get('month');
+        $year = $request->get('year');
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -24,7 +37,13 @@ class PenurunanMantriController extends Controller
 
         $penurunanMantris = $query->latest()->paginate(20);
         
-        return view('penurunan-mantri.index', compact('penurunanMantris'));
+        // Get available years
+        $availableYears = PenurunanMantri::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('penurunan-mantri.index', compact('penurunanMantris', 'month', 'year', 'availableYears'));
     }
 
     public function create()

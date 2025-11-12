@@ -14,7 +14,20 @@ class PenurunanMerchantMikroController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
+        
         $query = PenurunanMerchantMikro::query();
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
 
         if ($search) {
             $query->where('nama_nasabah', 'like', '%' . $search . '%')
@@ -25,8 +38,14 @@ class PenurunanMerchantMikroController extends Controller
 
         $data = $query->paginate(20);
         $lastPage = $data->lastPage();
+        
+        // Get available years
+        $availableYears = PenurunanMerchantMikro::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
 
-        return view('penurunan-merchant-mikro.index', compact('data', 'lastPage', 'search'));
+        return view('penurunan-merchant-mikro.index', compact('data', 'lastPage', 'search', 'month', 'year', 'availableYears'));
     }
 
     /**

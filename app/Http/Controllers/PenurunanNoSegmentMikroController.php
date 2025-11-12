@@ -16,6 +16,17 @@ class PenurunanNoSegmentMikroController extends Controller
     public function index(Request $request)
     {
         $query = PenurunanNoSegmentMikro::query();
+        
+        $month = $request->get('month');
+        $year = $request->get('year');
+        
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
 
         // Search functionality
         if ($request->has('search')) {
@@ -29,6 +40,13 @@ class PenurunanNoSegmentMikroController extends Controller
         }
 
         $penurunanNoSegmentMikros = $query->latest()->paginate(20);
+        
+        $availableYears = PenurunanNoSegmentMikro::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('penurunan-no-segment-mikro.index', compact('penurunanNoSegmentMikros', 'month', 'year', 'availableYears'));
         
         return view('penurunan-no-segment-mikro.index', compact('penurunanNoSegmentMikros'));
     }

@@ -149,10 +149,22 @@
         </a>
     </div>
     
-    <form method="GET" action="{{ route('top10-qris-per-unit.index') }}" class="search-form">
-        <input type="text" name="search" placeholder="Cari nama merchant, no rek, CIF, Store ID, atau branch..." value="{{ request('search') }}">
+    <form method="GET" action="{{ route('top10-qris-per-unit.index') }}" class="search-form" style="display:flex;gap:10px;align-items:center;">
+        <select name="year" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Tahun</option>
+            @foreach($availableYears as $availableYear)
+                <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+            @endforeach
+        </select>
+        <select name="month" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Bulan</option>
+            @for($i=1;$i<=12;$i++)
+                <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+            @endfor
+        </select>
+        <input type="text" name="search" placeholder="Cari nama merchant, no rek, CIF, Store ID, atau branch..." value="{{ request('search') }}" style="flex:1;">
         <button type="submit" class="btn btn-primary">🔍 Cari</button>
-        @if(request('search'))
+        @if(request('search') || request('month') || request('year'))
             <a href="{{ route('top10-qris-per-unit.index') }}" class="btn btn-warning">✖ Reset</a>
         @endif
     </form>

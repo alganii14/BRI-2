@@ -20,8 +20,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanBrilink::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -34,7 +46,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.brilink', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanBrilink::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.brilink', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan Mantri
@@ -43,8 +62,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanMantri::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -57,7 +88,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.mantri', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanMantri::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.mantri', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan Merchant Mikro
@@ -66,8 +104,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanMerchantMikro::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -80,7 +130,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.merchant-mikro', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanMerchantMikro::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.merchant-mikro', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan Merchant Ritel
@@ -89,8 +146,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanMerchantRitel::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -103,7 +172,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.merchant-ritel', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanMerchantRitel::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.merchant-ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan No Segment Mikro
@@ -112,8 +188,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanNoSegmentMikro::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -126,7 +214,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.no-segment-mikro', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanNoSegmentMikro::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.no-segment-mikro', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan No Segment Ritel
@@ -135,8 +230,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanNoSegmentRitel::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -149,7 +256,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.no-segment-ritel', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanNoSegmentRitel::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.no-segment-ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan SME Ritel
@@ -158,8 +272,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = PenurunanSmeRitel::where('kode_cabang_induk', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -172,7 +298,14 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('manager-pipeline.sme-ritel', compact('data', 'search'));
+        // Get available years
+        $availableYears = PenurunanSmeRitel::where('kode_cabang_induk', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.sme-ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Top 10 QRIS Per Unit
@@ -181,8 +314,20 @@ class ManagerPipelineController extends Controller
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
         $query = Top10QrisPerUnit::where('mainbr', $kodeKc);
+        
+        // Filter by year
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        // Filter by month
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -195,6 +340,13 @@ class ManagerPipelineController extends Controller
         
         $data = $query->orderBy('rank', 'asc')->paginate(20);
         
-        return view('manager-pipeline.qris', compact('data', 'search'));
+        // Get available years
+        $availableYears = Top10QrisPerUnit::where('mainbr', $kodeKc)
+            ->selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('manager-pipeline.qris', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
 }

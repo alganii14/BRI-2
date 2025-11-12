@@ -168,9 +168,21 @@
 
 <div class="search-box">
     <form method="GET" action="{{ route('penurunan-merchant-mikro.index') }}" style="display: flex; gap: 10px; flex: 1;">
-        <input type="text" name="search" placeholder="Cari nama nasabah, no rekening, CIFNO, unit kerja..." value="{{ $search ?? '' }}">
+        <select name="year" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Tahun</option>
+            @foreach($availableYears as $availableYear)
+                <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+            @endforeach
+        </select>
+        <select name="month" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
+            <option value="">Semua Bulan</option>
+            @for($i=1;$i<=12;$i++)
+                <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+            @endfor
+        </select>
+        <input type="text" name="search" placeholder="Cari nama nasabah, no rekening, CIFNO, unit kerja..." value="{{ $search ?? '' }}" style="flex:1;">
         <button type="submit" class="btn btn-primary btn-sm">🔍 Cari</button>
-        @if($search)
+        @if($search || request('month') || request('year'))
             <a href="{{ route('penurunan-merchant-mikro.index') }}" class="btn btn-danger btn-sm">✕ Reset</a>
         @endif
     </form>

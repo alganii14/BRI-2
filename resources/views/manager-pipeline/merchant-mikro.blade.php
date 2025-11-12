@@ -28,9 +28,31 @@ Data Penurunan Merchant Mikro - KC {{ auth()->user()->nama_kanca }}
 
     <div style="padding: 20px;">
         <form method="GET" action="{{ route('manager.pipeline.merchant-mikro') }}" class="search-box">
+            <!-- Filter Bulan dan Tahun -->
+            <select name="year" style="padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Semua Tahun</option>
+                @foreach($availableYears as $availableYear)
+                    <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+                @endforeach
+            </select>
+            <select name="month" style="padding: 10px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white;">
+                <option value="">Semua Bulan</option>
+                <option value="1" {{ request('month') == '1' ? 'selected' : '' }}>Januari</option>
+                <option value="2" {{ request('month') == '2' ? 'selected' : '' }}>Februari</option>
+                <option value="3" {{ request('month') == '3' ? 'selected' : '' }}>Maret</option>
+                <option value="4" {{ request('month') == '4' ? 'selected' : '' }}>April</option>
+                <option value="5" {{ request('month') == '5' ? 'selected' : '' }}>Mei</option>
+                <option value="6" {{ request('month') == '6' ? 'selected' : '' }}>Juni</option>
+                <option value="7" {{ request('month') == '7' ? 'selected' : '' }}>Juli</option>
+                <option value="8" {{ request('month') == '8' ? 'selected' : '' }}>Agustus</option>
+                <option value="9" {{ request('month') == '9' ? 'selected' : '' }}>September</option>
+                <option value="10" {{ request('month') == '10' ? 'selected' : '' }}>Oktober</option>
+                <option value="11" {{ request('month') == '11' ? 'selected' : '' }}>November</option>
+                <option value="12" {{ request('month') == '12' ? 'selected' : '' }}>Desember</option>
+            </select>
             <input type="text" name="search" placeholder="Cari berdasarkan CIFNO, Nama, No Rekening, atau Unit..." value="{{ $search ?? '' }}">
             <button type="submit" class="btn-search">🔍 Cari</button>
-            @if($search)
+            @if($search || request('month') || request('year'))
                 <a href="{{ route('manager.pipeline.merchant-mikro') }}" class="btn-search" style="background: #6c757d;">Reset</a>
             @endif
         </form>
@@ -119,6 +141,11 @@ Data Penurunan Merchant Mikro - KC {{ auth()->user()->nama_kanca }}
         <p style="margin: 0; color: #666; font-size: 14px;">
             <strong>Total Data:</strong> {{ $data->total() }} nasabah
             @if($search) | <strong>Hasil Pencarian:</strong> "{{ $search }}" @endif
+            @if(request('year')) | <strong>Tahun:</strong> {{ request('year') }} @endif
+            @if(request('month'))
+                @php $monthNames = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']; @endphp
+                | <strong>Bulan:</strong> {{ $monthNames[request('month')] }}
+            @endif
         </p>
     </div>
 </div>

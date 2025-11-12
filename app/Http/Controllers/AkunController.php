@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\RMFT;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AkunController extends Controller
 {
@@ -40,5 +43,110 @@ class AkunController extends Controller
         }
         
         return view('akun.index', compact('managers', 'rmfts'));
+    }
+    
+    public function create()
+    {
+        // Hanya admin yang bisa akses
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $rmftList = RMFT::orderBy('completename', 'asc')->get();
+        
+        return view('akun.create', compact('rmftList'));
+    }
+    
+    public function store(Request $request)
+    {
+        // Hanya admin yang bisa akses
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'role' => 'required|in:admin,manager,rmft',
+            'pernr' => 'nullable|string|max:50',
+            'rmft_id' => 'nullable|exists:rmfts,id',
+            'kode_kanca' => 'nullable|string|max:10',
+            'nama_kanca' => 'nullable|string|max:255',
+        ]);
+        
+        $validated['password'] = Hash::make($validated['password']);
+        
+        User::create($validated);
+        
+        return redirect()->route('akun.index')->with('success', 'Akun berhasil ditambahkan!');
+    }
+    
+    public function edit($id)
+    {
+        // Hanya admin yang bisa akses
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $akun = User::findOrFail($id);
+        $rmftList = RMFT::orderBy('completename', 'asc')->get();
+        
+        return view('akun.edit', compact('akun', 'rmftList'));
+    }
+    
+    public function update(Request $request, $id)
+    {
+        // Hanya admin yang bisa akses
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $akun = User::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($akun->id),
+            ],
+            'password' => 'nullable|min:6|confirmed',
+            'role' => 'required|in:admin,manager,rmft',
+            'pernr' => 'nullable|string|max:50',
+            'rmft_id' => 'nullable|exists:rmfts,id',
+            'kode_kanca' => 'nullable|string|max:10',
+            'nama_kanca' => 'nullable|string|max:255',
+        ]);
+        
+        // Update password hanya jika diisi
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+        
+        $akun->update($validated);
+        
+        return redirect()->route('akun.index')->with('success', 'Akun berhasil diperbarui!');
+    }
+    
+    public function destroy($id)
+    {
+        // Hanya admin yang bisa akses
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $akun = User::findOrFail($id);
+        
+        // Tidak boleh menghapus akun sendiri
+        if ($akun->id === auth()->id()) {
+            return redirect()->route('akun.index')->with('error', 'Tidak dapat menghapus akun sendiri!');
+        }
+        
+        $akun->delete();
+        
+        return redirect()->route('akun.index')->with('success', 'Akun berhasil dihapus!');
     }
 }

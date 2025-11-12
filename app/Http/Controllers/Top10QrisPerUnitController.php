@@ -11,8 +11,16 @@ class Top10QrisPerUnitController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $month = $request->get('month');
+        $year = $request->get('year');
         
-        $data = Top10QrisPerUnit::when($search, function($query) use ($search) {
+        $data = Top10QrisPerUnit::when($year, function($query) use ($year) {
+            return $query->whereYear('created_at', $year);
+        })
+        ->when($month, function($query) use ($month) {
+            return $query->whereMonth('created_at', $month);
+        })
+        ->when($search, function($query) use ($search) {
             return $query->where('nama_merchant', 'like', "%{$search}%")
                         ->orWhere('no_rek', 'like', "%{$search}%")
                         ->orWhere('cif', 'like', "%{$search}%")
@@ -22,7 +30,12 @@ class Top10QrisPerUnitController extends Controller
         ->orderBy('rank', 'asc')
         ->paginate(20);
         
-        return view('top10-qris-per-unit.index', compact('data', 'search'));
+        $availableYears = Top10QrisPerUnit::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+        
+        return view('top10-qris-per-unit.index', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
 
     public function create()

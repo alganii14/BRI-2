@@ -4,6 +4,20 @@
 @section('page-title', 'Manajemen Akun')
 
 @section('content')
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <style>
     .table-container {
         overflow-x: auto;
@@ -53,6 +67,11 @@
         color: white;
     }
 
+    .badge-admin {
+        background-color: #ff5722;
+        color: white;
+    }
+
     .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -92,11 +111,68 @@
         font-size: 13px;
         opacity: 0.9;
     }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .btn-sm {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
 </style>
 
 <div class="page-header">
     <h2>Manajemen Akun</h2>
     <p>Kelola akun Manager dan RMFT</p>
+    @if(auth()->user()->isAdmin())
+    <div style="margin-top: 16px;">
+        <a href="{{ route('akun.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Tambah Akun Baru
+        </a>
+    </div>
+    @endif
 </div>
 
 <div class="info-box">
@@ -114,6 +190,67 @@
     </div>
 </div>
 
+@if(auth()->user()->isAdmin())
+<div class="card">
+    <div class="section-title">🔑 Akun Admin</div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>NAMA</th>
+                    <th>EMAIL</th>
+                    <th>ROLE</th>
+                    <th>DIBUAT</th>
+                    <th>AKSI</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $admins = \App\Models\User::where('role', 'admin')->orderBy('name', 'asc')->get();
+                @endphp
+                @forelse($admins as $admin)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $admin->name }}</td>
+                    <td>{{ $admin->email }}</td>
+                    <td><span class="badge badge-admin">ADMIN</span></td>
+                    <td>{{ $admin->created_at->format('d/m/Y H:i') }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ route('akun.edit', $admin->id) }}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            @if($admin->id !== auth()->id())
+                            <form action="{{ route('akun.destroy', $admin->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun admin ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </form>
+                            @else
+                            <button class="btn btn-danger btn-sm" disabled title="Tidak dapat menghapus akun sendiri">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                        Tidak ada akun admin
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
 <div class="card">
     <div class="section-title">👤 Akun Manager</div>
     
@@ -126,6 +263,9 @@
                     <th>EMAIL</th>
                     <th>ROLE</th>
                     <th>DIBUAT</th>
+                    @if(auth()->user()->isAdmin())
+                    <th>AKSI</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -136,10 +276,26 @@
                     <td>{{ $manager->email }}</td>
                     <td><span class="badge badge-manager">MANAGER</span></td>
                     <td>{{ $manager->created_at->format('d/m/Y H:i') }}</td>
+                    @if(auth()->user()->isAdmin())
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ route('akun.edit', $manager->id) }}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form action="{{ route('akun.destroy', $manager->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px; color: #666;">
+                    <td colspan="{{ auth()->user()->isAdmin() ? '6' : '5' }}" style="text-align: center; padding: 40px; color: #666;">
                         Tidak ada akun manager
                     </td>
                 </tr>
@@ -170,6 +326,9 @@
                     <th>KELOMPOK</th>
                     <th>ROLE</th>
                     <th>DIBUAT</th>
+                    @if(auth()->user()->isAdmin())
+                    <th>AKSI</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -183,10 +342,26 @@
                     <td>{{ $rmft->rmftData->kelompok_jabatan ?? '-' }}</td>
                     <td><span class="badge badge-rmft">RMFT</span></td>
                     <td>{{ $rmft->created_at->format('d/m/Y H:i') }}</td>
+                    @if(auth()->user()->isAdmin())
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ route('akun.edit', $rmft->id) }}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form action="{{ route('akun.destroy', $rmft->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                    @endif
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; padding: 40px; color: #666;">
+                    <td colspan="{{ auth()->user()->isAdmin() ? '9' : '8' }}" style="text-align: center; padding: 40px; color: #666;">
                         Tidak ada akun RMFT
                     </td>
                 </tr>
@@ -202,10 +377,4 @@
     @endif
 </div>
 
-<div class="card" style="background-color: #f8f9fa; border-left: 4px solid #667eea;">
-    <h3 style="color: #667eea; margin-bottom: 12px;">ℹ️ Informasi Login</h3>
-    <p style="margin-bottom: 8px; color: #666;"><strong>Manager:</strong> Login menggunakan email dan password</p>
-    <p style="margin-bottom: 8px; color: #666;"><strong>RMFT:</strong> Login menggunakan PERNR atau email</p>
-    <p style="color: #666;"><strong>Password Default:</strong> <code style="background: white; padding: 2px 8px; border-radius: 4px; color: #667eea;">password</code></p>
-</div>
 @endsection

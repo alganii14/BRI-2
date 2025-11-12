@@ -173,10 +173,28 @@
         </a>
     </div>
     
-    <form method="GET" action="{{ route('penurunan-brilink.index') }}" class="search-form">
-        <input type="text" name="search" placeholder="Cari nasabah, rekening, CIFNO, atau unit kerja..." value="{{ request('search') }}">
+    <form method="GET" action="{{ route('penurunan-brilink.index') }}" class="search-form" style="display:flex;gap:10px;align-items:end;">
+        <div style="flex:1;">
+            <select name="year" style="width:100%;padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;">
+                <option value="">Semua Tahun</option>
+                @foreach($availableYears as $availableYear)
+                    <option value="{{ $availableYear }}" {{ request('year') == $availableYear ? 'selected' : '' }}>{{ $availableYear }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="flex:1;">
+            <select name="month" style="width:100%;padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;">
+                <option value="">Semua Bulan</option>
+                @for($i=1;$i<=12;$i++)
+                    <option value="{{ $i }}" {{ request('month') == $i ? 'selected' : '' }}>{{ ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$i] }}</option>
+                @endfor
+            </select>
+        </div>
+        <div style="flex:2;">
+            <input type="text" name="search" placeholder="Cari nasabah, rekening, CIFNO, atau unit kerja..." value="{{ request('search') }}" style="width:100%;">
+        </div>
         <button type="submit" class="btn btn-primary">🔍 Cari</button>
-        @if(request('search'))
+        @if(request('search') || request('month') || request('year'))
             <a href="{{ route('penurunan-brilink.index') }}" class="btn btn-warning">✖ Reset</a>
         @endif
     </form>

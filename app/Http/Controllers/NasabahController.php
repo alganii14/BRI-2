@@ -17,6 +17,59 @@ use Illuminate\Support\Facades\DB;
 class NasabahController extends Controller
 {
     /**
+     * Get available years from pipeline tables
+     */
+    public function getAvailableYears(Request $request)
+    {
+        $strategy = $request->get('strategy');
+        
+        if (!$strategy) {
+            return response()->json([]);
+        }
+        
+        // Tentukan model berdasarkan strategy
+        $model = null;
+        
+        switch ($strategy) {
+            case 'Penurunan Brilink':
+                $model = PenurunanBrilink::class;
+                break;
+            case 'Penurunan Mantri':
+                $model = PenurunanMantri::class;
+                break;
+            case 'Penurunan Merchant Mikro':
+                $model = PenurunanMerchantMikro::class;
+                break;
+            case 'Penurunan Merchant Ritel':
+                $model = PenurunanMerchantRitel::class;
+                break;
+            case 'Penurunan No-Segment Mikro':
+                $model = PenurunanNoSegmentMikro::class;
+                break;
+            case 'Penurunan No-Segment Ritel':
+                $model = PenurunanNoSegmentRitel::class;
+                break;
+            case 'Penurunan SME Ritel':
+                $model = PenurunanSmeRitel::class;
+                break;
+            case 'Top 10 QRIS Per Unit':
+                $model = Top10QrisPerUnit::class;
+                break;
+            default:
+                return response()->json([]);
+        }
+        
+        // Get distinct years from created_at
+        $years = $model::selectRaw('DISTINCT YEAR(created_at) as year')
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
+        
+        return response()->json($years);
+    }
+    
+    /**
      * Search nasabah from pipeline tables based on strategy
      */
     public function searchPipeline(Request $request)
@@ -28,6 +81,8 @@ class NasabahController extends Controller
         $load_all = $request->get('load_all'); // Parameter untuk load semua data
         $page = $request->get('page', 1); // Current page, default 1
         $perPage = 10; // 10 items per page
+        $month = $request->get('month'); // Filter bulan
+        $year = $request->get('year'); // Filter tahun
         
         if (!$strategy) {
             return response()->json([
@@ -83,6 +138,15 @@ class NasabahController extends Controller
         }
         
         $query = $model::query();
+        
+        // Filter berdasarkan bulan dan tahun pada created_at
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+        
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
         
         if ($isQris) {
             // Top 10 QRIS memiliki struktur field berbeda
