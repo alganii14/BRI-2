@@ -235,14 +235,14 @@
                         $kodeUkerValue = $ukerData ? $ukerData->kode_sub_kanca : '';
                     }
                 @endphp
-                <textarea id="kode_uker_display" readonly onclick="openUnitModal()" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f0f8ff; font-family: inherit; cursor: pointer;" placeholder="Klik untuk memilih unit" title="Klik untuk memilih unit di KC ini">{{ $kodeUkerValue }}</textarea>
+                <textarea id="kode_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f5f5f5; font-family: inherit;" placeholder="Kode unit yang dipilih akan muncul di sini">{{ $kodeUkerValue }}</textarea>
                 <input type="hidden" id="kode_uker" name="kode_uker" value="{{ $kodeUkerValue }}" required>
             </div>
 
             <div class="form-group" id="nama_uker_group">
-                <label>NAMA UKER <span id="unit_selector_label" style="color: #667eea;">(Klik untuk pilih unit)</span></label>
+                <label>NAMA UKER <span id="unit_selector_label" style="color: #667eea; display: none;">(Klik untuk pilih unit)</span></label>
                 <div style="position: relative;">
-                    <textarea id="nama_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f0f8ff; font-family: inherit; cursor: pointer;" placeholder="Klik untuk memilih unit" onclick="openUnitModal()">{{ old('nama_uker', optional($rmftData)->uker ?? '') }}</textarea>
+                    <textarea id="nama_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f5f5f5; font-family: inherit;" placeholder="Unit yang dipilih akan muncul di sini">{{ old('nama_uker', optional($rmftData)->uker ?? '') }}</textarea>
                     <input type="hidden" id="nama_uker" name="nama_uker" value="{{ old('nama_uker', optional($rmftData)->uker ?? '') }}" required>
                     <input type="hidden" id="kode_uker_list" name="kode_uker_list" value="">
                     <input type="hidden" id="nama_uker_list" name="nama_uker_list" value="">
@@ -509,29 +509,55 @@
         // Simpan kode KC untuk filter unit
         document.getElementById('rmft_kode_kc').value = option.dataset.kodeKc;
         
-        // Set default value - semua RMFT bisa ganti unit
+        // Set default value
         document.getElementById('nama_uker').value = option.dataset.uker;
         document.getElementById('nama_uker_display').value = option.dataset.uker;
         document.getElementById('kelompok').value = option.dataset.kelompok;
         
-        // Cek apakah RMFT ini adalah Unit RMFT (ukernya mengandung kata "UNIT")
+        // Cek apakah RMFT ini bisa ganti unit
+        // Hanya KC/KK/Unit yang bisa ganti, KCP tidak bisa
         const ukerName = option.dataset.uker.toUpperCase();
-        if (ukerName.includes('UNIT')) {
-            document.getElementById('is_unit_rmft').value = '1';
+        const canSelectUnit = ukerName.includes('UNIT') || ukerName.startsWith('KC ') || ukerName.startsWith('KK ');
+        
+        if (canSelectUnit) {
+            // Enable modal untuk pilih unit
+            document.getElementById('unit_selector_label').style.display = 'inline';
+            document.getElementById('nama_uker_display').style.cursor = 'pointer';
+            document.getElementById('nama_uker_display').style.backgroundColor = '#f0f8ff';
+            document.getElementById('nama_uker_display').title = 'Klik untuk memilih unit di KC ini';
+            document.getElementById('nama_uker_display').onclick = openUnitModal;
+            document.getElementById('kode_uker_display').style.cursor = 'pointer';
+            document.getElementById('kode_uker_display').style.backgroundColor = '#f0f8ff';
+            document.getElementById('kode_uker_display').title = 'Klik untuk memilih unit di KC ini';
+            document.getElementById('kode_uker_display').onclick = openUnitModal;
             
-            // Reset selections untuk Unit RMFT
+            // Set is_unit_rmft jika mengandung UNIT
+            if (ukerName.includes('UNIT')) {
+                document.getElementById('is_unit_rmft').value = '1';
+            } else {
+                document.getElementById('is_unit_rmft').value = '0';
+            }
+            
+            // Reset selections
             selectedUnits = [{
                 kode_sub_kanca: option.dataset.kodeUker,
                 sub_kanca: option.dataset.uker
             }];
         } else {
+            // KCP atau lainnya - readonly, tidak bisa ganti
             document.getElementById('is_unit_rmft').value = '0';
+            document.getElementById('unit_selector_label').style.display = 'none';
+            document.getElementById('nama_uker_display').style.cursor = 'default';
+            document.getElementById('nama_uker_display').style.backgroundColor = '#f5f5f5';
+            document.getElementById('nama_uker_display').title = '';
+            document.getElementById('nama_uker_display').onclick = null;
+            document.getElementById('kode_uker_display').style.cursor = 'default';
+            document.getElementById('kode_uker_display').style.backgroundColor = '#f5f5f5';
+            document.getElementById('kode_uker_display').title = '';
+            document.getElementById('kode_uker_display').onclick = null;
             
-            // Reset selections untuk RMFT biasa
-            selectedUnits = [{
-                kode_sub_kanca: option.dataset.kodeUker,
-                sub_kanca: option.dataset.uker
-            }];
+            // Reset selections
+            selectedUnits = [];
         }
         
         // Clear list fields
@@ -1368,7 +1394,7 @@
         return true;
     }
     
-    // Initialize untuk RMFT - cek apakah Unit RMFT
+    // Initialize untuk RMFT - cek apakah bisa pilih unit
     @if(auth()->user()->isRMFT())
     (function() {
         const rmftUkerName = "{{ optional($rmftData)->uker ?? '' }}";
@@ -1394,10 +1420,31 @@
         document.getElementById('kode_uker_list').value = '';
         document.getElementById('nama_uker_list').value = '';
         
-        // Cek apakah RMFT ini adalah Unit RMFT
-        if (rmftUkerName.toUpperCase().includes('UNIT')) {
-            document.getElementById('is_unit_rmft').value = '1';
+        // Cek apakah RMFT ini bisa ganti unit
+        // Hanya KC/KK/Unit yang bisa ganti, KCP tidak bisa
+        const ukerNameUpper = rmftUkerName.toUpperCase();
+        const canSelectUnit = ukerNameUpper.includes('UNIT') || ukerNameUpper.startsWith('KC ') || ukerNameUpper.startsWith('KK ');
+        
+        if (canSelectUnit) {
+            // Enable modal untuk pilih unit
+            document.getElementById('unit_selector_label').style.display = 'inline';
+            document.getElementById('nama_uker_display').style.cursor = 'pointer';
+            document.getElementById('nama_uker_display').style.backgroundColor = '#f0f8ff';
+            document.getElementById('nama_uker_display').title = 'Klik untuk memilih unit di KC ini';
+            document.getElementById('nama_uker_display').onclick = openUnitModal;
+            document.getElementById('kode_uker_display').style.cursor = 'pointer';
+            document.getElementById('kode_uker_display').style.backgroundColor = '#f0f8ff';
+            document.getElementById('kode_uker_display').title = 'Klik untuk memilih unit di KC ini';
+            document.getElementById('kode_uker_display').onclick = openUnitModal;
+            
+            // Set is_unit_rmft jika mengandung UNIT
+            if (ukerNameUpper.includes('UNIT')) {
+                document.getElementById('is_unit_rmft').value = '1';
+            } else {
+                document.getElementById('is_unit_rmft').value = '0';
+            }
         } else {
+            // KCP atau lainnya - readonly
             document.getElementById('is_unit_rmft').value = '0';
         }
         

@@ -9,7 +9,7 @@ use App\Models\RMFT;
 use App\Models\Uker;
 use Illuminate\Support\Facades\Hash;
 
-class UpdateUsersWithKancaSeeder extends Seeder
+class FreshManagerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,24 +18,14 @@ class UpdateUsersWithKancaSeeder extends Seeder
      */
     public function run()
     {
-        $this->command->info("Updating RMFT users with Kanca data...");
+        $this->command->info("🔄 Refreshing Manager accounts...");
         
-        // Update all RMFT users with their Kanca
-        $rmftUsers = User::where('role', 'rmft')->whereNotNull('rmft_id')->get();
+        // Delete all existing manager accounts
+        $deletedCount = User::where('role', 'manager')->delete();
+        $this->command->info("🗑️  Deleted {$deletedCount} existing Manager accounts");
         
-        foreach ($rmftUsers as $user) {
-            if ($user->rmftData) {
-                $user->update([
-                    'kode_kanca' => $user->rmftData->ukerRelation->kode_kanca ?? null,
-                    'nama_kanca' => $user->rmftData->kanca ?? null,
-                ]);
-            }
-        }
-        
-        $this->command->info("✓ Updated {$rmftUsers->count()} RMFT users with Kanca data");
-        
-        // Create Manager accounts per Kanca
-        $this->command->info("\nCreating Manager accounts per Kanca...");
+        // Create fresh Manager accounts per Kanca
+        $this->command->info("\n📝 Creating fresh Manager accounts per Kanca...");
         
         $kancaList = RMFT::select('kanca')
                         ->distinct()
@@ -73,18 +63,9 @@ class UpdateUsersWithKancaSeeder extends Seeder
                 continue;
             }
             
-            // Check if manager already exists
-            $existingManager = User::where('role', 'manager')
-                                   ->where('nama_kanca', $kanca)
-                                   ->first();
-            
-            if ($existingManager) {
-                $this->command->info("⏭️  Skipping {$kanca} - manager already exists");
-                continue;
-            }
-            
-            // Create manager email
-            $email = 'manager.' . strtolower(str_replace([' ', '.'], '', $kanca)) . '@bri.co.id';
+            // Create manager email (clean format)
+            $cleanKanca = strtolower(str_replace([' ', '.'], '', $kanca));
+            $email = 'manager.' . $cleanKanca . '@bri.co.id';
             
             User::create([
                 'name' => 'Manager ' . $kanca,
@@ -99,8 +80,8 @@ class UpdateUsersWithKancaSeeder extends Seeder
             $created++;
         }
         
-        $this->command->info("\n✅ Successfully created {$created} Manager accounts");
-        $this->command->info("\n📋 Manager accounts created with:");
+        $this->command->info("\n✅ Successfully created {$created} fresh Manager accounts");
+        $this->command->info("\n📋 Login Credentials:");
         $this->command->info("   Email format: manager.[kanca]@bri.co.id");
         $this->command->info("   Password: password");
         $this->command->info("\nExample:");
