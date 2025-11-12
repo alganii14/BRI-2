@@ -1133,7 +1133,7 @@
         }
         
         // Set nilai delta ke field RP/Jumlah
-        document.getElementById('rp_jumlah').value = deltaValue;
+        // document.getElementById('rp_jumlah').value = deltaValue; // Disabled auto-fill
         
         // Set segmen berdasarkan strategy yang dipilih
         const strategy = document.getElementById('strategy_pipeline').value;

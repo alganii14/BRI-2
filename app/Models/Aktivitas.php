@@ -36,6 +36,8 @@ class Aktivitas extends Model
         'nominal_realisasi',
         'keterangan_realisasi',
         'tanggal_feedback',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [

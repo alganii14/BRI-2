@@ -302,10 +302,19 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                         <span class="badge badge-warning">Belum</span>
                         @elseif($item->status_realisasi == 'tercapai')
                         <span class="badge badge-success">✅ Tercapai</span>
+                        @if($item->latitude && $item->longitude)
+                        <span class="badge" style="background-color: #2196F3; color: white; margin-left: 4px;" title="Lokasi tersedia">📍</span>
+                        @endif
                         @elseif($item->status_realisasi == 'tidak_tercapai')
                         <span class="badge badge-danger">❌ Tidak Tercapai</span>
+                        @if($item->latitude && $item->longitude)
+                        <span class="badge" style="background-color: #2196F3; color: white; margin-left: 4px;" title="Lokasi tersedia">📍</span>
+                        @endif
                         @elseif($item->status_realisasi == 'lebih')
                         <span class="badge badge-info">🎉 Melebihi</span>
+                        @if($item->latitude && $item->longitude)
+                        <span class="badge" style="background-color: #2196F3; color: white; margin-left: 4px;" title="Lokasi tersedia">📍</span>
+                        @endif
                         @endif
                     </td>
                     <td>

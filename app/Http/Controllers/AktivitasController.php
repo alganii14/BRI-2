@@ -426,6 +426,8 @@ class AktivitasController extends Controller
             'status_realisasi' => 'required|in:tercapai,tidak_tercapai,lebih',
             'nominal_realisasi' => 'required_if:status_realisasi,tidak_tercapai,lebih|nullable|string',
             'keterangan_realisasi' => 'nullable|string',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
         
         // Jika tercapai, gunakan rp_jumlah sebagai nominal_realisasi

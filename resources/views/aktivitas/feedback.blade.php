@@ -186,6 +186,54 @@
     .target-info strong {
         font-size: 18px;
     }
+
+    .location-info {
+        background-color: #e7f3ff;
+        border: 1px solid #2196F3;
+        color: #0d47a1;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .location-info.error {
+        background-color: #ffebee;
+        border-color: #f44336;
+        color: #c62828;
+    }
+
+    .location-info.success {
+        background-color: #e8f5e9;
+        border-color: #4caf50;
+        color: #2e7d32;
+    }
+
+    .location-btn {
+        background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .location-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .location-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
 </style>
 
 @if ($errors->any())
@@ -225,8 +273,19 @@
         <p style="margin: 8px 0 0 0;">Apakah target ini tercapai?</p>
     </div>
 
-    <form action="{{ route('aktivitas.storeFeedback', $aktivitas->id) }}" method="POST">
+    <div class="location-info" id="location-info">
+        <strong>📍 Lokasi Anda</strong>
+        <p style="margin: 8px 0 0 0;" id="location-status">Klik tombol di bawah untuk mengambil lokasi Anda</p>
+        <button type="button" class="location-btn" id="get-location-btn" onclick="getLocation()">
+            <span>📍</span> Ambil Lokasi Saya
+        </button>
+    </div>
+
+    <form action="{{ route('aktivitas.storeFeedback', $aktivitas->id) }}" method="POST" id="feedback-form">
         @csrf
+
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
 
         <div class="form-group">
             <label>Status Realisasi <span class="required">*</span></label>
@@ -269,6 +328,78 @@
 </div>
 
 <script>
+    let locationObtained = false;
+
+    function getLocation() {
+        const btn = document.getElementById('get-location-btn');
+        const locationInfo = document.getElementById('location-info');
+        const locationStatus = document.getElementById('location-status');
+        
+        if (!navigator.geolocation) {
+            locationInfo.classList.add('error');
+            locationStatus.textContent = '❌ Browser Anda tidak mendukung geolokasi';
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Mengambil lokasi...';
+        locationStatus.textContent = 'Mohon tunggu, sedang mengambil lokasi Anda...';
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                
+                document.getElementById('latitude').value = latitude;
+                document.getElementById('longitude').value = longitude;
+                
+                locationInfo.classList.remove('error');
+                locationInfo.classList.add('success');
+                locationStatus.innerHTML = `✅ Lokasi berhasil didapatkan!<br>
+                    <small>Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}</small>`;
+                btn.innerHTML = '<span>✓</span> Lokasi Tersimpan';
+                btn.style.background = '#4caf50';
+                locationObtained = true;
+            },
+            function(error) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>📍</span> Coba Lagi';
+                locationInfo.classList.add('error');
+                
+                let errorMsg = '';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = '❌ Anda menolak permintaan lokasi. Mohon izinkan akses lokasi di browser Anda.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = '❌ Informasi lokasi tidak tersedia.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = '❌ Waktu permintaan lokasi habis. Coba lagi.';
+                        break;
+                    default:
+                        errorMsg = '❌ Terjadi kesalahan saat mengambil lokasi.';
+                }
+                locationStatus.textContent = errorMsg;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    }
+
+    // Validasi form sebelum submit
+    document.getElementById('feedback-form').addEventListener('submit', function(e) {
+        if (!locationObtained) {
+            e.preventDefault();
+            alert('⚠️ Mohon ambil lokasi Anda terlebih dahulu sebelum mengirim feedback!');
+            document.getElementById('location-info').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+    });
+
     function selectStatus(status, element) {
         // Remove selected class from all options
         document.querySelectorAll('.radio-option').forEach(opt => {

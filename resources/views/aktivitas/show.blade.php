@@ -342,6 +342,16 @@
                 <div class="detail-value">{{ $aktivitas->keterangan_realisasi }}</div>
             </div>
             @endif
+
+            @if($aktivitas->latitude && $aktivitas->longitude)
+            <div class="detail-item" style="margin-top: 15px;">
+                <div class="detail-label">📍 Lokasi Feedback</div>
+                <div class="detail-value">
+                    Latitude: {{ $aktivitas->latitude }}, Longitude: {{ $aktivitas->longitude }}
+                </div>
+                <div id="map" style="width: 100%; height: 300px; border-radius: 8px; margin-top: 10px; border: 2px solid #e0e0e0;"></div>
+            </div>
+            @endif
         </div>
 
         <!-- Action Buttons -->
@@ -396,3 +406,37 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@if($aktivitas->latitude && $aktivitas->longitude)
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        const map = L.map('map').setView([{{ $aktivitas->latitude }}, {{ $aktivitas->longitude }}], 15);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Add marker
+        const marker = L.marker([{{ $aktivitas->latitude }}, {{ $aktivitas->longitude }}]).addTo(map);
+        
+        // Add popup to marker
+        marker.bindPopup(`
+            <div style="text-align: center;">
+                <strong>📍 Lokasi Feedback</strong><br>
+                <small>{{ $aktivitas->nama_rmft }}</small><br>
+                <small>{{ $aktivitas->tanggal_feedback ? \Carbon\Carbon::parse($aktivitas->tanggal_feedback)->format('d M Y H:i') : '' }}</small>
+            </div>
+        `).openPopup();
+    });
+</script>
+@endif
+@endpush
