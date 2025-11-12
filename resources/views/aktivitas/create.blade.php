@@ -126,7 +126,30 @@
                 @foreach($rmftList as $rmft)
                     @php
                         $rmftRecord = $rmft->rmftData;
-                        $ukerRecord = $rmftRecord ? $rmftRecord->ukerRelation : null;
+                        $ukerRecord = null;
+                        $kodeUkerValue = '';
+                        
+                        if ($rmftRecord) {
+                            // Cari uker berdasarkan nama uker yang EXACT dari field 'uker' di rmfts
+                            if ($rmftRecord->uker) {
+                                $ukerRecord = \App\Models\Uker::where('sub_kanca', $rmftRecord->uker)->first();
+                            }
+                            
+                            // Jika tidak ketemu, coba cari berdasarkan kanca
+                            if (!$ukerRecord && $rmftRecord->kanca) {
+                                $ukerRecord = \App\Models\Uker::where('kanca', $rmftRecord->kanca)->first();
+                            }
+                            
+                            // Fallback ke relasi jika ada
+                            if (!$ukerRecord) {
+                                $ukerRecord = $rmftRecord->ukerRelation;
+                            }
+                            
+                            // Set kode uker - prioritaskan dari uker yang ketemu berdasarkan nama
+                            if ($ukerRecord) {
+                                $kodeUkerValue = $ukerRecord->kode_sub_kanca;
+                            }
+                        }
                     @endphp
                 <option value="{{ $rmft->id }}" 
                         data-rmft-id="{{ $rmftRecord ? $rmftRecord->id : '' }}"
@@ -134,8 +157,8 @@
                         data-pernr="{{ $rmft->pernr }}"
                         data-kode-kc="{{ $ukerRecord ? $ukerRecord->kode_kanca : '' }}"
                         data-kanca="{{ $rmftRecord ? $rmftRecord->kanca : '' }}"
-                        data-kode-uker="{{ $ukerRecord ? $ukerRecord->kode_sub_kanca : '' }}"
-                        data-uker="{{ $ukerRecord ? $ukerRecord->sub_kanca : '' }}"
+                        data-kode-uker="{{ $kodeUkerValue }}"
+                        data-uker="{{ $rmftRecord ? $rmftRecord->uker : '' }}"
                         data-kelompok="{{ $rmftRecord ? $rmftRecord->kelompok_jabatan : '' }}">
                     {{ $rmft->name }} ({{ $rmft->pernr }}) - {{ $rmftRecord ? $rmftRecord->kanca : 'N/A' }}
                 </option>
@@ -172,7 +195,22 @@
 
             <div class="form-group">
                 <label>KODE KC</label>
-                <input type="text" id="kode_kc" name="kode_kc" value="{{ old('kode_kc', optional($rmftData)->ukerRelation->kode_kanca ?? '') }}" readonly required>
+                @php
+                    $kodeKcValue = old('kode_kc');
+                    if (!$kodeKcValue && $rmftData) {
+                        // Cari uker berdasarkan nama uker yang EXACT
+                        $ukerData = null;
+                        if ($rmftData->uker) {
+                            $ukerData = \App\Models\Uker::where('sub_kanca', $rmftData->uker)->first();
+                        }
+                        // Fallback ke kanca jika tidak ketemu
+                        if (!$ukerData && $rmftData->kanca) {
+                            $ukerData = \App\Models\Uker::where('kanca', $rmftData->kanca)->first();
+                        }
+                        $kodeKcValue = $ukerData ? $ukerData->kode_kanca : '';
+                    }
+                @endphp
+                <input type="text" id="kode_kc" name="kode_kc" value="{{ $kodeKcValue }}" readonly required>
             </div>
 
             <div class="form-group">
@@ -182,15 +220,30 @@
 
             <div class="form-group">
                 <label>KODE UKER</label>
-                <textarea id="kode_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f5f5f5; font-family: inherit;" placeholder="Kode unit yang dipilih akan muncul di sini">{{ old('kode_uker', optional($rmftData)->ukerRelation->kode_sub_kanca ?? '') }}</textarea>
-                <input type="hidden" id="kode_uker" name="kode_uker" value="{{ old('kode_uker', optional($rmftData)->ukerRelation->kode_sub_kanca ?? '') }}" required>
+                @php
+                    $kodeUkerValue = old('kode_uker');
+                    if (!$kodeUkerValue && $rmftData) {
+                        // Cari uker berdasarkan nama uker yang EXACT
+                        $ukerData = null;
+                        if ($rmftData->uker) {
+                            $ukerData = \App\Models\Uker::where('sub_kanca', $rmftData->uker)->first();
+                        }
+                        // Fallback ke kanca jika tidak ketemu
+                        if (!$ukerData && $rmftData->kanca) {
+                            $ukerData = \App\Models\Uker::where('kanca', $rmftData->kanca)->first();
+                        }
+                        $kodeUkerValue = $ukerData ? $ukerData->kode_sub_kanca : '';
+                    }
+                @endphp
+                <textarea id="kode_uker_display" readonly onclick="openUnitModal()" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f0f8ff; font-family: inherit; cursor: pointer;" placeholder="Klik untuk memilih unit" title="Klik untuk memilih unit di KC ini">{{ $kodeUkerValue }}</textarea>
+                <input type="hidden" id="kode_uker" name="kode_uker" value="{{ $kodeUkerValue }}" required>
             </div>
 
             <div class="form-group" id="nama_uker_group">
-                <label>NAMA UKER <span id="unit_selector_label" style="color: #667eea; display: none;">(Klik untuk pilih unit)</span></label>
+                <label>NAMA UKER <span id="unit_selector_label" style="color: #667eea;">(Klik untuk pilih unit)</span></label>
                 <div style="position: relative;">
-                    <textarea id="nama_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f5f5f5; font-family: inherit;" placeholder="Unit yang dipilih akan muncul di sini">{{ old('nama_uker', optional($rmftData)->ukerRelation->sub_kanca ?? '') }}</textarea>
-                    <input type="hidden" id="nama_uker" name="nama_uker" value="{{ old('nama_uker', optional($rmftData)->ukerRelation->sub_kanca ?? '') }}" required>
+                    <textarea id="nama_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f0f8ff; font-family: inherit; cursor: pointer;" placeholder="Klik untuk memilih unit" onclick="openUnitModal()">{{ old('nama_uker', optional($rmftData)->uker ?? '') }}</textarea>
+                    <input type="hidden" id="nama_uker" name="nama_uker" value="{{ old('nama_uker', optional($rmftData)->uker ?? '') }}" required>
                     <input type="hidden" id="kode_uker_list" name="kode_uker_list" value="">
                     <input type="hidden" id="nama_uker_list" name="nama_uker_list" value="">
                 </div>
@@ -432,11 +485,7 @@
             document.getElementById('nama_uker_display').value = '';
             document.getElementById('kelompok').value = '';
             document.getElementById('is_unit_rmft').value = '0';
-            document.getElementById('unit_selector_label').style.display = 'none';
-            document.getElementById('nama_uker_display').style.cursor = 'text';
-            document.getElementById('nama_uker_display').onclick = null;
-            document.getElementById('kode_uker_display').style.cursor = 'text';
-            document.getElementById('kode_uker_display').onclick = null;
+            document.getElementById('rmft_kode_kc').value = '';
             
             // Clear list fields
             document.getElementById('kode_uker_list').value = '';
@@ -460,54 +509,34 @@
         // Simpan kode KC untuk filter unit
         document.getElementById('rmft_kode_kc').value = option.dataset.kodeKc;
         
+        // Set default value - semua RMFT bisa ganti unit
+        document.getElementById('nama_uker').value = option.dataset.uker;
+        document.getElementById('nama_uker_display').value = option.dataset.uker;
+        document.getElementById('kelompok').value = option.dataset.kelompok;
+        
         // Cek apakah RMFT ini adalah Unit RMFT (ukernya mengandung kata "UNIT")
         const ukerName = option.dataset.uker.toUpperCase();
         if (ukerName.includes('UNIT')) {
             document.getElementById('is_unit_rmft').value = '1';
-            document.getElementById('unit_selector_label').style.display = 'inline';
-            document.getElementById('nama_uker_display').style.cursor = 'pointer';
-            document.getElementById('nama_uker_display').style.backgroundColor = '#f0f8ff';
-            document.getElementById('nama_uker_display').title = 'Klik untuk memilih unit di KC ini';
-            document.getElementById('nama_uker_display').onclick = openUnitModal;
-            document.getElementById('kode_uker_display').style.cursor = 'pointer';
-            document.getElementById('kode_uker_display').style.backgroundColor = '#f0f8ff';
-            document.getElementById('kode_uker_display').title = 'Klik untuk memilih unit di KC ini';
-            document.getElementById('kode_uker_display').onclick = openUnitModal;
             
-            // Set default value
-            document.getElementById('nama_uker').value = option.dataset.uker;
-            document.getElementById('nama_uker_display').value = option.dataset.uker;
-            document.getElementById('kelompok').value = option.dataset.kelompok;
-            
-            // Clear list fields - user harus pilih unit secara manual
-            document.getElementById('kode_uker_list').value = '';
-            document.getElementById('nama_uker_list').value = '';
-            
-            // Reset selections
+            // Reset selections untuk Unit RMFT
             selectedUnits = [{
                 kode_sub_kanca: option.dataset.kodeUker,
                 sub_kanca: option.dataset.uker
             }];
         } else {
             document.getElementById('is_unit_rmft').value = '0';
-            document.getElementById('unit_selector_label').style.display = 'none';
-            document.getElementById('nama_uker_display').style.cursor = 'text';
-            document.getElementById('nama_uker_display').style.backgroundColor = '#f5f5f5';
-            document.getElementById('nama_uker_display').title = '';
-            document.getElementById('nama_uker_display').onclick = null;
-            document.getElementById('kode_uker_display').style.cursor = 'text';
-            document.getElementById('kode_uker_display').style.backgroundColor = '#f5f5f5';
-            document.getElementById('kode_uker_display').title = '';
-            document.getElementById('kode_uker_display').onclick = null;
-            document.getElementById('nama_uker').value = option.dataset.uker;
-            document.getElementById('nama_uker_display').value = option.dataset.uker;
-            document.getElementById('kelompok').value = option.dataset.kelompok;
             
-            // Clear list fields untuk RMFT biasa
-            document.getElementById('kode_uker_list').value = '';
-            document.getElementById('nama_uker_list').value = '';
-            selectedUnits = [];
+            // Reset selections untuk RMFT biasa
+            selectedUnits = [{
+                kode_sub_kanca: option.dataset.kodeUker,
+                sub_kanca: option.dataset.uker
+            }];
         }
+        
+        // Clear list fields
+        document.getElementById('kode_uker_list').value = '';
+        document.getElementById('nama_uker_list').value = '';
         
         // Enable Data Aktivitas fields
         enableAktivitasFields();
@@ -957,11 +986,6 @@
     let selectedUnits = [];
     
     function openUnitModal() {
-        const isUnitRmft = document.getElementById('is_unit_rmft').value;
-        if (isUnitRmft !== '1') {
-            return;
-        }
-        
         const kodeKc = document.getElementById('rmft_kode_kc').value;
         const namaKc = document.getElementById('nama_kc').value;
         
@@ -1347,46 +1371,38 @@
     // Initialize untuk RMFT - cek apakah Unit RMFT
     @if(auth()->user()->isRMFT())
     (function() {
-        const rmftUkerName = "{{ optional($rmftData)->ukerRelation->sub_kanca ?? '' }}";
-        const kodeKc = "{{ optional($rmftData)->ukerRelation->kode_kanca ?? '' }}";
+        const rmftUkerName = "{{ optional($rmftData)->uker ?? '' }}";
+        @php
+            $ukerData = null;
+            if ($rmftData) {
+                // Cari berdasarkan nama uker yang EXACT
+                if ($rmftData->uker) {
+                    $ukerData = \App\Models\Uker::where('sub_kanca', $rmftData->uker)->first();
+                }
+                // Fallback ke kanca
+                if (!$ukerData && $rmftData->kanca) {
+                    $ukerData = \App\Models\Uker::where('kanca', $rmftData->kanca)->first();
+                }
+            }
+        @endphp
+        const kodeKc = "{{ $ukerData ? $ukerData->kode_kanca : '' }}";
         
+        // Set kode KC untuk modal
+        document.getElementById('rmft_kode_kc').value = kodeKc;
+        
+        // Clear list fields
+        document.getElementById('kode_uker_list').value = '';
+        document.getElementById('nama_uker_list').value = '';
+        
+        // Cek apakah RMFT ini adalah Unit RMFT
         if (rmftUkerName.toUpperCase().includes('UNIT')) {
-            // Set sebagai Unit RMFT
             document.getElementById('is_unit_rmft').value = '1';
-            document.getElementById('unit_selector_label').style.display = 'inline';
-            document.getElementById('rmft_kode_kc').value = kodeKc;
-            
-            // Clear list fields - user harus pilih unit secara manual
-            document.getElementById('kode_uker_list').value = '';
-            document.getElementById('nama_uker_list').value = '';
-            
-            // Enable klik untuk membuka modal unit
-            const namaUkerDisplay = document.getElementById('nama_uker_display');
-            const kodeUkerDisplay = document.getElementById('kode_uker_display');
-            
-            namaUkerDisplay.style.cursor = 'pointer';
-            namaUkerDisplay.onclick = function() {
-                openUnitModal();
-            };
-            
-            kodeUkerDisplay.style.cursor = 'pointer';
-            kodeUkerDisplay.onclick = function() {
-                openUnitModal();
-            };
-            
-            // Enable aktivitas fields
-            enableAktivitasFields();
         } else {
-            // RMFT biasa (bukan Unit RMFT)
             document.getElementById('is_unit_rmft').value = '0';
-            
-            // Pastikan list fields kosong untuk RMFT biasa
-            document.getElementById('kode_uker_list').value = '';
-            document.getElementById('nama_uker_list').value = '';
-            
-            // Enable aktivitas fields
-            enableAktivitasFields();
         }
+        
+        // Enable aktivitas fields
+        enableAktivitasFields();
     })();
     @endif
     
