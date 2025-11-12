@@ -346,28 +346,28 @@
 
 <!-- Modal Unit Selection -->
 <div id="unitModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-shrink: 0;">
             <h3 style="margin: 0; color: white;">Pilih Unit di <span id="modal_kc_name"></span></h3>
             <button onclick="closeUnitModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">&times;</button>
         </div>
         
-        <div style="padding: 20px;">
-            <div style="margin-bottom: 15px;">
+        <div style="padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
+            <div style="margin-bottom: 15px; flex-shrink: 0;">
                 <input type="text" id="searchUnit" placeholder="Cari nama unit..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;" onkeyup="filterUnitList()">
             </div>
             
-            <div id="selected_count" style="margin-bottom: 10px; padding: 8px 12px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600;">
+            <div id="selected_count" style="margin-bottom: 10px; padding: 8px 12px; background: #e3f2fd; border-radius: 6px; color: #1976d2; font-size: 13px; font-weight: 600; flex-shrink: 0;">
                 <span id="count_text">Belum ada unit dipilih</span>
             </div>
             
-            <div id="unitList" style="max-height: 350px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px;">
+            <div id="unitList" style="flex: 1; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; min-height: 200px; max-height: 350px;">
                 <div style="text-align: center; padding: 40px; color: #666;">
                     <p>Memuat daftar unit...</p>
                 </div>
             </div>
             
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;">
                 <button onclick="closeUnitModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">Batal</button>
                 <button onclick="applySelectedUnits()" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Terapkan Pilihan</button>
             </div>
@@ -785,43 +785,49 @@
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 15%;">CIFNO</th>';
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Nama</th>';
         html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Unit</th>';
-        html += '<th style="padding: 10px; text-align: right; font-size: 13px; width: 20%;">Saldo</th>';
+        html += '<th style="padding: 10px; text-align: right; font-size: 13px; width: 20%;">Delta</th>';
         html += '<th style="padding: 10px; text-align: center; font-size: 13px; width: 15%;">Aksi</th>';
         html += '</tr></thead><tbody>';
         
         nasabahs.forEach(nasabah => {
-            // Pastikan saldo adalah number yang benar
-            let saldoValue = 0;
+            // Ambil nilai delta langsung dari backend
+            let deltaValue = 0;
             
-            // Ambil nilai saldo - pastikan sebagai number
-            if (typeof nasabah.saldo_terupdate === 'number') {
-                saldoValue = nasabah.saldo_terupdate;
-            } else if (typeof nasabah.saldo_terupdate === 'string') {
-                saldoValue = parseFloat(nasabah.saldo_terupdate.replace(/,/g, ''));
-            } else if (nasabah.saldo_last_eom) {
-                if (typeof nasabah.saldo_last_eom === 'number') {
-                    saldoValue = nasabah.saldo_last_eom;
-                } else {
-                    saldoValue = parseFloat(nasabah.saldo_last_eom.replace(/,/g, ''));
+            if (nasabah.delta !== undefined && nasabah.delta !== null) {
+                // Gunakan nilai delta jika tersedia
+                if (typeof nasabah.delta === 'number') {
+                    deltaValue = nasabah.delta;
+                } else if (typeof nasabah.delta === 'string') {
+                    deltaValue = parseInt(nasabah.delta.replace(/[.,]/g, ''));
+                }
+            } else {
+                // Fallback ke saldo_terupdate jika delta tidak ada
+                if (typeof nasabah.saldo_terupdate === 'number') {
+                    deltaValue = nasabah.saldo_terupdate;
+                } else if (typeof nasabah.saldo_terupdate === 'string') {
+                    deltaValue = parseInt(nasabah.saldo_terupdate.replace(/[.,]/g, ''));
+                } else if (nasabah.saldo_last_eom) {
+                    if (typeof nasabah.saldo_last_eom === 'number') {
+                        deltaValue = nasabah.saldo_last_eom;
+                    } else {
+                        deltaValue = parseInt(nasabah.saldo_last_eom.replace(/[.,]/g, ''));
+                    }
                 }
             }
             
-            // Pastikan saldoValue adalah number yang valid
-            if (isNaN(saldoValue)) {
-                saldoValue = 0;
+            // Pastikan deltaValue adalah number yang valid
+            if (isNaN(deltaValue)) {
+                deltaValue = 0;
             }
             
-            // Format dengan pemisah ribuan dan desimal
-            const saldoFormatted = new Intl.NumberFormat('id-ID', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(saldoValue);
+            // Format dengan pemisah ribuan tanpa desimal
+            const saldoFormatted = new Intl.NumberFormat('id-ID').format(deltaValue);
             
             html += '<tr style="border-bottom: 1px solid #eee; transition: background 0.2s;" onmouseenter="this.style.background=\'#f8f9fa\'" onmouseleave="this.style.background=\'white\'">';
             html += `<td style="padding: 10px; font-weight: 600; font-family: monospace;">${nasabah.cifno || '-'}</td>`;
             html += `<td style="padding: 10px;">${nasabah.nama_nasabah}</td>`;
             html += `<td style="padding: 10px; font-size: 12px; color: #666;">${nasabah.unit_kerja || '-'}</td>`;
-            html += `<td style="padding: 10px; font-size: 13px; text-align: right; color: ${saldoValue > 0 ? '#2e7d32' : '#d32f2f'}; font-weight: 600; font-family: monospace;">Rp ${saldoFormatted}</td>`;
+            html += `<td style="padding: 10px; font-size: 13px; text-align: right; color: ${deltaValue > 0 ? '#2e7d32' : '#d32f2f'}; font-weight: 600; font-family: monospace;">Rp ${saldoFormatted}</td>`;
             html += `<td style="padding: 10px; text-align: center;">
                 <button onclick='selectNasabah(${JSON.stringify(nasabah)})' style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.05)'" onmouseleave="this.style.transform='scale(1)'">Pilih</button>
             </td>`;
@@ -1096,6 +1102,38 @@
     function selectNasabah(nasabah) {
         document.getElementById('norek').value = nasabah.cifno || nasabah.norek;
         document.getElementById('nama_nasabah').value = nasabah.nama_nasabah;
+        
+        // Ambil nilai delta langsung dari backend
+        let deltaValue = 0;
+        
+        if (nasabah.delta !== undefined && nasabah.delta !== null) {
+            // Gunakan nilai delta jika tersedia
+            if (typeof nasabah.delta === 'number') {
+                deltaValue = nasabah.delta;
+            } else if (typeof nasabah.delta === 'string') {
+                deltaValue = parseInt(nasabah.delta.replace(/[.,]/g, ''));
+            }
+        } else {
+            // Fallback ke saldo_terupdate jika delta tidak ada
+            if (typeof nasabah.saldo_terupdate === 'number') {
+                deltaValue = nasabah.saldo_terupdate;
+            } else if (typeof nasabah.saldo_terupdate === 'string') {
+                deltaValue = parseInt(nasabah.saldo_terupdate.replace(/[.,]/g, ''));
+            } else if (nasabah.saldo_last_eom) {
+                if (typeof nasabah.saldo_last_eom === 'number') {
+                    deltaValue = nasabah.saldo_last_eom;
+                } else {
+                    deltaValue = parseInt(nasabah.saldo_last_eom.replace(/[.,]/g, ''));
+                }
+            }
+        }
+        
+        if (isNaN(deltaValue)) {
+            deltaValue = 0;
+        }
+        
+        // Set nilai delta ke field RP/Jumlah
+        document.getElementById('rp_jumlah').value = deltaValue;
         
         // Set segmen berdasarkan strategy yang dipilih
         const strategy = document.getElementById('strategy_pipeline').value;

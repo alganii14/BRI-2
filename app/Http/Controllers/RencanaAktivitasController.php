@@ -50,22 +50,24 @@ class RencanaAktivitasController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\RencanaAktivitas  $rencanaAktivitas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(RencanaAktivitas $rencanaAktivitas)
+    public function show($id)
     {
+        $rencanaAktivitas = RencanaAktivitas::findOrFail($id);
         return view('rencana-aktivitas.show', compact('rencanaAktivitas'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\RencanaAktivitas  $rencanaAktivitas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(RencanaAktivitas $rencanaAktivitas)
+    public function edit($id)
     {
+        $rencanaAktivitas = RencanaAktivitas::findOrFail($id);
         return view('rencana-aktivitas.edit', compact('rencanaAktivitas'));
     }
 
@@ -73,11 +75,13 @@ class RencanaAktivitasController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\RencanaAktivitas  $rencanaAktivitas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RencanaAktivitas $rencanaAktivitas)
+    public function update(Request $request, $id)
     {
+        $rencanaAktivitas = RencanaAktivitas::findOrFail($id);
+        
         $validated = $request->validate([
             'nama_rencana' => 'required|string|max:255',
             'is_active' => 'boolean',
@@ -92,14 +96,49 @@ class RencanaAktivitasController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\RencanaAktivitas  $rencanaAktivitas
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RencanaAktivitas $rencanaAktivitas)
+    public function destroy($id)
     {
-        $rencanaAktivitas->delete();
+        try {
+            // Manual find by ID
+            $rencanaAktivitas = RencanaAktivitas::findOrFail($id);
 
-        return redirect()->route('rencana-aktivitas.index')
-            ->with('success', 'Rencana Aktivitas berhasil dihapus!');
+            // Log untuk debugging
+            \Log::info('Attempting to delete Rencana Aktivitas', [
+                'id' => $rencanaAktivitas->id,
+                'nama_rencana' => $rencanaAktivitas->nama_rencana,
+                'related_aktivitas_count' => $rencanaAktivitas->aktivitas()->count()
+            ]);
+
+            // Cek apakah ada aktivitas yang terkait
+            if ($rencanaAktivitas->aktivitas()->count() > 0) {
+                \Log::warning('Cannot delete Rencana Aktivitas - has related aktivitas', [
+                    'id' => $rencanaAktivitas->id
+                ]);
+                return redirect()->route('rencana-aktivitas.index')
+                    ->with('error', 'Rencana Aktivitas tidak dapat dihapus karena masih digunakan di ' . $rencanaAktivitas->aktivitas()->count() . ' aktivitas!');
+            }
+
+            $nama = $rencanaAktivitas->nama_rencana;
+            $rencanaAktivitas->delete();
+
+            \Log::info('Successfully deleted Rencana Aktivitas', [
+                'id' => $id,
+                'nama_rencana' => $nama
+            ]);
+
+            return redirect()->route('rencana-aktivitas.index')
+                ->with('success', 'Rencana Aktivitas "' . $nama . '" berhasil dihapus!');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting Rencana Aktivitas', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('rencana-aktivitas.index')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

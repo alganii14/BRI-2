@@ -120,7 +120,11 @@ class NasabahController extends Controller
                             ->orderBy('cif', 'asc')
                             ->get()
                             ->map(function($item) {
-                                // Ensure numeric values are properly formatted
+                                // Clean and convert saldo string to integer
+                                $saldo = $item->saldo_posisi ?? '0';
+                                // Remove thousand separators (. or ,) before converting
+                                $saldo = str_replace(['.', ','], '', $saldo);
+                                
                                 return [
                                     'id' => $item->id,
                                     'cifno' => $item->cif,
@@ -130,7 +134,7 @@ class NasabahController extends Controller
                                     'cabang_induk' => $item->mbdesc,
                                     'kode_uker' => $item->branch,
                                     'unit_kerja' => $item->brdesc,
-                                    'saldo_terupdate' => floatval($item->saldo_posisi ?? 0),
+                                    'saldo_terupdate' => intval($saldo),
                                 ];
                             });
             
@@ -178,7 +182,16 @@ class NasabahController extends Controller
                             ->orderBy('cifno', 'asc')
                             ->get()
                             ->map(function($item) {
-                                // Ensure numeric values are properly formatted
+                                // Clean and convert saldo strings to integers
+                                $saldoTerupdate = $item->saldo_terupdate ?? $item->saldo_last_eom ?? '0';
+                                $saldoLastEom = $item->saldo_last_eom ?? '0';
+                                $delta = $item->delta ?? '0';
+                                
+                                // Remove thousand separators (. or ,) before converting
+                                $saldoTerupdate = str_replace(['.', ','], '', $saldoTerupdate);
+                                $saldoLastEom = str_replace(['.', ','], '', $saldoLastEom);
+                                $delta = str_replace(['.', ','], '', $delta);
+                                
                                 return [
                                     'id' => $item->id,
                                     'cifno' => $item->cifno,
@@ -188,8 +201,9 @@ class NasabahController extends Controller
                                     'cabang_induk' => $item->cabang_induk,
                                     'kode_uker' => $item->kode_uker,
                                     'unit_kerja' => $item->unit_kerja,
-                                    'saldo_terupdate' => floatval($item->saldo_terupdate ?? $item->saldo_last_eom ?? 0),
-                                    'saldo_last_eom' => floatval($item->saldo_last_eom ?? 0),
+                                    'saldo_terupdate' => intval($saldoTerupdate),
+                                    'saldo_last_eom' => intval($saldoLastEom),
+                                    'delta' => intval($delta),
                                 ];
                             });
             
