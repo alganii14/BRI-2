@@ -15,11 +15,73 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        html {
+            overflow-x: hidden;
         }
 
         .main-container {
             display: flex;
             min-height: 100vh;
+        }
+
+        /* Hamburger Menu Button */
+        .hamburger-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .hamburger-menu span {
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger-menu:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+        }
+
+        .hamburger-menu:active {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
         }
 
         /* Sidebar */
@@ -31,6 +93,94 @@
             height: 100vh;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        /* Show sidebar toggle button */
+        .sidebar-toggle-hint {
+            position: fixed;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 6px;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, left 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar.hidden ~ .main-content .sidebar-toggle-hint {
+            opacity: 0.7;
+            pointer-events: auto;
+        }
+
+        .sidebar-toggle-hint:hover {
+            opacity: 1 !important;
+            left: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+            width: calc(100vw - 260px);
+            overflow-x: auto;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+            width: 100vw;
+        }
+
+        /* Scrollbar for main-content */
+        .main-content::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+        }
+
+        /* Scrollbar styling for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .sidebar-header {
@@ -61,9 +211,13 @@
             text-decoration: none;
             transition: background-color 0.3s;
             font-size: 15px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        .menu-item:hover {
+        .menu-item:hover,
+        .menu-item:active {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -93,9 +247,12 @@
             transition: background-color 0.3s;
             font-size: 15px;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        .menu-item-dropdown:hover {
+        .menu-item-dropdown:hover,
+        .menu-item-dropdown:active {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -134,21 +291,18 @@
             text-decoration: none;
             transition: background-color 0.3s;
             font-size: 14px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        .submenu-item:hover {
+        .submenu-item:hover,
+        .submenu-item:active {
             background-color: rgba(255, 255, 255, 0.15);
         }
 
         .submenu-item.active {
             background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            min-height: 100vh;
         }
 
         /* Navbar */
@@ -159,17 +313,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            min-width: max-content;
         }
 
         .navbar-left h1 {
             font-size: 24px;
             color: #333;
+            white-space: nowrap;
         }
 
         .navbar-right {
             display: flex;
             align-items: center;
             gap: 20px;
+            min-width: max-content;
         }
 
         .user-info {
@@ -225,21 +390,45 @@
         /* Content Area */
         .content {
             padding: 32px;
+            min-width: max-content;
+        }
+
+        /* Scrollbar for content */
+        .content::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
         }
 
         .page-header {
             margin-bottom: 24px;
+            min-width: max-content;
         }
 
         .page-header h2 {
             font-size: 28px;
             color: #333;
             margin-bottom: 8px;
+            white-space: nowrap;
         }
 
         .page-header p {
             color: #666;
             font-size: 14px;
+            white-space: nowrap;
         }
 
         /* Cards */
@@ -249,6 +438,7 @@
             padding: 24px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             margin-bottom: 24px;
+            overflow: visible;
         }
 
         .card h3 {
@@ -269,31 +459,161 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .sidebar {
-                width: 0;
-                overflow: hidden;
+                width: 240px;
             }
 
             .main-content {
-                margin-left: 0;
+                margin-left: 240px;
+            }
+
+            .menu-item,
+            .menu-item-dropdown {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .submenu-item {
+                padding: 10px 16px 10px 36px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .navbar-right .user-details {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+
+            .sidebar:not(.hidden) {
+                transform: translateX(0);
             }
 
             .navbar {
                 padding: 12px 16px;
             }
 
+            .navbar-left h1 {
+                font-size: 18px;
+            }
+
+            .navbar-right {
+                gap: 10px;
+            }
+
+            .navbar-right .user-info {
+                gap: 8px;
+            }
+
+            .navbar-right .user-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .btn-logout {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
             .content {
                 padding: 16px;
+            }
+
+            .main-content {
+                width: 100vw;
+                overflow-x: visible;
+            }
+
+            .content {
+                min-width: auto;
+            }
+
+            .page-header h2 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 16px;
+                overflow: visible;
+            }
+        }
+
+        /* Tablet Landscape */
+        @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main-content {
+                margin-left: 220px;
+                width: calc(100vw - 220px);
+            }
+
+            .menu-item,
+            .menu-item-dropdown {
+                padding: 11px 15px;
+                font-size: 14px;
+            }
+
+            .submenu-item {
+                padding: 10px 15px 10px 32px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-left h1 {
+                font-size: 16px;
+            }
+
+            .navbar-right .user-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .btn-logout {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .content {
+                padding: 12px;
+            }
+
+            .page-header h2 {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .table-container {
+                font-size: 12px;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px 10px;
             }
         }
     </style>
     @stack('styles')
 </head>
 <body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
     <div class="main-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2>Pipeline</h2>
                 <p>Management System</p>
@@ -346,7 +666,9 @@
                     </svg>
                     Akun
                 </a>
+                @endif
                 
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('rencana-aktivitas.index') }}" class="menu-item {{ request()->routeIs('rencana-aktivitas.*') ? 'active' : '' }}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
@@ -519,7 +841,12 @@
         <main class="main-content">
             <!-- Navbar -->
             <nav class="navbar">
-                <div class="navbar-left">
+                <div class="navbar-left" style="display: flex; align-items: center; gap: 15px;">
+                    <button class="hamburger-menu" id="hamburgerMenu" onclick="toggleSidebar()" title="Toggle Sidebar">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                     <h1>@yield('page-title', 'Dashboard')</h1>
                 </div>
                 <div class="navbar-right">
@@ -556,6 +883,54 @@
             submenu.classList.toggle('show');
             element.classList.toggle('active-dropdown');
         }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.getElementById('hamburgerMenu');
+            
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('expanded');
+            hamburger.classList.toggle('active');
+            
+            // Only show overlay on mobile
+            if (window.innerWidth <= 768) {
+                overlay.classList.toggle('active');
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburgerMenu');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !hamburger.contains(event.target) && !sidebar.classList.contains('hidden')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth > 768) {
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Initialize: Hide sidebar on mobile by default
+        window.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('expanded');
+            }
+        });
     </script>
 
     @stack('scripts')
