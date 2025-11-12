@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PenurunanNoSegmentRitel;
+use App\Models\PenurunanRitel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PenurunanNoSegmentRitelController extends Controller
+class PenurunanRitelController extends Controller
 {
     public function index(Request $request)
     {
@@ -14,7 +14,7 @@ class PenurunanNoSegmentRitelController extends Controller
         $month = $request->get('month');
         $year = $request->get('year');
         
-        $data = PenurunanNoSegmentRitel::when($year, function($query) use ($year) {
+        $data = PenurunanRitel::when($year, function($query) use ($year) {
             return $query->whereYear('created_at', $year);
         })
         ->when($month, function($query) use ($month) {
@@ -29,17 +29,17 @@ class PenurunanNoSegmentRitelController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(20);
         
-        $availableYears = PenurunanNoSegmentRitel::selectRaw('DISTINCT YEAR(created_at) as year')
+        $availableYears = PenurunanRitel::selectRaw('DISTINCT YEAR(created_at) as year')
             ->whereNotNull('created_at')
             ->orderBy('year', 'desc')
             ->pluck('year');
         
-        return view('penurunan-no-segment-ritel.index', compact('data', 'search', 'month', 'year', 'availableYears'));
+        return view('penurunan-ritel.index', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
 
     public function create()
     {
-        return view('penurunan-no-segment-ritel.create');
+        return view('penurunan-ritel.create');
     }
 
     public function store(Request $request)
@@ -70,23 +70,23 @@ class PenurunanNoSegmentRitelController extends Controller
             'pn_slot_8' => 'nullable|string',
         ]);
 
-        PenurunanNoSegmentRitel::create($validated);
+        PenurunanRitel::create($validated);
 
-        return redirect()->route('penurunan-no-segment-ritel.index')
+        return redirect()->route('penurunan-ritel.index')
                         ->with('success', 'Data berhasil ditambahkan');
     }
 
-    public function show(PenurunanNoSegmentRitel $penurunanNoSegmentRitel)
+    public function show(PenurunanRitel $PenurunanRitel)
     {
-        return view('penurunan-no-segment-ritel.show', compact('penurunanNoSegmentRitel'));
+        return view('penurunan-ritel.show', compact('PenurunanRitel'));
     }
 
-    public function edit(PenurunanNoSegmentRitel $penurunanNoSegmentRitel)
+    public function edit(PenurunanRitel $PenurunanRitel)
     {
-        return view('penurunan-no-segment-ritel.edit', compact('penurunanNoSegmentRitel'));
+        return view('penurunan-ritel.edit', compact('PenurunanRitel'));
     }
 
-    public function update(Request $request, PenurunanNoSegmentRitel $penurunanNoSegmentRitel)
+    public function update(Request $request, PenurunanRitel $PenurunanRitel)
     {
         $validated = $request->validate([
             'regional_office' => 'nullable|string',
@@ -114,23 +114,23 @@ class PenurunanNoSegmentRitelController extends Controller
             'pn_slot_8' => 'nullable|string',
         ]);
 
-        $penurunanNoSegmentRitel->update($validated);
+        $PenurunanRitel->update($validated);
 
-        return redirect()->route('penurunan-no-segment-ritel.index')
+        return redirect()->route('penurunan-ritel.index')
                         ->with('success', 'Data berhasil diupdate');
     }
 
-    public function destroy(PenurunanNoSegmentRitel $penurunanNoSegmentRitel)
+    public function destroy(PenurunanRitel $PenurunanRitel)
     {
-        $penurunanNoSegmentRitel->delete();
+        $PenurunanRitel->delete();
 
-        return redirect()->route('penurunan-no-segment-ritel.index')
+        return redirect()->route('penurunan-ritel.index')
                         ->with('success', 'Data berhasil dihapus');
     }
 
     public function importForm()
     {
-        return view('penurunan-no-segment-ritel.import');
+        return view('penurunan-ritel.import');
     }
 
     public function import(Request $request)
@@ -152,7 +152,7 @@ class PenurunanNoSegmentRitelController extends Controller
             }
 
             // Delete existing data first (outside transaction)
-            PenurunanNoSegmentRitel::truncate();
+            PenurunanRitel::truncate();
             
             DB::beginTransaction();
             
@@ -209,7 +209,7 @@ class PenurunanNoSegmentRitelController extends Controller
             fclose($handle);
             DB::commit();
             
-            return redirect()->route('penurunan-no-segment-ritel.index')
+            return redirect()->route('penurunan-ritel.index')
                            ->with('success', "Data berhasil diimport! Total {$rowCount} baris.");
                            
         } catch (\Exception $e) {
@@ -224,7 +224,7 @@ class PenurunanNoSegmentRitelController extends Controller
     public function deleteAll()
     {
         try {
-            $count = PenurunanNoSegmentRitel::count();
+            $count = PenurunanRitel::count();
             
             if ($count > 0) {
                 // Disable foreign key checks temporarily
@@ -236,11 +236,11 @@ class PenurunanNoSegmentRitelController extends Controller
                 // Re-enable foreign key checks
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
                 
-                return redirect()->route('penurunan-no-segment-ritel.index')
+                return redirect()->route('penurunan-ritel.index')
                                 ->with('success', '✓ Berhasil menghapus semua data penurunan no-segment ritel! Total data terhapus: ' . number_format($count, 0, ',', '.') . ' baris');
             }
             
-            return redirect()->route('penurunan-no-segment-ritel.index')
+            return redirect()->route('penurunan-ritel.index')
                             ->with('success', '✓ Tidak ada data penurunan no-segment ritel untuk dihapus.');
                             
         } catch (\Exception $e) {

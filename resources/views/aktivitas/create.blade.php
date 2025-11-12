@@ -269,8 +269,7 @@
                 <option value="Penurunan Mantri" {{ old('strategy_pipeline') == 'Penurunan Mantri' ? 'selected' : '' }}>Penurunan Mantri</option>
                 <option value="Penurunan Merchant Mikro" {{ old('strategy_pipeline') == 'Penurunan Merchant Mikro' ? 'selected' : '' }}>Penurunan Merchant Mikro</option>
                 <option value="Penurunan Merchant Ritel" {{ old('strategy_pipeline') == 'Penurunan Merchant Ritel' ? 'selected' : '' }}>Penurunan Merchant Ritel</option>
-                <option value="Penurunan No-Segment Mikro" {{ old('strategy_pipeline') == 'Penurunan No-Segment Mikro' ? 'selected' : '' }}>Penurunan No-Segment Mikro</option>
-                <option value="Penurunan No-Segment Ritel" {{ old('strategy_pipeline') == 'Penurunan No-Segment Ritel' ? 'selected' : '' }}>Penurunan No-Segment Ritel</option>
+                <option value="Penurunan Ritel" {{ old('strategy_pipeline') == 'Penurunan Ritel' ? 'selected' : '' }}>Penurunan Ritel</option>
                 <option value="Penurunan SME Ritel" {{ old('strategy_pipeline') == 'Penurunan SME Ritel' ? 'selected' : '' }}>Penurunan SME Ritel</option>
                 <option value="Top 10 QRIS Per Unit" {{ old('strategy_pipeline') == 'Top 10 QRIS Per Unit' ? 'selected' : '' }}>Top 10 QRIS Per Unit</option>
             </select>
@@ -605,8 +604,7 @@
             <option value="Penurunan Mantri">Penurunan Mantri</option>
             <option value="Penurunan Merchant Mikro">Penurunan Merchant Mikro</option>
             <option value="Penurunan Merchant Ritel">Penurunan Merchant Ritel</option>
-            <option value="Penurunan No-Segment Mikro">Penurunan No-Segment Mikro</option>
-            <option value="Penurunan No-Segment Ritel">Penurunan No-Segment Ritel</option>
+            <option value="Penurunan Ritel">Penurunan Ritel</option>
             <option value="Penurunan SME Ritel">Penurunan SME Ritel</option>
             <option value="Top 10 QRIS Per Unit">Top 10 QRIS Per Unit</option>
         `;

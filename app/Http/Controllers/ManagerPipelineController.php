@@ -7,8 +7,7 @@ use App\Models\PenurunanBrilink;
 use App\Models\PenurunanMantri;
 use App\Models\PenurunanMerchantMikro;
 use App\Models\PenurunanMerchantRitel;
-use App\Models\PenurunanNoSegmentMikro;
-use App\Models\PenurunanNoSegmentRitel;
+use App\Models\PenurunanRitel;
 use App\Models\PenurunanSmeRitel;
 use App\Models\Top10QrisPerUnit;
 
@@ -182,8 +181,8 @@ class ManagerPipelineController extends Controller
         return view('manager-pipeline.merchant-ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
-    // Penurunan No Segment Mikro
-    public function noSegmentMikro(Request $request)
+    // Penurunan Ritel
+    public function ritel(Request $request)
     {
         $user = auth()->user();
         $kodeKc = $user->kode_kanca;
@@ -191,7 +190,7 @@ class ManagerPipelineController extends Controller
         $month = $request->get('month');
         $year = $request->get('year');
         
-        $query = PenurunanNoSegmentMikro::where('kode_cabang_induk', $kodeKc);
+        $query = PenurunanRitel::where('kode_cabang_induk', $kodeKc);
         
         // Filter by year
         if ($year) {
@@ -215,55 +214,13 @@ class ManagerPipelineController extends Controller
         $data = $query->orderBy('created_at', 'desc')->paginate(20);
         
         // Get available years
-        $availableYears = PenurunanNoSegmentMikro::where('kode_cabang_induk', $kodeKc)
+        $availableYears = PenurunanRitel::where('kode_cabang_induk', $kodeKc)
             ->selectRaw('DISTINCT YEAR(created_at) as year')
             ->whereNotNull('created_at')
             ->orderBy('year', 'desc')
             ->pluck('year');
         
-        return view('manager-pipeline.no-segment-mikro', compact('data', 'search', 'month', 'year', 'availableYears'));
-    }
-    
-    // Penurunan No Segment Ritel
-    public function noSegmentRitel(Request $request)
-    {
-        $user = auth()->user();
-        $kodeKc = $user->kode_kanca;
-        $search = $request->get('search');
-        $month = $request->get('month');
-        $year = $request->get('year');
-        
-        $query = PenurunanNoSegmentRitel::where('kode_cabang_induk', $kodeKc);
-        
-        // Filter by year
-        if ($year) {
-            $query->whereYear('created_at', $year);
-        }
-        
-        // Filter by month
-        if ($month) {
-            $query->whereMonth('created_at', $month);
-        }
-        
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('nama_nasabah', 'like', "%{$search}%")
-                  ->orWhere('no_rekening', 'like', "%{$search}%")
-                  ->orWhere('cifno', 'like', "%{$search}%")
-                  ->orWhere('unit_kerja', 'like', "%{$search}%");
-            });
-        }
-        
-        $data = $query->orderBy('created_at', 'desc')->paginate(20);
-        
-        // Get available years
-        $availableYears = PenurunanNoSegmentRitel::where('kode_cabang_induk', $kodeKc)
-            ->selectRaw('DISTINCT YEAR(created_at) as year')
-            ->whereNotNull('created_at')
-            ->orderBy('year', 'desc')
-            ->pluck('year');
-        
-        return view('manager-pipeline.no-segment-ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
+        return view('manager-pipeline.ritel', compact('data', 'search', 'month', 'year', 'availableYears'));
     }
     
     // Penurunan SME Ritel

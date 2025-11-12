@@ -12,8 +12,7 @@ use App\Http\Controllers\PenurunanBrilinkController;
 use App\Http\Controllers\PenurunanMantriController;
 use App\Http\Controllers\PenurunanMerchantMikroController;
 use App\Http\Controllers\PenurunanMerchantRitelController;
-use App\Http\Controllers\PenurunanNoSegmentMikroController;
-use App\Http\Controllers\PenurunanNoSegmentRitelController;
+use App\Http\Controllers\PenurunanRitelController;
 use App\Http\Controllers\PenurunanSmeRitelController;
 use App\Http\Controllers\Top10QrisPerUnitController;
 use App\Http\Controllers\ManagerPipelineController;
@@ -84,8 +83,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pipeline/mantri', [ManagerPipelineController::class, 'mantri'])->name('manager.pipeline.mantri');
         Route::get('pipeline/merchant-mikro', [ManagerPipelineController::class, 'merchantMikro'])->name('manager.pipeline.merchant-mikro');
         Route::get('pipeline/merchant-ritel', [ManagerPipelineController::class, 'merchantRitel'])->name('manager.pipeline.merchant-ritel');
-        Route::get('pipeline/no-segment-mikro', [ManagerPipelineController::class, 'noSegmentMikro'])->name('manager.pipeline.no-segment-mikro');
-        Route::get('pipeline/no-segment-ritel', [ManagerPipelineController::class, 'noSegmentRitel'])->name('manager.pipeline.no-segment-ritel');
+        Route::get('pipeline/ritel', [ManagerPipelineController::class, 'ritel'])->name('manager.pipeline.ritel');
         Route::get('pipeline/sme-ritel', [ManagerPipelineController::class, 'smeRitel'])->name('manager.pipeline.sme-ritel');
         Route::get('pipeline/qris', [ManagerPipelineController::class, 'qris'])->name('manager.pipeline.qris');
     });
@@ -147,16 +145,11 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('penurunan-merchant-ritel/delete-all', [PenurunanMerchantRitelController::class, 'deleteAll'])->name('penurunan-merchant-ritel.deleteAll');
             Route::resource('penurunan-merchant-ritel', PenurunanMerchantRitelController::class);
             
-            // Penurunan No-Segment Mikro Routes - Admin Only
-            Route::get('penurunan-no-segment-mikro/import', [PenurunanNoSegmentMikroController::class, 'importForm'])->name('penurunan-no-segment-mikro.import.form');
-            Route::post('penurunan-no-segment-mikro/import', [PenurunanNoSegmentMikroController::class, 'import'])->name('penurunan-no-segment-mikro.import');
-            Route::resource('penurunan-no-segment-mikro', PenurunanNoSegmentMikroController::class);
-            
-            // Penurunan No-Segment Ritel Routes - Admin Only
-            Route::get('penurunan-no-segment-ritel/import', [PenurunanNoSegmentRitelController::class, 'importForm'])->name('penurunan-no-segment-ritel.import.form');
-            Route::post('penurunan-no-segment-ritel/import', [PenurunanNoSegmentRitelController::class, 'import'])->name('penurunan-no-segment-ritel.import');
-            Route::delete('penurunan-no-segment-ritel-delete-all', [PenurunanNoSegmentRitelController::class, 'deleteAll'])->name('penurunan-no-segment-ritel.delete-all');
-            Route::resource('penurunan-no-segment-ritel', PenurunanNoSegmentRitelController::class);
+            // Penurunan Ritel Routes - Admin Only
+            Route::get('penurunan-ritel/import', [PenurunanRitelController::class, 'importForm'])->name('penurunan-ritel.import.form');
+            Route::post('penurunan-ritel/import', [PenurunanRitelController::class, 'import'])->name('penurunan-ritel.import');
+            Route::delete('penurunan-ritel-delete-all', [PenurunanRitelController::class, 'deleteAll'])->name('penurunan-ritel.delete-all');
+            Route::resource('penurunan-ritel', PenurunanRitelController::class);
             
             // Penurunan SME Ritel Routes - Admin Only
             Route::get('penurunan-sme-ritel/import', [PenurunanSmeRitelController::class, 'importForm'])->name('penurunan-sme-ritel.import.form');

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PenurunanNoSegmentRitel extends Model
+class PenurunanRitel extends Model
 {
     use HasFactory;
+
+    protected $table = 'penurunan_ritels';
 
     protected $fillable = [
         'regional_office',

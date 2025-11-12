@@ -8,8 +8,7 @@ use App\Models\PenurunanBrilink;
 use App\Models\PenurunanMantri;
 use App\Models\PenurunanMerchantMikro;
 use App\Models\PenurunanMerchantRitel;
-use App\Models\PenurunanNoSegmentMikro;
-use App\Models\PenurunanNoSegmentRitel;
+use App\Models\PenurunanRitel;
 use App\Models\PenurunanSmeRitel;
 use App\Models\Top10QrisPerUnit;
 use Illuminate\Support\Facades\DB;
@@ -43,11 +42,8 @@ class NasabahController extends Controller
             case 'Penurunan Merchant Ritel':
                 $model = PenurunanMerchantRitel::class;
                 break;
-            case 'Penurunan No-Segment Mikro':
-                $model = PenurunanNoSegmentMikro::class;
-                break;
-            case 'Penurunan No-Segment Ritel':
-                $model = PenurunanNoSegmentRitel::class;
+            case 'Penurunan Ritel':
+                $model = PenurunanRitel::class;
                 break;
             case 'Penurunan SME Ritel':
                 $model = PenurunanSmeRitel::class;
@@ -120,11 +116,8 @@ class NasabahController extends Controller
             case 'Penurunan Merchant Ritel':
                 $model = PenurunanMerchantRitel::class;
                 break;
-            case 'Penurunan No-Segment Mikro':
-                $model = PenurunanNoSegmentMikro::class;
-                break;
-            case 'Penurunan No-Segment Ritel':
-                $model = PenurunanNoSegmentRitel::class;
+            case 'Penurunan Ritel':
+                $model = PenurunanRitel::class;
                 break;
             case 'Penurunan SME Ritel':
                 $model = PenurunanSmeRitel::class;
