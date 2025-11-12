@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UpdateUsersWithKancaSeeder::class,
             CreateAllRMFTUsersSeeder::class,
             UpdateRMFTUserSeeder::class,
+            CreateAllRencanaAktivitasSeeder::class,
         ]);
     }
 }

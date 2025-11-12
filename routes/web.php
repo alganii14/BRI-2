@@ -17,6 +17,7 @@ use App\Http\Controllers\PenurunanNoSegmentRitelController;
 use App\Http\Controllers\PenurunanSmeRitelController;
 use App\Http\Controllers\Top10QrisPerUnitController;
 use App\Http\Controllers\ManagerPipelineController;
+use App\Http\Controllers\RencanaAktivitasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,6 +89,9 @@ Route::middleware(['auth'])->group(function () {
     
     // Manager and Admin Routes
     Route::middleware(['role:manager,admin'])->group(function () {
+        
+        // Rencana Aktivitas Routes
+        Route::resource('rencana-aktivitas', RencanaAktivitasController::class);
         
         // Nasabah Routes
         Route::resource('nasabah', NasabahController::class);

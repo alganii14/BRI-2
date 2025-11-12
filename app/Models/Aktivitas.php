@@ -26,6 +26,7 @@ class Aktivitas extends Model
         'kelompok',
         'strategy_pipeline',
         'rencana_aktivitas',
+        'rencana_aktivitas_id',
         'segmen_nasabah',
         'nama_nasabah',
         'norek',
@@ -54,5 +55,10 @@ class Aktivitas extends Model
     public function assignedBy()
     {
         return $this->belongsTo(User::class, 'assigned_by');
+    }
+
+    public function rencanaAktivitasRelasi()
+    {
+        return $this->belongsTo(RencanaAktivitas::class, 'rencana_aktivitas_id');
     }
 }

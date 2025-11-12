@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,19 +14,30 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('nasabahs', function (Blueprint $table) {
+        // Check if indexes already exist before creating them
+        $indexes = $this->getIndexes('nasabahs');
+        
+        Schema::table('nasabahs', function (Blueprint $table) use ($indexes) {
             // Index untuk filter by KC (paling sering digunakan dan paling selektif)
-            $table->index('kode_kc', 'idx_nasabahs_kode_kc');
+            if (!in_array('idx_nasabahs_kode_kc', $indexes)) {
+                $table->index('kode_kc', 'idx_nasabahs_kode_kc');
+            }
             
             // Index untuk filter by Unit/Uker
-            $table->index('kode_uker', 'idx_nasabahs_kode_uker');
+            if (!in_array('idx_nasabahs_kode_uker', $indexes)) {
+                $table->index('kode_uker', 'idx_nasabahs_kode_uker');
+            }
             
             // Index untuk search by CIFNO (exact start match dengan LIKE 'xxx%')
-            $table->index('cifno', 'idx_nasabahs_cifno');
+            if (!in_array('idx_nasabahs_cifno', $indexes)) {
+                $table->index('cifno', 'idx_nasabahs_cifno');
+            }
             
             // Composite index untuk query yang filter KC dan Unit sekaligus
             // Ini akan mempercepat query: WHERE kode_kc = ? AND kode_uker IN (?,?,?)
-            $table->index(['kode_kc', 'kode_uker'], 'idx_nasabahs_kc_uker');
+            if (!in_array('idx_nasabahs_kc_uker', $indexes)) {
+                $table->index(['kode_kc', 'kode_uker'], 'idx_nasabahs_kc_uker');
+            }
         });
     }
 
@@ -38,10 +50,29 @@ return new class extends Migration
     {
         Schema::table('nasabahs', function (Blueprint $table) {
             // Drop indexes in reverse order
-            $table->dropIndex('idx_nasabahs_kc_uker');
-            $table->dropIndex('idx_nasabahs_cifno');
-            $table->dropIndex('idx_nasabahs_kode_uker');
-            $table->dropIndex('idx_nasabahs_kode_kc');
+            $indexes = $this->getIndexes('nasabahs');
+            
+            if (in_array('idx_nasabahs_kc_uker', $indexes)) {
+                $table->dropIndex('idx_nasabahs_kc_uker');
+            }
+            if (in_array('idx_nasabahs_cifno', $indexes)) {
+                $table->dropIndex('idx_nasabahs_cifno');
+            }
+            if (in_array('idx_nasabahs_kode_uker', $indexes)) {
+                $table->dropIndex('idx_nasabahs_kode_uker');
+            }
+            if (in_array('idx_nasabahs_kode_kc', $indexes)) {
+                $table->dropIndex('idx_nasabahs_kode_kc');
+            }
         });
+    }
+    
+    /**
+     * Get all indexes for a table
+     */
+    private function getIndexes($tableName)
+    {
+        $indexes = DB::select("SHOW INDEX FROM {$tableName}");
+        return collect($indexes)->pluck('Key_name')->unique()->toArray();
     }
 };

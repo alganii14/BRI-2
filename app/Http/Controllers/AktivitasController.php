@@ -6,6 +6,7 @@ use App\Models\Aktivitas;
 use App\Models\RMFT;
 use App\Models\Nasabah;
 use App\Models\User;
+use App\Models\RencanaAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -101,7 +102,12 @@ class AktivitasController extends Controller
                            ->get();
         }
         
-        return view('aktivitas.create', compact('rmftData', 'rmftList'));
+        // Get list rencana aktivitas yang aktif
+        $rencanaAktivitas = RencanaAktivitas::where('is_active', true)
+                                            ->orderBy('nama_rencana', 'asc')
+                                            ->get();
+        
+        return view('aktivitas.create', compact('rmftData', 'rmftList', 'rencanaAktivitas'));
     }
 
     /**
@@ -127,7 +133,8 @@ class AktivitasController extends Controller
             'nama_uker_list' => 'nullable|string',
             'kelompok' => 'required|string',
             'strategy_pipeline' => 'required|string',
-            'rencana_aktivitas' => 'required|string',
+            'rencana_aktivitas' => 'nullable|string',
+            'rencana_aktivitas_id' => 'nullable|exists:rencana_aktivitas,id',
             'segmen_nasabah' => 'required|string',
             'nama_nasabah' => 'required|string',
             'norek' => 'required|string',
@@ -198,6 +205,7 @@ class AktivitasController extends Controller
                     'kelompok' => $validated['kelompok'],
                     'strategy_pipeline' => $validated['strategy_pipeline'],
                     'rencana_aktivitas' => $validated['rencana_aktivitas'],
+                    'rencana_aktivitas_id' => $validated['rencana_aktivitas_id'],
                     'segmen_nasabah' => $validated['segmen_nasabah'],
                     'nama_nasabah' => $validated['nama_nasabah'],
                     'norek' => $validated['norek'],
@@ -299,7 +307,12 @@ class AktivitasController extends Controller
             abort(403, 'Unauthorized action.');
         }
         
-        return view('aktivitas.edit', compact('aktivitas'));
+        // Get list rencana aktivitas yang aktif
+        $rencanaAktivitas = RencanaAktivitas::where('is_active', true)
+                                            ->orderBy('nama_rencana', 'asc')
+                                            ->get();
+        
+        return view('aktivitas.edit', compact('aktivitas', 'rencanaAktivitas'));
     }
 
     /**
@@ -327,7 +340,8 @@ class AktivitasController extends Controller
         
         $validated = $request->validate([
             'tanggal' => 'required|date',
-            'rencana_aktivitas' => 'required|string',
+            'rencana_aktivitas' => 'nullable|string',
+            'rencana_aktivitas_id' => 'nullable|exists:rencana_aktivitas,id',
             'segmen_nasabah' => 'required|string',
             'nama_nasabah' => 'required|string',
             'norek' => 'required|string',

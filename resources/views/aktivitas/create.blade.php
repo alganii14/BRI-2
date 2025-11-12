@@ -225,37 +225,17 @@
 
         <div class="form-group">
             <label>RENCANA AKTIVITAS <span style="color: red;">*</span></label>
-            <select name="rencana_aktivitas" id="rencana_aktivitas" required disabled>
-                <option value="">Pilih RMFT terlebih dahulu</option>
-                <option value="DANA MASUK TABUNGAN (Rp)" {{ old('rencana_aktivitas') == 'DANA MASUK TABUNGAN (Rp)' ? 'selected' : '' }}>DANA MASUK TABUNGAN (Rp)</option>
-                <option value="PICKUP SERVICE (RP)" {{ old('rencana_aktivitas') == 'PICKUP SERVICE (RP)' ? 'selected' : '' }}>PICKUP SERVICE (RP)</option>
-                <option value="DANA MASUK GIRO (Rp)" {{ old('rencana_aktivitas') == 'DANA MASUK GIRO (Rp)' ? 'selected' : '' }}>DANA MASUK GIRO (Rp)</option>
-                <option value="DANA MASUK DEPO (Rp)" {{ old('rencana_aktivitas') == 'DANA MASUK DEPO (Rp)' ? 'selected' : '' }}>DANA MASUK DEPO (Rp)</option>
-                <option value="BRICUAN (Rp)" {{ old('rencana_aktivitas') == 'BRICUAN (Rp)' ? 'selected' : '' }}>BRICUAN (Rp)</option>
-                <option value="EXTRA REWARD PRIO (Rp)" {{ old('rencana_aktivitas') == 'EXTRA REWARD PRIO (Rp)' ? 'selected' : '' }}>EXTRA REWARD PRIO (Rp)</option>
-                <option value="BOOSTER DEPO (Rp)" {{ old('rencana_aktivitas') == 'BOOSTER DEPO (Rp)' ? 'selected' : '' }}>BOOSTER DEPO (Rp)</option>
-                <option value="PANEN EXTRA TAB (Rp)" {{ old('rencana_aktivitas') == 'PANEN EXTRA TAB (Rp)' ? 'selected' : '' }}>PANEN EXTRA TAB (Rp)</option>
-                <option value="BRING BACK FUND (Rp)" {{ old('rencana_aktivitas') == 'BRING BACK FUND (Rp)' ? 'selected' : '' }}>BRING BACK FUND (Rp)</option>
-                <option value="CASA BRILINK (Rp)" {{ old('rencana_aktivitas') == 'CASA BRILINK (Rp)' ? 'selected' : '' }}>CASA BRILINK (Rp)</option>
-                <option value="DISBURSEMENT KREDIT MIKRO (Rp)" {{ old('rencana_aktivitas') == 'DISBURSEMENT KREDIT MIKRO (Rp)' ? 'selected' : '' }}>DISBURSEMENT KREDIT MIKRO (Rp)</option>
-                <option value="NASI KUNING (Rp)" {{ old('rencana_aktivitas') == 'NASI KUNING (Rp)' ? 'selected' : '' }}>NASI KUNING (Rp)</option>
-                <option value="MERCY (Rp)" {{ old('rencana_aktivitas') == 'MERCY (Rp)' ? 'selected' : '' }}>MERCY (Rp)</option>
-                <option value="SHL SMT II (Rp)" {{ old('rencana_aktivitas') == 'SHL SMT II (Rp)' ? 'selected' : '' }}>SHL SMT II (Rp)</option>
-                <option value="AKURASI (Jumlah Rek)" {{ old('rencana_aktivitas') == 'AKURASI (Jumlah Rek)' ? 'selected' : '' }}>AKURASI (Jumlah Rek)</option>
-                <option value="REK VQ (Jumlah Rek)" {{ old('rencana_aktivitas') == 'REK VQ (Jumlah Rek)' ? 'selected' : '' }}>REK VQ (Jumlah Rek)</option>
-                <option value="REK H3 (Jumlah Rek)" {{ old('rencana_aktivitas') == 'REK H3 (Jumlah Rek)' ? 'selected' : '' }}>REK H3 (Jumlah Rek)</option>
-                <option value="Akuisisi EDC/ QRIS (Jumlah)" {{ old('rencana_aktivitas') == 'Akuisisi EDC/ QRIS (Jumlah)' ? 'selected' : '' }}>Akuisisi EDC/ QRIS (Jumlah)</option>
-                <option value="brifest spbu baraya (Jumlah)" {{ old('rencana_aktivitas') == 'brifest spbu baraya (Jumlah)' ? 'selected' : '' }}>brifest spbu baraya (Jumlah)</option>
-                <option value="lucky ride (Jumlah)" {{ old('rencana_aktivitas') == 'lucky ride (Jumlah)' ? 'selected' : '' }}>lucky ride (Jumlah)</option>
-                <option value="Menyala Agenku (Jumlah)" {{ old('rencana_aktivitas') == 'Menyala Agenku (Jumlah)' ? 'selected' : '' }}>Menyala Agenku (Jumlah)</option>
-                <option value="Agen Ngebutz (Jumlah)" {{ old('rencana_aktivitas') == 'Agen Ngebutz (Jumlah)' ? 'selected' : '' }}>Agen Ngebutz (Jumlah)</option>
-                <option value="Akuisisi Incoming (Jumlah)" {{ old('rencana_aktivitas') == 'Akuisisi Incoming (Jumlah)' ? 'selected' : '' }}>Akuisisi Incoming (Jumlah)</option>
-                <option value="Akuisisi Hotspot (Jumlah)" {{ old('rencana_aktivitas') == 'Akuisisi Hotspot (Jumlah)' ? 'selected' : '' }}>Akuisisi Hotspot (Jumlah)</option>
-                <option value="Giro Pareto Belum EDC (Jumlah)" {{ old('rencana_aktivitas') == 'Giro Pareto Belum EDC (Jumlah)' ? 'selected' : '' }}>Giro Pareto Belum EDC (Jumlah)</option>
-                <option value="Giro Reward (Jumlah)" {{ old('rencana_aktivitas') == 'Giro Reward (Jumlah)' ? 'selected' : '' }}>Giro Reward (Jumlah)</option>
-                <option value="Suku Bunga Nego Giro (Jumlah)" {{ old('rencana_aktivitas') == 'Suku Bunga Nego Giro (Jumlah)' ? 'selected' : '' }}>Suku Bunga Nego Giro (Jumlah)</option>
-                <option value="Cross Sell Perusahaan Anak" {{ old('rencana_aktivitas') == 'Cross Sell Perusahaan Anak' ? 'selected' : '' }}>Cross Sell Perusahaan Anak</option>
+            <select name="rencana_aktivitas_id" id="rencana_aktivitas" required disabled>
+                <option value="">Pilih Rencana Aktivitas</option>
+                @foreach($rencanaAktivitas as $item)
+                    <option value="{{ $item->id }}" 
+                            data-nama="{{ $item->nama_rencana }}"
+                            {{ old('rencana_aktivitas_id') == $item->id ? 'selected' : '' }}>
+                        {{ $item->nama_rencana }}
+                    </option>
+                @endforeach
             </select>
+            <input type="hidden" name="rencana_aktivitas" id="rencana_aktivitas_text" value="{{ old('rencana_aktivitas') }}">
         </div>
 
         <div class="form-row">
@@ -556,34 +536,9 @@
         document.getElementById('rencana_aktivitas').disabled = false;
         document.getElementById('rencana_aktivitas').innerHTML = `
             <option value="">Pilih Rencana Aktivitas</option>
-            <option value="DANA MASUK TABUNGAN (Rp)">DANA MASUK TABUNGAN (Rp)</option>
-            <option value="PICKUP SERVICE (RP)">PICKUP SERVICE (RP)</option>
-            <option value="DANA MASUK GIRO (Rp)">DANA MASUK GIRO (Rp)</option>
-            <option value="DANA MASUK DEPO (Rp)">DANA MASUK DEPO (Rp)</option>
-            <option value="BRICUAN (Rp)">BRICUAN (Rp)</option>
-            <option value="EXTRA REWARD PRIO (Rp)">EXTRA REWARD PRIO (Rp)</option>
-            <option value="BOOSTER DEPO (Rp)">BOOSTER DEPO (Rp)</option>
-            <option value="PANEN EXTRA TAB (Rp)">PANEN EXTRA TAB (Rp)</option>
-            <option value="BRING BACK FUND (Rp)">BRING BACK FUND (Rp)</option>
-            <option value="CASA BRILINK (Rp)">CASA BRILINK (Rp)</option>
-            <option value="DISBURSEMENT KREDIT MIKRO (Rp)">DISBURSEMENT KREDIT MIKRO (Rp)</option>
-            <option value="NASI KUNING (Rp)">NASI KUNING (Rp)</option>
-            <option value="MERCY (Rp)">MERCY (Rp)</option>
-            <option value="SHL SMT II (Rp)">SHL SMT II (Rp)</option>
-            <option value="AKURASI (Jumlah Rek)">AKURASI (Jumlah Rek)</option>
-            <option value="REK VQ (Jumlah Rek)">REK VQ (Jumlah Rek)</option>
-            <option value="REK H3 (Jumlah Rek)">REK H3 (Jumlah Rek)</option>
-            <option value="Akuisisi EDC/ QRIS (Jumlah)">Akuisisi EDC/ QRIS (Jumlah)</option>
-            <option value="brifest spbu baraya (Jumlah)">brifest spbu baraya (Jumlah)</option>
-            <option value="lucky ride (Jumlah)">lucky ride (Jumlah)</option>
-            <option value="Menyala Agenku (Jumlah)">Menyala Agenku (Jumlah)</option>
-            <option value="Agen Ngebutz (Jumlah)">Agen Ngebutz (Jumlah)</option>
-            <option value="Akuisisi Incoming (Jumlah)">Akuisisi Incoming (Jumlah)</option>
-            <option value="Akuisisi Hotspot (Jumlah)">Akuisisi Hotspot (Jumlah)</option>
-            <option value="Giro Pareto Belum EDC (Jumlah)">Giro Pareto Belum EDC (Jumlah)</option>
-            <option value="Giro Reward (Jumlah)">Giro Reward (Jumlah)</option>
-            <option value="Suku Bunga Nego Giro (Jumlah)">Suku Bunga Nego Giro (Jumlah)</option>
-            <option value="Cross Sell Perusahaan Anak">Cross Sell Perusahaan Anak</option>
+            @foreach($rencanaAktivitas as $item)
+            <option value="{{ $item->id }}" data-nama="{{ $item->nama_rencana }}">{{ $item->nama_rencana }}</option>
+            @endforeach
         `;
         
         // Enable Segmen Nasabah
@@ -1301,5 +1256,12 @@
         }
     })();
     @endif
+    
+    // Event listener untuk update hidden field rencana_aktivitas
+    document.getElementById('rencana_aktivitas').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const namaRencana = selectedOption.getAttribute('data-nama') || selectedOption.text;
+        document.getElementById('rencana_aktivitas_text').value = namaRencana;
+    });
 </script>
 @endsection
