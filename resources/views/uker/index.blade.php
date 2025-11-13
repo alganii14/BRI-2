@@ -185,7 +185,7 @@
 
     .search-input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .button-group {
@@ -207,7 +207,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -244,12 +244,12 @@
     }
 
     .btn-search {
-        background-color: #667eea;
+        background-color: #0066CC;
         color: white;
     }
 
     .btn-search:hover {
-        background-color: #5568d3;
+        background-color: #0052A3;
     }
 
     .table-responsive {
@@ -383,7 +383,7 @@
     }
 
     .file-input:hover {
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .modal-actions {

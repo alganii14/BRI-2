@@ -54,12 +54,12 @@
     }
 
     .file-input-label:hover {
-        border-color: #667eea;
+        border-color: #0066CC;
         background: #f0f4ff;
     }
 
     .file-input-label.has-file {
-        border-color: #667eea;
+        border-color: #0066CC;
         background: #f0f4ff;
     }
 
@@ -112,7 +112,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         width: 100%;
     }

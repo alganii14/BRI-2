@@ -18,7 +18,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -81,7 +81,7 @@
     }
 
     .table thead {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -206,7 +206,7 @@
                 @foreach (range($startPage, $endPage) as $page)
                     @php $url = $rencanaAktivitas->url($page); @endphp
                     @if ($page == $currentPage)
-                        <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">{{ $page }}</span>
+                        <span style="padding: 10px 20px; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: 1px solid #0066CC; border-radius: 4px;">{{ $page }}</span>
                     @else
                         <a href="{{ $url }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">{{ $page }}</a>
                     @endif

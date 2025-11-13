@@ -32,7 +32,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .form-row {
@@ -54,13 +54,13 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.4);
     }
 
     .btn-secondary {

@@ -32,7 +32,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .form-group input:disabled {
@@ -53,7 +53,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -94,7 +94,7 @@
     }
 
     .info-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 20px;
         border-radius: 8px;
@@ -147,7 +147,7 @@
     }
 
     .radio-option:hover {
-        border-color: #667eea;
+        border-color: #0066CC;
         background-color: #f8f9ff;
     }
 
@@ -165,7 +165,7 @@
     }
 
     .radio-option.selected {
-        border-color: #667eea;
+        border-color: #0066CC;
         background-color: #f8f9ff;
     }
 

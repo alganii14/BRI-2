@@ -31,7 +31,7 @@
     }
 
     table th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 12px;
         text-align: left;
@@ -58,7 +58,7 @@
     }
 
     .badge-manager {
-        background-color: #667eea;
+        background-color: #0066CC;
         color: white;
     }
 
@@ -79,7 +79,7 @@
         margin-top: 32px;
         margin-bottom: 16px;
         padding-bottom: 8px;
-        border-bottom: 2px solid #667eea;
+        border-bottom: 2px solid #0066CC;
     }
 
     .section-title:first-child {
@@ -87,7 +87,7 @@
     }
 
     .info-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 16px 20px;
         border-radius: 8px;
@@ -125,7 +125,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 

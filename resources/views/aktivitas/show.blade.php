@@ -14,7 +14,7 @@
     }
 
     .detail-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 20px 30px;
         display: flex;
@@ -46,7 +46,7 @@
         color: #333;
         margin-bottom: 15px;
         padding-bottom: 10px;
-        border-bottom: 2px solid #667eea;
+        border-bottom: 2px solid #0066CC;
     }
 
     .detail-grid {
@@ -141,7 +141,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -170,7 +170,7 @@
 
     .info-box {
         background: #f8f9fa;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid #0066CC;
         padding: 15px;
         border-radius: 6px;
         margin-bottom: 20px;
@@ -405,6 +405,14 @@
         </div>
     </div>
 </div>
+
+<!-- Tombol Kembali -->
+<div style="margin-top: 20px; text-align: center;">
+    <a href="{{ route('aktivitas.index') }}" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px;">
+        ← Kembali ke Daftar Aktivitas
+    </a>
+</div>
+
 @endsection
 
 @push('styles')

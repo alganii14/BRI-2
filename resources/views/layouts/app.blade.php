@@ -87,7 +87,7 @@
         /* Sidebar */
         .sidebar {
             width: 260px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #0066CC 0%, #003D82 100%);
             color: white;
             position: fixed;
             height: 100vh;
@@ -108,7 +108,7 @@
             left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             color: white;
             padding: 10px 6px;
             border-radius: 0 6px 6px 0;
@@ -157,12 +157,12 @@
         }
 
         .main-content::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             border-radius: 5px;
         }
 
         .main-content::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+            background: linear-gradient(135deg, #0052A3 0%, #002D5C 100%);
         }
 
         /* Scrollbar styling for sidebar */
@@ -347,7 +347,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -405,12 +405,12 @@
         }
 
         .content::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             border-radius: 5px;
         }
 
         .content::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+            background: linear-gradient(135deg, #0052A3 0%, #002D5C 100%);
         }
 
         .page-header {

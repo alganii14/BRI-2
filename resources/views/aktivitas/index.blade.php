@@ -18,7 +18,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -109,7 +109,7 @@
     }
 
     table th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 12px;
         text-align: left;
@@ -371,7 +371,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                 @empty
                 <tr>
                     <td colspan="16" style="text-align: center; padding: 40px; color: #666;">
-                        Belum ada data aktivitas. <a href="{{ route('aktivitas.create') }}" style="color: #667eea;">Tambah aktivitas</a>
+                        Belum ada data aktivitas. <a href="{{ route('aktivitas.create') }}" style="color: #0066CC;">Tambah aktivitas</a>
                     </td>
                 </tr>
                 @endforelse
@@ -401,7 +401,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
             @foreach (range($startPage, $endPage) as $page)
                 @php $url = $aktivitas->appends(request()->query())->url($page); @endphp
                 @if ($page == $currentPage)
-                    <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">{{ $page }}</span>
+                    <span style="padding: 10px 20px; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: 1px solid #0066CC; border-radius: 4px;">{{ $page }}</span>
                 @else
                     <a href="{{ $url }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">{{ $page }}</a>
                 @endif

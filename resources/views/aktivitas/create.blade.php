@@ -32,7 +32,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .form-group input:disabled {
@@ -59,7 +59,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -84,7 +84,7 @@
     }
 
     .section-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 12px 20px;
         border-radius: 8px 8px 0 0;
@@ -240,7 +240,7 @@
             </div>
 
             <div class="form-group" id="nama_uker_group">
-                <label>NAMA UKER <span id="unit_selector_label" style="color: #667eea; display: none;">(Klik untuk pilih unit)</span></label>
+                <label>NAMA UKER <span id="unit_selector_label" style="color: #0066CC; display: none;">(Klik untuk pilih unit)</span></label>
                 <div style="position: relative;">
                     <textarea id="nama_uker_display" readonly style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 60px; resize: vertical; background-color: #f5f5f5; font-family: inherit;" placeholder="Unit yang dipilih akan muncul di sini">{{ old('nama_uker', optional($rmftData)->uker ?? '') }}</textarea>
                     <input type="hidden" id="nama_uker" name="nama_uker" value="{{ old('nama_uker', optional($rmftData)->uker ?? '') }}" required>
@@ -323,7 +323,7 @@
                     <label>CIFNO <span style="color: red;">*</span></label>
                     <div style="position: relative;">
                         <input type="text" id="norek" name="norek" value="{{ old('norek') }}" placeholder="Pilih RMFT terlebih dahulu" autocomplete="off" style="padding-right: 45px;" disabled>
-                        <button type="button" id="btn_search_nasabah" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" disabled>
+                        <button type="button" id="btn_search_nasabah" onclick="openNasabahModal()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;" disabled>
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
@@ -378,7 +378,7 @@
 <!-- Modal Nasabah -->
 <div id="nasabahModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
     <div style="background: white; border-radius: 12px; width: 90%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-shrink: 0;">
+        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); flex-shrink: 0;">
             <h3 style="margin: 0; color: white;">Pilih Nasabah dari Pull of Pipeline</h3>
             <button onclick="closeNasabahModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">&times;</button>
         </div>
@@ -411,8 +411,8 @@
             <input type="text" id="searchNasabah" placeholder="Cari CIFNO atau nama nasabah (opsional)..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; flex-shrink: 0;" onkeyup="searchNasabahList()">
             
             <div id="nasabahList" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
-                <div style="text-align: center; padding: 40px; color: #667eea;">
-                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <div style="text-align: center; padding: 40px; color: #0066CC;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #0066CC; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     <p style="margin-top: 16px;">Memuat data...</p>
                 </div>
             </div>
@@ -423,7 +423,7 @@
 <!-- Modal Unit Selection -->
 <div id="unitModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
     <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-shrink: 0;">
+        <div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); flex-shrink: 0;">
             <h3 style="margin: 0; color: white;">Pilih Unit di <span id="modal_kc_name"></span></h3>
             <button onclick="closeUnitModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">&times;</button>
         </div>
@@ -445,7 +445,7 @@
             
             <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;">
                 <button onclick="closeUnitModal()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">Batal</button>
-                <button onclick="applySelectedUnits()" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Terapkan Pilihan</button>
+                <button onclick="applySelectedUnits()" style="padding: 10px 20px; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Terapkan Pilihan</button>
             </div>
         </div>
     </div>
@@ -835,8 +835,8 @@
         }
         
         document.getElementById('nasabahList').innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #667eea;">
-                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <div style="text-align: center; padding: 40px; color: #0066CC;">
+                <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #0066CC; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                 <p style="margin-top: 16px;">Memuat data nasabah dari ${filterText}...</p>
             </div>
             <style>
@@ -953,7 +953,7 @@
             html += `<td style="padding: 10px; font-size: 12px; color: #666;">${nasabah.unit_kerja || '-'}</td>`;
             html += `<td style="padding: 10px; font-size: 13px; text-align: right; color: ${deltaValue > 0 ? '#2e7d32' : '#d32f2f'}; font-weight: 600; font-family: monospace;">Rp ${saldoFormatted}</td>`;
             html += `<td style="padding: 10px; text-align: center;">
-                <button onclick='selectNasabah(${JSON.stringify(nasabah)})' style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.05)'" onmouseleave="this.style.transform='scale(1)'">Pilih</button>
+                <button onclick='selectNasabah(${JSON.stringify(nasabah)})' style="background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.05)'" onmouseleave="this.style.transform='scale(1)'">Pilih</button>
             </td>`;
             html += '</tr>';
         });
@@ -968,7 +968,7 @@
             // Previous button
             const prevDisabled = paginationData.current_page <= 1;
             html += `<button onclick="loadAllNasabahFromPipeline(${paginationData.current_page - 1})" 
-                     style="padding: 8px 16px; background: ${prevDisabled ? '#e0e0e0' : '#667eea'}; color: ${prevDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${prevDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
+                     style="padding: 8px 16px; background: ${prevDisabled ? '#e0e0e0' : '#0066CC'}; color: ${prevDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${prevDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
                      ${prevDisabled ? 'disabled' : ''}>
                      ‹ Sebelumnya
                   </button>`;
@@ -982,7 +982,7 @@
             // Next button
             const nextDisabled = paginationData.current_page >= paginationData.last_page;
             html += `<button onclick="loadAllNasabahFromPipeline(${paginationData.current_page + 1})" 
-                     style="padding: 8px 16px; background: ${nextDisabled ? '#e0e0e0' : '#667eea'}; color: ${nextDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${nextDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
+                     style="padding: 8px 16px; background: ${nextDisabled ? '#e0e0e0' : '#0066CC'}; color: ${nextDisabled ? '#999' : 'white'}; border: none; border-radius: 4px; cursor: ${nextDisabled ? 'not-allowed' : 'pointer'}; font-size: 13px; font-weight: 600;" 
                      ${nextDisabled ? 'disabled' : ''}>
                      Selanjutnya ›
                   </button>`;
@@ -1189,8 +1189,8 @@
             }
             
             document.getElementById('nasabahList').innerHTML = `
-                <div style="text-align: center; padding: 40px; color: #667eea;">
-                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <div style="text-align: center; padding: 40px; color: #0066CC;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #0066CC; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     <p style="margin-top: 16px;">Mencari...</p>
                 </div>
             `;

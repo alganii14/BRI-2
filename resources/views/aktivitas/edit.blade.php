@@ -32,7 +32,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .form-group input:disabled {
@@ -59,7 +59,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -84,7 +84,7 @@
     }
 
     .section-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         padding: 12px 20px;
         border-radius: 8px 8px 0 0;
@@ -102,7 +102,7 @@
         padding: 15px;
         border-radius: 6px;
         margin-bottom: 20px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid #0066CC;
     }
 
     .info-box p {

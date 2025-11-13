@@ -24,7 +24,7 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         display: flex;
         align-items: center;
@@ -52,7 +52,7 @@
         border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -96,7 +96,7 @@
 
     .form-group input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #0066CC;
     }
 
     .form-group input:disabled {
@@ -117,7 +117,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 

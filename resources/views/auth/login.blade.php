@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -73,7 +73,7 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #0066CC;
         }
 
         .form-group.error input {
@@ -113,7 +113,7 @@
         }
 
         .forgot-password {
-            color: #667eea;
+            color: #0066CC;
             text-decoration: none;
         }
 
@@ -124,7 +124,7 @@
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -136,7 +136,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
         }
 
         .btn-login:active {

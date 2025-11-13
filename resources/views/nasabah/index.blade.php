@@ -26,7 +26,7 @@
     }
 
     th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
         font-weight: 600;
         font-size: 13px;
@@ -48,7 +48,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #0066CC 0%, #003D82 100%);
         color: white;
     }
 
@@ -295,9 +295,9 @@
                     <td><strong>{{ $nasabah->cifno ?? '-' }}</strong></td>
                     <td>{{ $nasabah->nama_nasabah }}</td>
                     <td><span class="badge badge-info">{{ $nasabah->segmen_nasabah }}</span></td>
-                    <td><strong style="color: #667eea;">{{ $nasabah->kode_kc ?? '-' }}</strong></td>
+                    <td><strong style="color: #0066CC;">{{ $nasabah->kode_kc ?? '-' }}</strong></td>
                     <td>{{ $nasabah->nama_kc ?? '-' }}</td>
-                    <td><strong style="color: #764ba2;">{{ $nasabah->kode_uker ?? '-' }}</strong></td>
+                    <td><strong style="color: #003D82;">{{ $nasabah->kode_uker ?? '-' }}</strong></td>
                     <td>{{ $nasabah->nama_uker ?? '-' }}</td>
                     <td>
                         <div class="actions">
@@ -328,7 +328,7 @@
                 <a href="{{ $nasabahs->appends(request()->except('page'))->previousPageUrl() }}" style="padding: 10px 20px; background: white; color: #333; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; text-decoration: none;">← Previous</a>
             @endif
 
-            <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: 1px solid #667eea; border-radius: 4px;">
+            <span style="padding: 10px 20px; background: linear-gradient(135deg, #0066CC 0%, #003D82 100%); color: white; border: 1px solid #0066CC; border-radius: 4px;">
                 Halaman {{ $nasabahs->currentPage() }}
             </span>
 
