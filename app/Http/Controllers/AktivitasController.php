@@ -35,6 +35,15 @@ class AktivitasController extends Controller
                 $query->where('kode_uker', $request->kode_uker);
             }
             
+            // Filter per Range Tanggal
+            if ($request->filled('tanggal_dari')) {
+                $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+            }
+            
+            if ($request->filled('tanggal_sampai')) {
+                $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+            }
+            
             $aktivitas = $query->orderBy('tanggal', 'desc')->paginate(20);
             
             // Get list KC dan Unit untuk dropdown filter
@@ -60,6 +69,15 @@ class AktivitasController extends Controller
                 $query->where('kode_uker', $request->kode_uker);
             }
             
+            // Filter per Range Tanggal
+            if ($request->filled('tanggal_dari')) {
+                $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+            }
+            
+            if ($request->filled('tanggal_sampai')) {
+                $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+            }
+            
             $aktivitas = $query->orderBy('tanggal', 'desc')->paginate(20);
             
             // Get list Unit untuk dropdown filter (hanya unit di KC manager)
@@ -72,10 +90,19 @@ class AktivitasController extends Controller
             return view('aktivitas.index', compact('aktivitas', 'listUnit'));
         } else {
             // RMFT lihat aktivitas mereka sendiri
-            $aktivitas = Aktivitas::with(['assignedBy', 'nasabah'])
-                                  ->where('rmft_id', $user->rmft_id)
-                                  ->orderBy('tanggal', 'desc')
-                                  ->paginate(20);
+            $query = Aktivitas::with(['assignedBy', 'nasabah'])
+                              ->where('rmft_id', $user->rmft_id);
+            
+            // Filter per Range Tanggal
+            if ($request->filled('tanggal_dari')) {
+                $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+            }
+            
+            if ($request->filled('tanggal_sampai')) {
+                $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+            }
+            
+            $aktivitas = $query->orderBy('tanggal', 'desc')->paginate(20);
             
             return view('aktivitas.index', compact('aktivitas'));
         }

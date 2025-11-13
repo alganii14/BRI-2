@@ -181,32 +181,42 @@
 
 @if(auth()->user()->isAdmin())
 <div class="card" style="margin-bottom: 20px;">
-    <form method="GET" action="{{ route('aktivitas.index') }}" style="display: flex; gap: 15px; align-items: flex-end;">
-        <div style="flex: 1;">
-            <label for="kode_kc" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per KC</label>
-            <select name="kode_kc" id="kode_kc" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
-                <option value="">-- Semua KC --</option>
-                @foreach($listKC as $kc)
-                <option value="{{ $kc->kode_kc }}" {{ request('kode_kc') == $kc->kode_kc ? 'selected' : '' }}>
-                    {{ $kc->kode_kc }} - {{ $kc->nama_kc }}
-                </option>
-                @endforeach
-            </select>
-        </div>
-        <div style="flex: 1;">
-            <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
-            <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
-                <option value="">-- Semua Unit --</option>
-                @foreach($listUnit as $unit)
-                <option value="{{ $unit->kode_uker }}" data-kc="{{ $unit->kode_kc }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
-                    {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
-                </option>
-                @endforeach
-            </select>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white;">Reset</a>
+    <form method="GET" action="{{ route('aktivitas.index') }}">
+        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label for="kode_kc" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per KC</label>
+                <select name="kode_kc" id="kode_kc" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                    <option value="">-- Semua KC --</option>
+                    @foreach($listKC as $kc)
+                    <option value="{{ $kc->kode_kc }}" {{ request('kode_kc') == $kc->kode_kc ? 'selected' : '' }}>
+                        {{ $kc->kode_kc }} - {{ $kc->nama_kc }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
+                <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                    <option value="">-- Semua Unit --</option>
+                    @foreach($listUnit as $unit)
+                    <option value="{{ $unit->kode_uker }}" data-kc="{{ $unit->kode_kc }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
+                        {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <label for="tanggal_dari" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Dari</label>
+                <input type="date" name="tanggal_dari" id="tanggal_dari" value="{{ request('tanggal_dari') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <label for="tanggal_sampai" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Sampai</label>
+                <input type="date" name="tanggal_sampai" id="tanggal_sampai" value="{{ request('tanggal_sampai') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Filter</button>
+                <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white; white-space: nowrap;">Reset</a>
+            </div>
         </div>
     </form>
 </div>
@@ -244,21 +254,52 @@ document.getElementById('kode_kc').addEventListener('change', function() {
 
 @if(auth()->user()->isManager())
 <div class="card" style="margin-bottom: 20px;">
-    <form method="GET" action="{{ route('aktivitas.index') }}" style="display: flex; gap: 15px; align-items: flex-end;">
-        <div style="flex: 1;">
-            <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
-            <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
-                <option value="">-- Semua Unit --</option>
-                @foreach($listUnit as $unit)
-                <option value="{{ $unit->kode_uker }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
-                    {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
-                </option>
-                @endforeach
-            </select>
+    <form method="GET" action="{{ route('aktivitas.index') }}">
+        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
+                <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                    <option value="">-- Semua Unit --</option>
+                    @foreach($listUnit as $unit)
+                    <option value="{{ $unit->kode_uker }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
+                        {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <label for="tanggal_dari" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Dari</label>
+                <input type="date" name="tanggal_dari" id="tanggal_dari" value="{{ request('tanggal_dari') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <label for="tanggal_sampai" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Sampai</label>
+                <input type="date" name="tanggal_sampai" id="tanggal_sampai" value="{{ request('tanggal_sampai') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Filter</button>
+                <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white; white-space: nowrap;">Reset</a>
+            </div>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white;">Reset</a>
+    </form>
+</div>
+@endif
+
+@if(auth()->user()->isRMFT())
+<div class="card" style="margin-bottom: 20px;">
+    <form method="GET" action="{{ route('aktivitas.index') }}">
+        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label for="tanggal_dari" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Dari</label>
+                <input type="date" name="tanggal_dari" id="tanggal_dari" value="{{ request('tanggal_dari') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label for="tanggal_sampai" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Tanggal Sampai</label>
+                <input type="date" name="tanggal_sampai" id="tanggal_sampai" value="{{ request('tanggal_sampai') }}" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; font-size: 14px;">
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Filter</button>
+                <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white; white-space: nowrap;">Reset</a>
+            </div>
         </div>
     </form>
 </div>
