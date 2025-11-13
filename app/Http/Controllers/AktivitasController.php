@@ -275,16 +275,8 @@ class AktivitasController extends Controller
                               ->first();
             
             if (!$nasabah) {
-                // Cek apakah norek sudah ada tapi dengan KC/Unit berbeda
-                $existingNasabah = Nasabah::where('norek', $validated['norek'])->first();
-                
-                if ($existingNasabah) {
-                    return back()->withErrors([
-                        'norek' => 'Norek ini terdaftar di KC: ' . $existingNasabah->nama_kc . ' / Unit: ' . $existingNasabah->nama_uker . '. Norek harus sesuai dengan KC dan Unit RMFT.'
-                    ])->withInput();
-                }
-                
                 // Buat nasabah baru dengan KC dan Unit
+                // Norek bisa sama selama KC dan Unit berbeda
                 $nasabah = Nasabah::create([
                     'norek' => $validated['norek'],
                     'nama_nasabah' => $validated['nama_nasabah'],
