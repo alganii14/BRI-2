@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Penurunan No-Segment Ritel')
-@section('page-title', 'Tambah Data Penurunan No-Segment Ritel')
+@section('title', 'Tambah Penurunan Ritel')
+@section('page-title', 'Tambah Data Penurunan Ritel')
 
 @section('content')
 <style>
@@ -100,7 +100,7 @@
         </div>
     @endif
 
-    <form action="{{ route('penurunan-no-segment-ritel.store') }}" method="POST">
+    <form action="{{ route('penurunan-ritel.store') }}" method="POST">
             @csrf
             
             <div class="form-grid">
@@ -224,7 +224,7 @@
                 <button type="submit" class="btn btn-primary">
                     💾 Simpan Data
                 </button>
-                <a href="{{ route('penurunan-no-segment-ritel.index') }}" class="btn btn-secondary">
+                <a href="{{ route('penurunan-ritel.index') }}" class="btn btn-secondary">
                     ← Kembali
                 </a>
             </div>

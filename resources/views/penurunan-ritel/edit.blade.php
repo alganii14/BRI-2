@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Penurunan No-Segment Ritel')
-@section('page-title', 'Edit Data Penurunan No-Segment Ritel')
+@section('title', 'Edit Penurunan Ritel')
+@section('page-title', 'Edit Data Penurunan Ritel')
 
 @section('content')
 <style>
@@ -100,124 +100,124 @@
         </div>
     @endif
 
-    <form action="{{ route('penurunan-no-segment-ritel.update', $penurunanNoSegmentRitel->id) }}" method="POST">
+    <form action="{{ route('penurunan-ritel.update', $penurunanRitel->id) }}" method="POST">
             @csrf
             @method('PUT')
             
             <div class="form-grid">
                 <div class="form-group">
                     <label for="regional_office">Regional Office</label>
-                    <input type="text" id="regional_office" name="regional_office" value="{{ old('regional_office', $penurunanNoSegmentRitel->regional_office) }}">
+                    <input type="text" id="regional_office" name="regional_office" value="{{ old('regional_office', $penurunanRitel->regional_office) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="kode_cabang_induk">Kode Cabang Induk</label>
-                    <input type="text" id="kode_cabang_induk" name="kode_cabang_induk" value="{{ old('kode_cabang_induk', $penurunanNoSegmentRitel->kode_cabang_induk) }}">
+                    <input type="text" id="kode_cabang_induk" name="kode_cabang_induk" value="{{ old('kode_cabang_induk', $penurunanRitel->kode_cabang_induk) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="cabang_induk">Cabang Induk</label>
-                    <input type="text" id="cabang_induk" name="cabang_induk" value="{{ old('cabang_induk', $penurunanNoSegmentRitel->cabang_induk) }}">
+                    <input type="text" id="cabang_induk" name="cabang_induk" value="{{ old('cabang_induk', $penurunanRitel->cabang_induk) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="kode_uker">Kode Uker</label>
-                    <input type="text" id="kode_uker" name="kode_uker" value="{{ old('kode_uker', $penurunanNoSegmentRitel->kode_uker) }}">
+                    <input type="text" id="kode_uker" name="kode_uker" value="{{ old('kode_uker', $penurunanRitel->kode_uker) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="unit_kerja">Unit Kerja</label>
-                    <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $penurunanNoSegmentRitel->unit_kerja) }}">
+                    <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $penurunanRitel->unit_kerja) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="cifno">CIFNO</label>
-                    <input type="text" id="cifno" name="cifno" value="{{ old('cifno', $penurunanNoSegmentRitel->cifno) }}">
+                    <input type="text" id="cifno" name="cifno" value="{{ old('cifno', $penurunanRitel->cifno) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="no_rekening">No Rekening</label>
-                    <input type="text" id="no_rekening" name="no_rekening" value="{{ old('no_rekening', $penurunanNoSegmentRitel->no_rekening) }}">
+                    <input type="text" id="no_rekening" name="no_rekening" value="{{ old('no_rekening', $penurunanRitel->no_rekening) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="penurunan">Penurunan</label>
-                    <input type="text" id="penurunan" name="penurunan" value="{{ old('penurunan', $penurunanNoSegmentRitel->penurunan) }}">
+                    <input type="text" id="penurunan" name="penurunan" value="{{ old('penurunan', $penurunanRitel->penurunan) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="product_type">Product Type</label>
-                    <input type="text" id="product_type" name="product_type" value="{{ old('product_type', $penurunanNoSegmentRitel->product_type) }}">
+                    <input type="text" id="product_type" name="product_type" value="{{ old('product_type', $penurunanRitel->product_type) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="nama_nasabah">Nama Nasabah</label>
-                    <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah', $penurunanNoSegmentRitel->nama_nasabah) }}">
+                    <input type="text" id="nama_nasabah" name="nama_nasabah" value="{{ old('nama_nasabah', $penurunanRitel->nama_nasabah) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="segmentasi_bpr">Segmentasi BPR</label>
-                    <input type="text" id="segmentasi_bpr" name="segmentasi_bpr" value="{{ old('segmentasi_bpr', $penurunanNoSegmentRitel->segmentasi_bpr) }}">
+                    <input type="text" id="segmentasi_bpr" name="segmentasi_bpr" value="{{ old('segmentasi_bpr', $penurunanRitel->segmentasi_bpr) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="jenis_simpanan">Jenis Simpanan</label>
-                    <input type="text" id="jenis_simpanan" name="jenis_simpanan" value="{{ old('jenis_simpanan', $penurunanNoSegmentRitel->jenis_simpanan) }}">
+                    <input type="text" id="jenis_simpanan" name="jenis_simpanan" value="{{ old('jenis_simpanan', $penurunanRitel->jenis_simpanan) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="saldo_last_eom">Saldo Last EOM</label>
-                    <input type="text" id="saldo_last_eom" name="saldo_last_eom" value="{{ old('saldo_last_eom', $penurunanNoSegmentRitel->saldo_last_eom) }}">
+                    <input type="text" id="saldo_last_eom" name="saldo_last_eom" value="{{ old('saldo_last_eom', $penurunanRitel->saldo_last_eom) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="saldo_terupdate">Saldo Terupdate</label>
-                    <input type="text" id="saldo_terupdate" name="saldo_terupdate" value="{{ old('saldo_terupdate', $penurunanNoSegmentRitel->saldo_terupdate) }}">
+                    <input type="text" id="saldo_terupdate" name="saldo_terupdate" value="{{ old('saldo_terupdate', $penurunanRitel->saldo_terupdate) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="delta">Delta</label>
-                    <input type="text" id="delta" name="delta" value="{{ old('delta', $penurunanNoSegmentRitel->delta) }}">
+                    <input type="text" id="delta" name="delta" value="{{ old('delta', $penurunanRitel->delta) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_1">PN Slot 1</label>
-                    <input type="text" id="pn_slot_1" name="pn_slot_1" value="{{ old('pn_slot_1', $penurunanNoSegmentRitel->pn_slot_1) }}">
+                    <input type="text" id="pn_slot_1" name="pn_slot_1" value="{{ old('pn_slot_1', $penurunanRitel->pn_slot_1) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_2">PN Slot 2</label>
-                    <input type="text" id="pn_slot_2" name="pn_slot_2" value="{{ old('pn_slot_2', $penurunanNoSegmentRitel->pn_slot_2) }}">
+                    <input type="text" id="pn_slot_2" name="pn_slot_2" value="{{ old('pn_slot_2', $penurunanRitel->pn_slot_2) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_3">PN Slot 3</label>
-                    <input type="text" id="pn_slot_3" name="pn_slot_3" value="{{ old('pn_slot_3', $penurunanNoSegmentRitel->pn_slot_3) }}">
+                    <input type="text" id="pn_slot_3" name="pn_slot_3" value="{{ old('pn_slot_3', $penurunanRitel->pn_slot_3) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_4">PN Slot 4</label>
-                    <input type="text" id="pn_slot_4" name="pn_slot_4" value="{{ old('pn_slot_4', $penurunanNoSegmentRitel->pn_slot_4) }}">
+                    <input type="text" id="pn_slot_4" name="pn_slot_4" value="{{ old('pn_slot_4', $penurunanRitel->pn_slot_4) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_5">PN Slot 5</label>
-                    <input type="text" id="pn_slot_5" name="pn_slot_5" value="{{ old('pn_slot_5', $penurunanNoSegmentRitel->pn_slot_5) }}">
+                    <input type="text" id="pn_slot_5" name="pn_slot_5" value="{{ old('pn_slot_5', $penurunanRitel->pn_slot_5) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_6">PN Slot 6</label>
-                    <input type="text" id="pn_slot_6" name="pn_slot_6" value="{{ old('pn_slot_6', $penurunanNoSegmentRitel->pn_slot_6) }}">
+                    <input type="text" id="pn_slot_6" name="pn_slot_6" value="{{ old('pn_slot_6', $penurunanRitel->pn_slot_6) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_7">PN Slot 7</label>
-                    <input type="text" id="pn_slot_7" name="pn_slot_7" value="{{ old('pn_slot_7', $penurunanNoSegmentRitel->pn_slot_7) }}">
+                    <input type="text" id="pn_slot_7" name="pn_slot_7" value="{{ old('pn_slot_7', $penurunanRitel->pn_slot_7) }}">
                 </div>
 
                 <div class="form-group">
                     <label for="pn_slot_8">PN Slot 8</label>
-                    <input type="text" id="pn_slot_8" name="pn_slot_8" value="{{ old('pn_slot_8', $penurunanNoSegmentRitel->pn_slot_8) }}">
+                    <input type="text" id="pn_slot_8" name="pn_slot_8" value="{{ old('pn_slot_8', $penurunanRitel->pn_slot_8) }}">
                 </div>
             </div>
 
@@ -225,7 +225,7 @@
                 <button type="submit" class="btn btn-primary">
                     💾 Update Data
                 </button>
-                <a href="{{ route('penurunan-no-segment-ritel.index') }}" class="btn btn-secondary">
+                <a href="{{ route('penurunan-ritel.index') }}" class="btn btn-secondary">
                     ← Kembali
                 </a>
             </div>

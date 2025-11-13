@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Import CSV - Penurunan No-Segment Ritel')
-@section('page-title', 'Import CSV - Penurunan No-Segment Ritel')
+@section('title', 'Import CSV - Penurunan Ritel')
+@section('page-title', 'Import CSV - Penurunan Ritel')
 
 @section('content')
 <style>
@@ -136,7 +136,7 @@
             </ul>
         </div>
 
-        <form action="{{ route('penurunan-no-segment-ritel.import') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <form action="{{ route('penurunan-ritel.import') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
             @csrf
             
             <div class="upload-area" onclick="document.getElementById('csv_file').click()">
@@ -155,17 +155,17 @@
                 📤 Upload dan Import
             </button>
 
-            <a href="{{ route('penurunan-no-segment-ritel.index') }}" class="btn btn-secondary">
+            <a href="{{ route('penurunan-ritel.index') }}" class="btn btn-secondary">
                 ← Kembali
             </a>
         </form>
 
         <!-- Zona Berbahaya -->
         @php
-            $totalPenurunanNoSegmentRitel = \App\Models\PenurunanNoSegmentRitel::count();
+            $totalpenurunanRitel = \App\Models\penurunanRitel::count();
         @endphp
 
-        @if($totalPenurunanNoSegmentRitel > 0)
+        @if($totalpenurunanRitel > 0)
         <div class="card" style="margin-top: 30px; border: 2px solid #dc3545;">
             <div class="card-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
                 <h4 class="card-title mb-0">⚠️ Zona Berbahaya</h4>
@@ -178,10 +178,10 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6>Hapus Semua Data Penurunan No Segment Ritel</h6>
-                        <p class="text-muted mb-0">Total {{ number_format($totalPenurunanNoSegmentRitel, 0, ",", ".") }} data akan dihapus secara permanen</p>
+                        <p class="text-muted mb-0">Total {{ number_format($totalpenurunanRitel, 0, ",", ".") }} data akan dihapus secara permanen</p>
                     </div>
-                    <form action="{{ route('penurunan-no-segment-ritel.delete-all') }}" method="POST" 
-                          onsubmit="return confirm('PERINGATAN: Anda akan menghapus SEMUA data penurunan no segment ritel ({{ number_format($totalPenurunanNoSegmentRitel, 0, ",", ".") }} data).\n\nTindakan ini TIDAK DAPAT DIBATALKAN!\n\nApakah Anda yakin ingin melanjutkan?')">
+                    <form action="{{ route('penurunan-ritel.delete-all') }}" method="POST" 
+                          onsubmit="return confirm('PERINGATAN: Anda akan menghapus SEMUA data penurunan no segment ritel ({{ number_format($totalpenurunanRitel, 0, ",", ".") }} data).\n\nTindakan ini TIDAK DAPAT DIBATALKAN!\n\nApakah Anda yakin ingin melanjutkan?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">

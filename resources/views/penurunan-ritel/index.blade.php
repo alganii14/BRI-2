@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Penurunan No-Segment Ritel')
-@section('page-title', 'Data Penurunan No-Segment Ritel')
+@section('title', 'Penurunan Ritel')
+@section('page-title', 'Data Penurunan Ritel')
 
 @section('content')
 <style>
@@ -162,7 +162,7 @@
 
 <div class="action-buttons-top">
     @if($data->total() > 0)
-    <form action="{{ route('penurunan-no-segment-ritel.delete-all') }}" method="POST" style="display: inline;" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data penurunan no-segment ritel ({{ number_format($data->total(), 0, ',', '.') }} baris).\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?')">
+    <form action="{{ route('penurunan-ritel.delete-all') }}" method="POST" style="display: inline;" onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SEMUA data Penurunan Ritel ({{ number_format($data->total(), 0, ',', '.') }} baris).\n\nData yang sudah dihapus TIDAK DAPAT dikembalikan!\n\nApakah Anda yakin ingin melanjutkan?')">
         @csrf
         @method('DELETE')
         <button type="submit" class="btn btn-danger-gradient">
@@ -170,10 +170,10 @@
         </button>
     </form>
     @endif
-    <a href="{{ route('penurunan-no-segment-ritel.import.form') }}" class="btn btn-success">
+    <a href="{{ route('penurunan-ritel.import.form') }}" class="btn btn-success">
         📤 Import CSV
     </a>
-    <a href="{{ route('penurunan-no-segment-ritel.create') }}" class="btn btn-primary">
+    <a href="{{ route('penurunan-ritel.create') }}" class="btn btn-primary">
         ➕ Tambah Data
     </a>
 </div>
@@ -185,7 +185,7 @@
 @endif
 
 <div class="search-box">
-    <form action="{{ route('penurunan-no-segment-ritel.index') }}" method="GET" style="display:flex;gap:10px;align-items:center;">
+    <form action="{{ route('penurunan-ritel.index') }}" method="GET" style="display:flex;gap:10px;align-items:center;">
         <select name="year" style="padding:10px 16px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;min-width:140px;">
             <option value="">Semua Tahun</option>
             @foreach($availableYears as $availableYear)
@@ -200,7 +200,7 @@
         </select>
         <input type="text" name="search" placeholder="🔍 Cari berdasarkan nama nasabah, no rekening, CIFNO, atau unit kerja..." value="{{ $search }}" style="flex:1;">
         @if($search || request('month') || request('year'))
-            <a href="{{ route('penurunan-no-segment-ritel.index') }}" style="padding:10px 16px;background:#dc3545;color:white;border-radius:6px;text-decoration:none;white-space:nowrap;">Reset</a>
+            <a href="{{ route('penurunan-ritel.index') }}" style="padding:10px 16px;background:#dc3545;color:white;border-radius:6px;text-decoration:none;white-space:nowrap;">Reset</a>
         @endif
     </form>
 </div>
@@ -241,9 +241,9 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('penurunan-no-segment-ritel.show', $item->id) }}" class="btn-sm btn-info">👁️ Lihat</a>
-                                    <a href="{{ route('penurunan-no-segment-ritel.edit', $item->id) }}" class="btn-sm btn-warning">✏️ Edit</a>
-                                    <form action="{{ route('penurunan-no-segment-ritel.destroy', $item->id) }}" method="POST" style="display: inline;">
+                                    <a href="{{ route('penurunan-ritel.show', $item->id) }}" class="btn-sm btn-info">👁️ Lihat</a>
+                                    <a href="{{ route('penurunan-ritel.edit', $item->id) }}" class="btn-sm btn-warning">✏️ Edit</a>
+                                    <form action="{{ route('penurunan-ritel.destroy', $item->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️ Hapus</button>
