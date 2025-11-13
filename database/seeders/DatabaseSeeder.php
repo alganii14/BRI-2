@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         // Seed admin user first
         $this->call([
             AdminUserSeeder::class,
-            UpdateUsersWithKancaSeeder::class,
+            FreshManagerSeeder::class,
             CreateAllRMFTUsersSeeder::class,
             UpdateRMFTUserSeeder::class,
             CreateAllRencanaAktivitasSeeder::class,

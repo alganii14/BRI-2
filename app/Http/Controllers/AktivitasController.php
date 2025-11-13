@@ -23,7 +23,7 @@ class AktivitasController extends Controller
         
         if ($user->isAdmin()) {
             // Admin bisa lihat semua aktivitas dengan filter
-            $query = Aktivitas::with(['rmft', 'assignedBy']);
+            $query = Aktivitas::with(['rmft', 'assignedBy', 'nasabah']);
             
             // Filter per KC
             if ($request->filled('kode_kc')) {
@@ -51,16 +51,28 @@ class AktivitasController extends Controller
             return view('aktivitas.index', compact('aktivitas', 'listKC', 'listUnit'));
             
         } elseif ($user->isManager()) {
-            // Manager hanya lihat aktivitas di Kanca mereka
-            $aktivitas = Aktivitas::with(['rmft', 'assignedBy'])
-                                  ->where('kode_kc', $user->kode_kanca)
-                                  ->orderBy('tanggal', 'desc')
-                                  ->paginate(20);
+            // Manager hanya lihat aktivitas di Kanca mereka dengan filter unit
+            $query = Aktivitas::with(['rmft', 'assignedBy', 'nasabah'])
+                              ->where('kode_kc', $user->kode_kanca);
             
-            return view('aktivitas.index', compact('aktivitas'));
+            // Filter per Unit
+            if ($request->filled('kode_uker')) {
+                $query->where('kode_uker', $request->kode_uker);
+            }
+            
+            $aktivitas = $query->orderBy('tanggal', 'desc')->paginate(20);
+            
+            // Get list Unit untuk dropdown filter (hanya unit di KC manager)
+            $listUnit = Aktivitas::select('kode_uker', 'nama_uker')
+                                 ->where('kode_kc', $user->kode_kanca)
+                                 ->distinct()
+                                 ->orderBy('nama_uker')
+                                 ->get();
+            
+            return view('aktivitas.index', compact('aktivitas', 'listUnit'));
         } else {
             // RMFT lihat aktivitas mereka sendiri
-            $aktivitas = Aktivitas::with('assignedBy')
+            $aktivitas = Aktivitas::with(['assignedBy', 'nasabah'])
                                   ->where('rmft_id', $user->rmft_id)
                                   ->orderBy('tanggal', 'desc')
                                   ->paginate(20);
@@ -281,7 +293,7 @@ class AktivitasController extends Controller
      */
     public function show($id)
     {
-        $aktivitas = Aktivitas::with('rmft')->findOrFail($id);
+        $aktivitas = Aktivitas::with(['rmft', 'nasabah'])->findOrFail($id);
         return view('aktivitas.show', compact('aktivitas'));
     }
 

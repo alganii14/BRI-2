@@ -242,6 +242,28 @@ document.getElementById('kode_kc').addEventListener('change', function() {
 </script>
 @endif
 
+@if(auth()->user()->isManager())
+<div class="card" style="margin-bottom: 20px;">
+    <form method="GET" action="{{ route('aktivitas.index') }}" style="display: flex; gap: 15px; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label for="kode_uker" style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px;">Filter per Unit</label>
+            <select name="kode_uker" id="kode_uker" class="form-control" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+                <option value="">-- Semua Unit --</option>
+                @foreach($listUnit as $unit)
+                <option value="{{ $unit->kode_uker }}" {{ request('kode_uker') == $unit->kode_uker ? 'selected' : '' }}>
+                    {{ $unit->kode_uker }} - {{ $unit->nama_uker }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ route('aktivitas.index') }}" class="btn" style="background-color: #6c757d; color: white;">Reset</a>
+        </div>
+    </form>
+</div>
+@endif
+
 <div class="card">
     <div class="header-actions">
         <h3>Daftar Aktivitas</h3>
@@ -295,7 +317,7 @@ document.getElementById('kode_kc').addEventListener('change', function() {
                     <td>{{ $item->rencana_aktivitas }}</td>
                     <td>{{ $item->segmen_nasabah }}</td>
                     <td>{{ $item->nama_nasabah }}</td>
-                    <td>{{ $item->norek }}</td>
+                    <td>{{ $item->nasabah->cifno ?? '-' }}</td>
                     <td>Rp {{ number_format($item->rp_jumlah, 0, ',', '.') }}</td>
                     <td>
                         @if($item->status_realisasi == 'belum')

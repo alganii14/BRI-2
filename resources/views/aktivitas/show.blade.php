@@ -281,7 +281,7 @@
             <div class="detail-grid">
                 <div class="detail-item">
                     <div class="detail-label">CIFNO</div>
-                    <div class="detail-value">{{ $aktivitas->norek }}</div>
+                    <div class="detail-value">{{ $aktivitas->nasabah->cifno ?? '-' }}</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Nama Nasabah</div>
