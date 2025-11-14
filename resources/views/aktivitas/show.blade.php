@@ -406,12 +406,6 @@
     </div>
 </div>
 
-<!-- Tombol Kembali -->
-<div style="margin-top: 20px; text-align: center;">
-    <a href="{{ route('aktivitas.index') }}" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px;">
-        ← Kembali ke Daftar Aktivitas
-    </a>
-</div>
 
 @endsection
 
