@@ -903,14 +903,14 @@
         html += '</div>';
         
         // Scrollable table container
-        html += '<div style="flex: 1; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">';
-        html += '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<div style="flex: 1; overflow-y: auto; overflow-x: auto; margin-bottom: 10px;">';
+        html += '<table style="width: 100%; border-collapse: collapse; min-width: 600px;">';
         html += '<thead><tr style="background: #f5f5f5; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;">';
-        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 15%;">CIFNO</th>';
-        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Nama</th>';
-        html += '<th style="padding: 10px; text-align: left; font-size: 13px; width: 25%;">Unit</th>';
-        html += '<th style="padding: 10px; text-align: right; font-size: 13px; width: 20%;">Delta</th>';
-        html += '<th style="padding: 10px; text-align: center; font-size: 13px; width: 15%;">Aksi</th>';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; min-width: 100px;">CIFNO</th>';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; min-width: 150px;">Nama</th>';
+        html += '<th style="padding: 10px; text-align: left; font-size: 13px; min-width: 150px;">Unit</th>';
+        html += '<th style="padding: 10px; text-align: right; font-size: 13px; min-width: 120px;">Delta</th>';
+        html += '<th style="padding: 10px; text-align: center; font-size: 13px; min-width: 80px;">Aksi</th>';
         html += '</tr></thead><tbody>';
         
         nasabahs.forEach(nasabah => {
